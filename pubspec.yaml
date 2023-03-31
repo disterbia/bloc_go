@@ -37,7 +37,18 @@ dependencies:
   go_router: ^6.2.0
   cupertino_icons: ^1.0.2
   equatable: ^2.0.5
-  dio: ^5.0.1
+  dio: ^4.0.6
+  sign_in_with_apple: ^4.3.0
+#  google_sign_in: ^6.0.2
+  kakao_flutter_sdk: ^1.4.2
+  flutter_naver_login: ^1.7.0
+  image_picker: ^0.8.7
+  video_player: ^2.6.0
+  web_socket_channel: ^2.3.0
+  firebase_storage: ^11.1.0
+  chewie: ^1.4.0
+  flutter_swiper_null_safety: ^1.0.2
+  firebase_core: ^2.9.0
 
 dev_dependencies:
   flutter_test:

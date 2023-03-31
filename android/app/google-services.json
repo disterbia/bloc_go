@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "591622777355",
+    "project_id": "oauthtest-8d82e",
+    "storage_bucket": "oauthtest-8d82e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591622777355:android:3d2c22ed04393ea495f50e",
+        "android_client_info": {
+          "package_name": "com.dmonster.eatall.eatall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "591622777355-11cntqroa2j3d3ogg3bgtcq9kto087ig.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBciO4Lq3Sj-yYWc0RkiPl4KXph0kAlG5A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "591622777355-11cntqroa2j3d3ogg3bgtcq9kto087ig.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
