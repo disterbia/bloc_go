@@ -5,6 +5,7 @@ import 'package:eatall/app/repository/login_repository.dart';
 import 'package:eatall/app/view/splash_page.dart';
 import 'package:eatall/app/view/login_page.dart';
 import 'package:eatall/app/view/upload_page.dart';
+import 'package:eatall/app/view/video_chat_page.dart';
 import 'package:eatall/app/view/videostream.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +30,7 @@ class MyPages {
       ),
       GoRoute(
           path: MyRoutes.VIDEO,
-          builder: (context, state) => VideoScreen()
+          builder: (context, state) => VideoScreenPage()
       ),
       GoRoute(
           path: MyRoutes.Login,

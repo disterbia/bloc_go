@@ -14,7 +14,7 @@ class SplashScreen extends StatelessWidget {
         body: BlocListener<SplashBloc,bool>(
           listenWhen: (previous, current) => current,
           listener: (context,state) {
-            context.pushReplacement("/video");
+            context.pushReplacement("/login");
           },
           child:Center(
         child: Image.asset("assets/product_img2.jpeg"),

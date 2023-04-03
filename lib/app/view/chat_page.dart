@@ -5,19 +5,57 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatScreen extends StatefulWidget {
+  final String roomId;
+
+  ChatScreen({Key? key, required this.roomId}) : super(key: key);
+
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  ChatScreenState createState() => ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class ChatScreenState extends State<ChatScreen> {
   TextEditingController _controller = TextEditingController();
   final List<Message> _messages = [];
   IOWebSocketChannel? _channel;
+  String? _roomId;
 
-  @override
-  void initState() {
-    super.initState();
-    _channel = IOWebSocketChannel.connect('ws://192.168.0.83:8080/ws');
+  void clearMessages() {
+    setState(() {
+      _messages.clear();
+    });
+  }
+  void updateRoomId(String roomId) {
+    _roomId = roomId;
+  }
+
+  void connectWebSocket() {
+    if (_channel == null && _roomId != null) {
+      setupWebSocket();
+    }
+  }
+  void disposeWebSocket() {
+    if (_channel != null) {
+      _channel?.sink.close();
+      _channel = null;
+    }
+  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   setupWebSocket();
+  // }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   if (!_isInitialized) {
+  //     setupWebSocket();
+  //     _isInitialized = true;
+  //   }
+  // }
+
+  void setupWebSocket() {
+    _channel = IOWebSocketChannel.connect(
+        'ws://192.168.0.88:8080/ws?roomId=${widget.roomId}');
     _channel!.stream.listen((event) {
       Map<String, dynamic> messageData = jsonDecode(event);
       setState(() {
@@ -28,7 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _channel!.sink.close();
+    disposeWebSocket();
     super.dispose();
   }
 
@@ -41,43 +79,38 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Chat Room")),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_messages[index].username),
-                    subtitle: Text(_messages[index].text),
-                  );
-                },
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(hintText: '메시지를 입력하세요.'),
-                      onSubmitted: _sendMessage,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () => _sendMessage(_controller.text),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: _messages.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(_messages[index].username),
+                subtitle: Text(_messages[index].text),
+              );
+            },
+          ),
         ),
-      ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  decoration: InputDecoration(hintText: '메시지를 입력하세요.'),
+                  onSubmitted: _sendMessage,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.send),
+                onPressed: () => _sendMessage(_controller.text),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

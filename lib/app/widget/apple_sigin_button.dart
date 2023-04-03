@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AppleSignInButton extends StatelessWidget {
@@ -34,7 +35,7 @@ class AppleSignInButton extends StatelessWidget {
                   print('credential.state = $credential');
                   print('credential.state = ${credential.email}');
                   print('credential.state = ${credential.userIdentifier}');
-
+                  context.push("/video");
                 } catch (error) {
                   print('error = $error');
                 }
