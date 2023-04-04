@@ -35,7 +35,7 @@ class AppleSignInButton extends StatelessWidget {
                   print('credential.state = $credential');
                   print('credential.state = ${credential.email}');
                   print('credential.state = ${credential.userIdentifier}');
-                  context.push("/video");
+                  context.push("/video",extra: credential.userIdentifier);
                 } catch (error) {
                   print('error = $error');
                 }

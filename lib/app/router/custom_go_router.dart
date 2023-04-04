@@ -5,7 +5,7 @@ import 'package:eatall/app/repository/login_repository.dart';
 import 'package:eatall/app/view/splash_page.dart';
 import 'package:eatall/app/view/login_page.dart';
 import 'package:eatall/app/view/upload_page.dart';
-import 'package:eatall/app/view/video_chat_page.dart';
+import 'package:eatall/app/view/video_upload.dart';
 import 'package:eatall/app/view/videostream.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +16,7 @@ class MyRoutes {
   static const Login = '/login';
   static const UPLOAD = '/upload';
   static const VIDEO = '/video';
+  static const VIDEOUPLOAD = '/video_upload';
 
 }
 
@@ -29,9 +30,13 @@ class MyPages {
           builder: (context, state) => SplashScreen()
       ),
       GoRoute(
-          path: MyRoutes.VIDEO,
-          builder: (context, state) => VideoScreenPage()
+          path: MyRoutes.VIDEOUPLOAD,
+          builder: (context, state) => VideoUploadScreen()
       ),
+      GoRoute(
+          path: MyRoutes.VIDEO,
+          builder: (context, state)  {
+            return VideoScreenPage(state.extra.toString());}),
       GoRoute(
           path: MyRoutes.Login,
           builder: (context, state) => RepositoryProvider(

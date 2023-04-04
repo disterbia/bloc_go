@@ -20,7 +20,7 @@ class LoginPage extends StatelessWidget {
   TextEditingController pwController = TextEditingController();
   Dio dio = Dio();
 
-  void _get_user_info(kakao.OAuthToken token) async {
+  Future<String> _get_user_info(kakao.OAuthToken token) async {
     print(token);
     dio.options.headers["authorization"] = "Bearer ${token.accessToken}";
     try {
@@ -34,10 +34,13 @@ class LoginPage extends StatelessWidget {
         "https://kapi.kakao.com/v2/user/me",
       );
       final profileInfo = response.data;
-      print(profileInfo);
+      return profileInfo["id"].toString();
+
 
 
     } catch (error) {
+      print(error);
+      return "";
       print('사용자 정보 요청 실패 $error');
     }
   }
@@ -58,6 +61,28 @@ class LoginPage extends StatelessWidget {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+  Future<bool> login(String userID) async {
+    try {
+      final dio = Dio();
+      final response = await dio.post(
+        'http://192.168.0.88:8080/login',
+        data: FormData.fromMap({
+          'userID': userID,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Login or registration successful');
+        return true;
+      } else {
+        print('Login or registration failed');
+        return false;
+      }
+    } catch (e) {
+      print('Error occurred during login or registration: $e');
+      return false;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -88,14 +113,27 @@ class LoginPage extends StatelessWidget {
                           try {
                             kakao.OAuthToken token=await kakao.UserApi.instance.loginWithKakaoTalk();
                             print('카카오톡으로 로그인 성공');
-                            _get_user_info(token);
+                            String result =await _get_user_info(token);
+                            bool temp = await login(result);
+                            if(temp){
+                              context.push("/video",extra: result);
+                            }else{
+                              print("fuck you");
+                            }
+
                           } catch (error) {
                             print('카카오톡으로 로그인 실패 $error');
                             // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
                             try {
                               kakao.OAuthToken token=await kakao.UserApi.instance.loginWithKakaoAccount();
                               print('카카오계정으로 로그인 성공');
-                              _get_user_info(token);
+                              String result =await _get_user_info(token);
+                              bool temp = await login(result);
+                              if(temp){
+                                context.push("/video",extra: result);
+                              }else{
+                                print("fuck you");
+                              }
                             } catch (error) {
                               print('카카오계정으로 로그인 실패 $error');
                             }
@@ -104,8 +142,13 @@ class LoginPage extends StatelessWidget {
                           try {
                             kakao.OAuthToken token= await kakao.UserApi.instance.loginWithKakaoAccount();
                             print('카카오계정으로 로그인 성공');
-                            _get_user_info(token);
-                            context.push("/video");
+                            String result =await _get_user_info(token);
+                            bool temp = await login(result);
+                            if(temp){
+                              context.push("/video",extra: result);
+                            }else{
+                              print("fuck you");
+                            }
                           } catch (error) {
                             print('카카오계정으로 로그인 실패 $error');
                           }
@@ -119,13 +162,13 @@ class LoginPage extends StatelessWidget {
             try{
               FlutterNaverLogin.logOut();
               final NaverLoginResult result = await FlutterNaverLogin.logIn();
-
               if (result.status == NaverLoginStatus.loggedIn) {
-                print('accessToken = ${result.accessToken}');
-                print('id = ${result.account.id}');
-                print('email = ${result.account.email}');
-                print('name = ${result.account.name}');
-                context.push("/video");
+                bool temp = await login(result.account.id);
+                if(temp){
+                  context.push("/video",extra: result.account.id);
+                }else{
+                  print("fuck you");
+                }
               }
             }catch(e){
               print("-=-=$e");
@@ -134,7 +177,13 @@ class LoginPage extends StatelessWidget {
           }, child: Text("naver")),
           ElevatedButton(onPressed: ()async{
             UserCredential result=  await signInWithGoogle();
-            context.push("/video");
+            bool temp = await login(result.user!.uid);
+            if(temp){
+              context.push("/video",extra: result.user!.uid);
+            }else{
+              print("fuck you");
+            }
+
           }, child: Text("google")),
           ElevatedButton(
               onPressed: () =>

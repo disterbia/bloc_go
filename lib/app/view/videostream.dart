@@ -8,7 +8,8 @@ import 'package:video_player/video_player.dart';
 
 
 class VideoScreenPage extends StatefulWidget {
-
+  VideoScreenPage(this.id);
+  String id;
   @override
   _VideoScreenState createState() => _VideoScreenState();
 }
