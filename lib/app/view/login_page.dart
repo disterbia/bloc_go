@@ -116,7 +116,7 @@ class LoginPage extends StatelessWidget {
                             String result =await _get_user_info(token);
                             bool temp = await login(result);
                             if(temp){
-                              context.push("/video",extra: result);
+                              context.push("/middle",extra: result);
                             }else{
                               print("fuck you");
                             }
@@ -130,7 +130,7 @@ class LoginPage extends StatelessWidget {
                               String result =await _get_user_info(token);
                               bool temp = await login(result);
                               if(temp){
-                                context.push("/video",extra: result);
+                                context.push("/middle",extra: result);
                               }else{
                                 print("fuck you");
                               }
@@ -145,7 +145,7 @@ class LoginPage extends StatelessWidget {
                             String result =await _get_user_info(token);
                             bool temp = await login(result);
                             if(temp){
-                              context.push("/video",extra: result);
+                              context.push("/middle",extra: result);
                             }else{
                               print("fuck you");
                             }
@@ -165,7 +165,7 @@ class LoginPage extends StatelessWidget {
               if (result.status == NaverLoginStatus.loggedIn) {
                 bool temp = await login(result.account.id);
                 if(temp){
-                  context.push("/video",extra: result.account.id);
+                  context.push("/middle",extra: result.account.id);
                 }else{
                   print("fuck you");
                 }
@@ -179,7 +179,7 @@ class LoginPage extends StatelessWidget {
             UserCredential result=  await signInWithGoogle();
             bool temp = await login(result.user!.uid);
             if(temp){
-              context.push("/video",extra: result.user!.uid);
+              context.push("/middle",extra: result.user!.uid);
             }else{
               print("fuck you");
             }
