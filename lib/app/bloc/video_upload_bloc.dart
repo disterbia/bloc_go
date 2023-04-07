@@ -7,6 +7,7 @@ import 'package:eatall/app/model/video_object.dart';
 import 'package:eatall/app/repository/login_repository.dart';
 import 'package:eatall/app/repository/video_upload_repository.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
@@ -15,7 +16,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
   final VideoUploadRepository videoUploadRepository ;
   final _picker = ImagePicker();
 
-  VideoUploadBloc(this.videoUploadRepository) : super(VideoState()) {
+  VideoUploadBloc(this.videoUploadRepository) : super(VideoState(titleController: TextEditingController())) {
     on<PickVideoEvent>((event, emit) async{
      await _pickVideos(event,emit);
     });
@@ -24,7 +25,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
     });
     on<ResetSnackBarEvent>((event, emit) {
       if (state is SnackBarState) {
-        emit(VideoState(videoPlayerController: state.videoPlayerController));
+        emit(VideoState(videoPlayerController: state.videoPlayerController,titleController: state.titleController));
       }
     });
   }
@@ -37,7 +38,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
         await controller.initialize();
         await controller.setLooping(true);
         controller.play();
-        emit(VideoState(videos: [pickedFiles],videoPlayerController: controller));
+        emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: state.titleController));
   }
 
   }
@@ -59,15 +60,14 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
   Future<void> _uploadVideos(UploadVideoEvent event,emit) async {
     if (state.videos == null || state.videos!.isEmpty) {
-      emit(SnackBarState(message: "동영상을 선택하세요."));
+      emit(SnackBarState(message: "동영상을 선택하세요.",titleController: state.titleController));
       return;
     }
-    emit(UploadingState(videos: state.videos, videoPlayerController: state.videoPlayerController));
+    emit(UploadingState(videos: state.videos, videoPlayerController: state.videoPlayerController,titleController: state.titleController));
 
     // 여기서 titles를 적절한 값으로 설정하십시오.
     List<String> titles = [
-      event.text,
-      '예제2'
+      event.text
     ]; // 동영상 제목을 사용자로부터 입력받아 설정하세요.
 
     try {
@@ -93,20 +93,21 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
       final response = await videoUploadRepository.upload(formData);
 
       if (response.statusCode == 200) {
-        emit(SnackBarState(message: "동영상 업로드에 성공했습니다."));
+        emit(SnackBarState(message: "동영상 업로드에 성공했습니다.",titleController: state.titleController));
       } else {
-        emit(SnackBarState(message: "동영상 업로드에 실패했습니다."));
+        emit(SnackBarState(message: "동영상 업로드에 실패했습니다.",titleController: state.titleController));
       }
 
-      emit(VideoState(videoPlayerController: state.videoPlayerController));
+      emit(VideoState(titleController: state.titleController));
     } catch (e) {
       print(e);
-      emit(SnackBarState(message: "동영상 업로드 중 오류가 발생했습니다."));
+      emit(SnackBarState(message: "동영상 업로드 중 오류가 발생했습니다.",titleController: state.titleController));
     }
   }
   @override
   Future<void> close() {
     state.videoPlayerController?.dispose();
+    state.titleController?.dispose();
     return super.close();
   }
 }
@@ -135,30 +136,31 @@ class ResetSnackBarEvent extends UploadEvent {
 abstract class UploadState extends Equatable{
   final List<XFile>? videos;
   final VideoPlayerController? videoPlayerController; // Add this line
+  final TextEditingController? titleController;
 
-  UploadState({this.videos, this.videoPlayerController});
+  UploadState({this.videos, this.videoPlayerController,this.titleController});
 }
 
 class UploadingState extends UploadState {
-  UploadingState({super.videos, super.videoPlayerController});
+  UploadingState({super.videos, super.videoPlayerController,super.titleController});
 
 
   @override
-  List<Object?> get props => [videos, videoPlayerController];
+  List<Object?> get props => [videos, videoPlayerController,titleController];
 }
 
 class VideoState extends UploadState{
-  VideoState({super.videos,super.videoPlayerController});
+  VideoState({super.videos,super.videoPlayerController,super.titleController});
 
   @override
-  List<Object?> get props => [videos,videoPlayerController];
+  List<Object?> get props => [videos,videoPlayerController,titleController];
 }
 
 class SnackBarState extends UploadState {
   final String message;
 
-  SnackBarState({required this.message, super.videos, super.videoPlayerController});
+  SnackBarState({required this.message, super.videos, super.videoPlayerController,super.titleController});
 
   @override
-  List<Object?> get props => [message, videos, videoPlayerController];
+  List<Object?> get props => [message, videos, videoPlayerController,titleController];
 }

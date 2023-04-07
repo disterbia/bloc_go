@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:eatall/app/const/addr.dart';
 import 'package:eatall/app/model/object_data.dart';
 
 class ImageRepository{
@@ -9,7 +10,7 @@ class ImageRepository{
       final dio = Dio();
       final data = jsonEncode(objects.map((obj) => obj.toJson()).toList());
       final response = await dio.post(
-        'http://192.168.0.21:8080/multiupload',
+        '${Address.addr}multiupload',
         data: data,
         options: Options(contentType: 'application/json'),
       );

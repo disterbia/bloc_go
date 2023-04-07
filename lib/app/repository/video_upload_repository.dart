@@ -1,13 +1,21 @@
 import 'package:dio/dio.dart';
+import 'package:eatall/app/const/addr.dart';
 
 class VideoUploadRepository{
   final dio = Dio();
 
   Future<Response<dynamic>> upload(FormData formData) async {
-    var result=await dio.post(
-      'http://192.168.0.88:8080/uploads',
-      data: formData,
-    );
-    return result;
+    var result;
+    try{
+      result=await dio.post(
+        '${Address.addr}uploads',
+        data: formData,
+      );
+      return result;
+    }catch(e){
+      print(e);
+      return result;
+    }
+
   }
 }

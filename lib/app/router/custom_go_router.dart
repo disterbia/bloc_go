@@ -44,19 +44,11 @@ class MyPages {
           builder: (context, state) => VideoScreenPage(state.extra.toString())),
       GoRoute(
           path: MyRoutes.Login,
-          builder: (context, state) => RepositoryProvider(
-              create: (context) => LoginRepository(),
-              child: BlocProvider(
-                  create: (context) => LoginBloc(context.read<LoginRepository>()),
-                  child: LoginPage()))
+          builder: (context, state) =>  LoginPage(),
       ),
       GoRoute(
           path: MyRoutes.UPLOAD,
-          builder: (context, state) => RepositoryProvider(
-              create: (context) => ImageRepository(),
-              child: BlocProvider(
-                  create: (context) => ImageBloc(context.read<ImageRepository>()),
-                  child: UploadPage(title: 'upload',)))
+          builder: (context, state) => UploadPage(title: 'upload')
       ),
     ],
   );
