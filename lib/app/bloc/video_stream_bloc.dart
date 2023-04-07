@@ -46,7 +46,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       videoPlayerController: videoPlayerController,
       autoPlay: false,
       looping: false,
-      showControls: false
+
     );
 
     return chewieController;

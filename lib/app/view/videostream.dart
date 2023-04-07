@@ -51,12 +51,12 @@ class VideoScreenPage extends StatelessWidget {
                                   child: TextField(
                                     controller: chatstate.controller,
                                     decoration: InputDecoration(hintText: '메시지를 입력하세요.'),
-                                    onSubmitted:(text)=> context.read<ChatBloc>().add(SendMessageEvent(text: text)),
+                                    onSubmitted:(text)=> context.read<ChatBloc>().add(SendMessageEvent(text: text,userId: id.substring(0,5))),
                                   ),
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.send),
-                                  onPressed: () => context.read<ChatBloc>().add(SendMessageEvent(text: chatstate.controller!.text)),
+                                  onPressed: () => context.read<ChatBloc>().add(SendMessageEvent(text: chatstate.controller!.text,userId: id.substring(0,5))),
                                 ),
                               ],
                             ),

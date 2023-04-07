@@ -12,7 +12,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   ChatBloc() : super(ChatInitial()) {
     on<SendMessageEvent>((event, emit) {
-      _sendMessage(event.text);
+      _sendMessage(event.text,event.userId);
     });
     on<NewChatEvent>((event, emit) async{
       clearMessages(emit);
@@ -48,9 +48,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
-  void _sendMessage(String text) {
+  void _sendMessage(String text,String username) {
     if (text.isNotEmpty) {
-      _channel?.sink.add(jsonEncode({"username": "User", "text": text}));
+      _channel?.sink.add(jsonEncode({"username": username, "text": text}));
       state.controller!.clear();
     }
   }
@@ -66,8 +66,9 @@ abstract class ChatEvent extends Equatable {}
 
 class SendMessageEvent extends ChatEvent {
   final String text;
+  final String userId;
 
-  SendMessageEvent({required this.text});
+  SendMessageEvent({required this.text,required this.userId});
 
   @override
   List<Object?> get props => [text];
