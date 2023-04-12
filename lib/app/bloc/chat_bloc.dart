@@ -19,7 +19,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await connectWebSocket(emit, event.roomId);
     });
 
-    add(NewChatEvent("0"));
   }
 
   void clearMessages(Emitter<ChatState> emit) async {

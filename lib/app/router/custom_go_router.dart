@@ -2,6 +2,8 @@ import 'package:eatall/app/bloc/image_bloc.dart';
 import 'package:eatall/app/bloc/login_bloc.dart';
 import 'package:eatall/app/repository/image_repository.dart';
 import 'package:eatall/app/repository/login_repository.dart';
+import 'package:eatall/app/view/four_page.dart';
+import 'package:eatall/app/view/home_page.dart';
 import 'package:eatall/app/view/middle_page.dart';
 import 'package:eatall/app/view/splash_page.dart';
 import 'package:eatall/app/view/login_page.dart';
@@ -14,10 +16,12 @@ import 'package:go_router/go_router.dart';
 
 class MyRoutes {
   static const SPLASH = '/';
+  static const HOME = '/home';
   static const Login = '/login';
   static const UPLOAD = '/upload';
   static const VIDEO = '/video';
   static const MIDDLE = '/middle';
+  static const FOUR = '/four';
   static const VIDEOUPLOAD = '/video_upload';
 
 }
@@ -31,6 +35,15 @@ class MyPages {
           path: MyRoutes.SPLASH,
           builder: (context, state) => SplashScreen()
       ),
+      GoRoute(
+          path: MyRoutes.HOME,
+          builder: (context, state) => HomePage()
+      ),
+      GoRoute(
+          path: MyRoutes.FOUR,
+          builder: (context, state) => FourWayPageView()
+      ),
+
       GoRoute(
           path: MyRoutes.VIDEOUPLOAD,
           builder: (context, state) => VideoUploadScreen(state.extra.toString())

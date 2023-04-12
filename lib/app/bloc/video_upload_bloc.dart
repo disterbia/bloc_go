@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:eatall/app/model/video_object.dart';
-import 'package:eatall/app/repository/login_repository.dart';
 import 'package:eatall/app/repository/video_upload_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_player/video_player.dart';
+
 
 class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
@@ -34,9 +34,16 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
     final pickedFiles = await _picker.pickVideo(source: ImageSource.gallery);
     if (pickedFiles != null) {
-        VideoPlayerController controller = VideoPlayerController.file(File(pickedFiles.path));
-        await controller.initialize();
-        await controller.setLooping(true);
+      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.file,pickedFiles.path);
+      BetterPlayerConfiguration betterPlayerConfiguration =
+      BetterPlayerConfiguration(
+          autoPlay: false,
+          looping: false,
+          autoDispose: false,
+          controlsConfiguration: BetterPlayerControlsConfiguration(
+              showControlsOnInitialize: false));
+      BetterPlayerController controller = BetterPlayerController(betterPlayerConfiguration,betterPlayerDataSource: betterPlayerDataSource,);
         controller.play();
         emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: state.titleController));
   }
@@ -135,7 +142,7 @@ class ResetSnackBarEvent extends UploadEvent {
 
 abstract class UploadState extends Equatable{
   final List<XFile>? videos;
-  final VideoPlayerController? videoPlayerController; // Add this line
+  final BetterPlayerController? videoPlayerController; // Add this line
   final TextEditingController? titleController;
 
   UploadState({this.videos, this.videoPlayerController,this.titleController});

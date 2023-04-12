@@ -7,31 +7,20 @@ import 'package:go_router/go_router.dart';
 
 
 class LoginPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocListener<LoginBloc, LoginState>(
+    return BlocListener<LoginBloc, LoginState>(
         listener: (context, state) =>
             context.pushReplacement("/middle", extra: state.uid),
         listenWhen: (previous, current) => current.isLogin!,
-        child: SafeArea(
-      child: Scaffold(
-        body: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Image.asset(
-              "assets/product_img2.jpeg",
-              fit: BoxFit.fitWidth,
-              height: 200,
-              width: double.infinity,
-            ),
+        child:  Column(mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+          Center(
+            child: ElevatedButton(
+                child: Text("카카오 로그인"),
+                onPressed: () => context.read<LoginBloc>().add(KakaoLoginEvent())),
           ),
-          Container(
-              color: Colors.white,
-              child: Center(
-                  child: ElevatedButton(
-                      child: Text("카카오 로그인"),
-                      onPressed: () => context.read<LoginBloc>().add(KakaoLoginEvent())))),
           ElevatedButton(
             onPressed: () =>
                 context.read<LoginBloc>().add(AppleLoginEvent()),
@@ -46,9 +35,7 @@ class LoginPage extends StatelessWidget {
                   context.read<LoginBloc>().add(GoogleLoginEvent()),
               child: Text("구글로그인")),
         ]),
-      ),
-        ),
-      ),
-    );
+
+        );
   }
 }

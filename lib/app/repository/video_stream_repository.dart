@@ -1,25 +1,42 @@
 import 'package:dio/dio.dart';
 import 'package:eatall/app/const/addr.dart';
+import 'package:eatall/app/model/video_stream.dart';
 
-class VideoStreamRepository{
+class VideoStreamRepository {
   final dio = Dio();
 
-  Future<List<String>> fetchVideosFromServer(int page) async {
-    var response;
-    try{
-       response = await dio.get(
-        '${Address.addr}videos?page=$page',
+  Future<List<VideoStream>> fetchVideosFromServer(
+      int page, String? firstVideoUrl) async {
+    try {
+      Response<dynamic> response = await dio.get(
+        '${Address.addr}videos',
+        queryParameters: {
+          'page': page,
+          'first': firstVideoUrl,
+        },
       );
 
       if (response.statusCode == 200) {
-        return List<String>.from(response.data);
-      } else if (response.statusCode == 400){
-          return [];
-      }else throw Exception('Failed to load videos');
-    }catch(e){
+        print(response.data);
+        return (response.data as List)
+            .map((json) => VideoStream.fromJson(json))
+            .toList();
+      } else if (response.statusCode == 400) {
+        print(response.data);
+        return [];
+      } else {
+        throw Exception('Failed to load videos');
+      }
+    } on DioError catch (e) {
+      if (e.type == DioErrorType.response) {
+        print(e.response?.data);
+      } else {
+        print(e);
+      }
+      return [];
+    } catch (e) {
       print(e);
       return [];
     }
   }
-
 }

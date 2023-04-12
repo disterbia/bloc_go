@@ -1,114 +1,128 @@
+import 'dart:typed_data';
 
+import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
-import 'package:chewie/chewie.dart';
-import 'package:eatall/app/bloc/chat_bloc.dart';
+import 'package:eatall/app/model/video_stream.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:eatall/app/repository/video_stream_repository.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   final VideoStreamRepository repository;
   int _currentPage = 0;
   List<String>? updatedVideoUrls;
-  List<ChewieController?>? updatedChewieControllers;
+  List<BetterPlayerController?>? updatedBetterPlayerControllers;
+  bool isFirst = true;
 
   VideoStreamBloc(this.repository) : super(VideoInitial()) {
-
-    on<LoadVideoEvent>((event, emit)async => await _loadVideos(emit));
+    on<LoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
   }
 
 
-  Future<void> _loadVideos(Emitter<VideoState> emit) async {
-    _currentPage++;
-    print("--=-=-=-=-=-=-=-=-$_currentPage");
-    List<String> temp = await repository.fetchVideosFromServer(_currentPage-1);
-    ;
-    if (temp.isEmpty) return;
-
-    updatedVideoUrls = List<String>.from(state.videoUrls!)..addAll(temp);
-    updatedChewieControllers = List<ChewieController?>.from(state.chewieControllers!);
-
-      for (int i = 0; i < temp.length; i++) {
-        ChewieController chewieController = await _initializeVideo(temp[i]);
-        updatedChewieControllers!.add(chewieController);
-      }
-     emit(VideoLoaded(videoUrls: updatedVideoUrls,chewieControllers: updatedChewieControllers));
-
-
-  }
-
-  Future<ChewieController> _initializeVideo(String downloadUrl) async {
-    VideoPlayerController videoPlayerController = VideoPlayerController.network(downloadUrl);
-    await videoPlayerController.initialize();
-
-    ChewieController chewieController = ChewieController(
-      videoPlayerController: videoPlayerController,
-      autoPlay: false,
-      looping: false,
-
+  Future<Uint8List?> generateThumbnail(String videoUrl) async {
+    final thumbnailData = await VideoThumbnail.thumbnailData(
+      video: videoUrl,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth: 128,
+      maxHeight: 72,
+      quality: 25,
     );
+    // Image.memory(thumbnailData)
+    return thumbnailData;
 
-    return chewieController;
   }
 
+  Future<void> _loadVideos(LoadVideoEvent event,Emitter<VideoState> emit) async {
+    //print("--=-=-=-=-=-=-=-=-$_currentPage");
+    List<VideoStream> temp =
+        await repository.fetchVideosFromServer(_currentPage,event.url);
+    print(temp);
+    if (temp.isEmpty) {
+      return;
+    }
+
+    updatedBetterPlayerControllers =
+        List<BetterPlayerController>.from(state.betterPlayerControllers!);
+
+    for (int i = 0; i < temp.length; i++) {
+      BetterPlayerController betterPlayerController =
+          await _initializeVideo(temp[i]);
+      updatedBetterPlayerControllers!.add(betterPlayerController);
+    }
+    emit(VideoLoaded(
+        videoUrls: updatedVideoUrls,
+        betterPlayerControllers: updatedBetterPlayerControllers));
+
+    _currentPage ++;
+  }
+
+  Future<BetterPlayerController> _initializeVideo(VideoStream video) async {
+    BetterPlayerConfiguration betterPlayerConfiguration =
+        const BetterPlayerConfiguration(
+            autoPlay: false,
+            looping: false,
+            autoDispose: false,
+            controlsConfiguration: BetterPlayerControlsConfiguration(
+                showControlsOnInitialize: false));
+
+    BetterPlayerDataSource betterPlayerDataSource =
+        BetterPlayerDataSource(BetterPlayerDataSourceType.network, video.url,
+            cacheConfiguration: const BetterPlayerCacheConfiguration(
+              useCache: true,
+              preCacheSize: 10 * 1024 * 1024,
+            ));
+
+    BetterPlayerController betterPlayerController = BetterPlayerController(
+        betterPlayerConfiguration,
+        betterPlayerDataSource: betterPlayerDataSource);
+
+    return betterPlayerController;
+  }
 
   @override
   Future<void> close() {
-    for (ChewieController? chewieController in state.chewieControllers!) {
-      chewieController?.dispose();
+    for (BetterPlayerController? betterPlayerController
+        in state.betterPlayerControllers!) {
+      betterPlayerController?.dispose();
     }
     return super.close();
   }
 }
 
-
 // VideoEvent
 
-abstract class VideoEvent extends Equatable {}
+abstract class VideoEvent extends Equatable {
+  final String? url;
+  VideoEvent({this.url});
+}
 
 class LoadVideoEvent extends VideoEvent {
-  LoadVideoEvent();
+  LoadVideoEvent({super.url});
 
   @override
-  List<Object?> get props => [];
-}
-class BuildVideoEvent extends VideoEvent {
-  final int index;
-
-  BuildVideoEvent({required this.index});
-
-  @override
-  List<Object?> get props => [index];
+  List<Object?> get props => [url];
 }
 
-class PageChangedEvent extends VideoEvent {
-  final int index;
-
-  PageChangedEvent({required this.index});
-
-  @override
-  List<Object?> get props => [];
-}
 
 // VideoState
 
 abstract class VideoState extends Equatable {
-  final List<ChewieController?>? chewieControllers;
+  final List<BetterPlayerController?>? betterPlayerControllers;
   final List<String>? videoUrls;
-  VideoState({this.chewieControllers,this.videoUrls});
+
+  VideoState({this.betterPlayerControllers, this.videoUrls});
 }
 
 class VideoInitial extends VideoState {
-  VideoInitial(): super(chewieControllers: [],videoUrls: []);
+  VideoInitial() : super(betterPlayerControllers: [], videoUrls: []);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [betterPlayerControllers,videoUrls];
 }
+
 class VideoLoaded extends VideoState {
-  VideoLoaded({super.chewieControllers,super.videoUrls});
+  VideoLoaded({super.betterPlayerControllers, super.videoUrls});
 
   @override
-  List<Object?> get props => [];
-
+  List<Object?> get props => [betterPlayerControllers,videoUrls];
 }
