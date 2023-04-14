@@ -1,18 +1,18 @@
 
 import 'package:better_player/better_player.dart';
 import 'package:eatall/app/bloc/video_upload_bloc.dart';
+import 'package:eatall/app/view/login_page.dart';
+import 'package:eatall/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 
 class VideoUploadScreen extends StatelessWidget {
-  String id;
-  VideoUploadScreen(this.id);
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<VideoUploadBloc,UploadState>(
+    return UserID.uid==null?LoginPage():BlocConsumer<VideoUploadBloc,UploadState>(
           listener: (context, state) {
             if (state is SnackBarState) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -31,15 +31,15 @@ class VideoUploadScreen extends StatelessWidget {
                       BetterPlayer(controller:
                           state.videoPlayerController!),
                     SizedBox(height: 50,),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(16.0),
-                    //   child: TextField(
-                    //     controller: state.titleController,
-                    //     decoration: InputDecoration(
-                    //       labelText: '동영상 제목',
-                    //     ),
-                    //   ),
-                    // ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextField(
+                        controller: state.titleController,
+                        decoration: InputDecoration(
+                          labelText: '동영상 제목',
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(

@@ -1,57 +1,97 @@
-
-
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-class FourWayPageView extends StatefulWidget {
-  @override
-  _FourWayPageViewState createState() => _FourWayPageViewState();
+class Creator {
+  final String name;
+  final String imageUrl;
+  final String videoUrl;
+  final int followers;
+  final int following;
+
+  Creator({
+    required this.name,
+    required this.imageUrl,
+    required this.videoUrl,
+    required this.followers,
+    required this.following,
+  });
 }
 
-class _FourWayPageViewState extends State<FourWayPageView> {
-  final PageController _horizontalController = PageController(initialPage: 1);
-  final PageController _verticalController = PageController();
+class FollowingPage extends StatelessWidget {
+  final List<Creator> creators;
 
-  @override
-  void dispose() {
-    _horizontalController.dispose();
-    _verticalController.dispose();
-    super.dispose();
-  }
-
-  Widget _buildPage(int horizontalIndex, int verticalIndex) {
-    // 각 인덱스에 따라 다른 위젯을 반환하려면 이 로직을 변경하세요.
-    Color backgroundColor = Colors.primaries[(horizontalIndex * 3 + verticalIndex) % Colors.primaries.length];
-
-    return Container(
-      color: backgroundColor,
-      child: Center(
-        child: Text(
-          '페이지 $horizontalIndex x $verticalIndex',
-          style: TextStyle(fontSize: 24, color: Colors.white),
-        ),
-      ),
-    );
-  }
+  FollowingPage({required this.creators});
 
   @override
   Widget build(BuildContext context) {
-    return PageView.custom(
-      controller: _horizontalController,
-      scrollDirection: Axis.horizontal,
-      childrenDelegate: SliverChildBuilderDelegate(
-            (BuildContext context, int horizontalIndex) {
-          return PageView.custom(
-            controller: _verticalController,
-            scrollDirection: Axis.vertical,
-            childrenDelegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int verticalIndex) {
-                return _buildPage(horizontalIndex, verticalIndex);
-              },
-              childCount: 3, // 수직 방향 페이지 수
-            ),
-          );
-        },
-        childCount: 3, // 수평 방향 페이지 수
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Following'),
+      ),
+      body: Center(
+        child: CarouselSlider.builder(
+          itemCount: creators.length,
+          itemBuilder: (BuildContext context, int index, int realIndex) {
+            Creator creator = creators[index];
+            return Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.network(
+                    creator.videoUrl,
+                    fit: BoxFit.cover,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: MediaQuery.of(context).size.height * 0.6,
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.8),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        creator.name,
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Followers: ${creator.followers}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Text(
+                        'Following: ${creator.following}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+          options: CarouselOptions(
+            autoPlay: false,
+            enlargeCenterPage: true,
+            aspectRatio: 1,
+            viewportFraction: 0.9,
+          ),
+        ),
       ),
     );
   }

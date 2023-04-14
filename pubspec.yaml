@@ -39,7 +39,6 @@ dependencies:
   equatable: ^2.0.5
   dio: ^4.0.6
   sign_in_with_apple: ^4.3.0
-#  google_sign_in: ^6.0.2
   kakao_flutter_sdk: ^1.4.2
   flutter_naver_login: ^1.7.0
   image_picker: ^0.8.7
@@ -52,6 +51,10 @@ dependencies:
   video_compress: ^3.1.2
   better_player: ^0.0.83
   video_thumbnail: ^0.4.3
+  shared_preferences: ^2.1.0
+  carousel_slider: ^4.2.1
+  camera: ^0.10.4
+  path_provider: ^2.0.14
 
 dev_dependencies:
   flutter_test:

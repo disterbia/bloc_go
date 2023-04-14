@@ -1,18 +1,20 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:eatall/app/model/video_stream.dart';
+
+import 'package:eatall/app/view/splash_page.dart';
+import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:eatall/app/repository/video_stream_repository.dart';
 import 'package:equatable/equatable.dart';
 
 class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   final VideoStreamRepository repository;
-  int _currentPage = 0;
-  List<String>? updatedVideoUrls;
   List<BetterPlayerController?>? updatedBetterPlayerControllers;
-  bool isFirst = true;
+  List<String> videoUrls=[];
 
   VideoStreamBloc(this.repository) : super(VideoInitial()) {
     on<LoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
@@ -33,9 +35,8 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   }
 
   Future<void> _loadVideos(LoadVideoEvent event,Emitter<VideoState> emit) async {
-    //print("--=-=-=-=-=-=-=-=-$_currentPage");
     List<VideoStream> temp =
-        await repository.fetchVideosFromServer(_currentPage,event.url);
+        await repository.fetchVideosFromServer(event.page!,event.url);
     print(temp);
     if (temp.isEmpty) {
       return;
@@ -45,25 +46,41 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
         List<BetterPlayerController>.from(state.betterPlayerControllers!);
 
     for (int i = 0; i < temp.length; i++) {
+      videoUrls!.add(temp[i].url);
       BetterPlayerController betterPlayerController =
           await _initializeVideo(temp[i]);
       updatedBetterPlayerControllers!.add(betterPlayerController);
     }
     emit(VideoLoaded(
-        videoUrls: updatedVideoUrls,
-        betterPlayerControllers: updatedBetterPlayerControllers));
-
-    _currentPage ++;
+        video:temp,
+        betterPlayerControllers: updatedBetterPlayerControllers,
+        videoUrl: videoUrls));
   }
 
   Future<BetterPlayerController> _initializeVideo(VideoStream video) async {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        const BetterPlayerConfiguration(
+         BetterPlayerConfiguration(
+            aspectRatio: VideoAspectRatio.aspectRatio,
             autoPlay: false,
-            looping: false,
+            looping: true,
             autoDispose: false,
-            controlsConfiguration: BetterPlayerControlsConfiguration(
-                showControlsOnInitialize: false));
+            controlsConfiguration: const BetterPlayerControlsConfiguration(
+                showControls: true,
+                showControlsOnInitialize: false,
+                 controlBarColor: Colors.transparent,
+                controlsHideTime: Duration.zero,
+                enablePlayPause: false,
+                enableFullscreen: false,
+                enableMute: false,
+                enableProgressText: false,
+                enableSkips: false,
+                enableAudioTracks: false,
+                enableOverflowMenu: false,
+                enablePlaybackSpeed: false,
+                enableSubtitles: false,
+                enableQualities: false,
+                enablePip: false,
+                enableRetry: false,));
 
     BetterPlayerDataSource betterPlayerDataSource =
         BetterPlayerDataSource(BetterPlayerDataSourceType.network, video.url,
@@ -93,14 +110,15 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 
 abstract class VideoEvent extends Equatable {
   final String? url;
-  VideoEvent({this.url});
+  final int page;
+  VideoEvent({required this.page,this.url});
 }
 
 class LoadVideoEvent extends VideoEvent {
-  LoadVideoEvent({super.url});
+  LoadVideoEvent({required super.page,super.url});
 
   @override
-  List<Object?> get props => [url];
+  List<Object?> get props => [page,url];
 }
 
 
@@ -108,21 +126,22 @@ class LoadVideoEvent extends VideoEvent {
 
 abstract class VideoState extends Equatable {
   final List<BetterPlayerController?>? betterPlayerControllers;
-  final List<String>? videoUrls;
+  final List<VideoStream>? video;
+  final List<String>? videoUrl;
 
-  VideoState({this.betterPlayerControllers, this.videoUrls});
+  VideoState({this.betterPlayerControllers, this.video,this.videoUrl});
 }
 
 class VideoInitial extends VideoState {
-  VideoInitial() : super(betterPlayerControllers: [], videoUrls: []);
+  VideoInitial() : super(betterPlayerControllers: [], video: [],videoUrl: []);
 
   @override
-  List<Object?> get props => [betterPlayerControllers,videoUrls];
+  List<Object?> get props => [betterPlayerControllers,video,videoUrl];
 }
 
 class VideoLoaded extends VideoState {
-  VideoLoaded({super.betterPlayerControllers, super.videoUrls});
+  VideoLoaded({super.betterPlayerControllers, super.video,super.videoUrl});
 
   @override
-  List<Object?> get props => [betterPlayerControllers,videoUrls];
+  List<Object?> get props => [betterPlayerControllers,video,videoUrl];
 }

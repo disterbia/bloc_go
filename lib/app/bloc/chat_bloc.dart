@@ -9,35 +9,39 @@ import 'package:web_socket_channel/io.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   IOWebSocketChannel? _channel;
-
+  String? curruntVideo;
   ChatBloc() : super(ChatInitial()) {
     on<SendMessageEvent>((event, emit) {
       _sendMessage(event.text,event.userId);
     });
     on<NewChatEvent>((event, emit) async{
-      clearMessages(emit);
       await connectWebSocket(emit, event.roomId);
     });
 
   }
 
   void clearMessages(Emitter<ChatState> emit) async {
-    emit(ChatChange(messages: [], controller: state.controller));
+    emit(ChatChange(messages: [], controller: state.controller,isLoading: true));
   }
 
   Future<void> connectWebSocket(Emitter<ChatState> emit, String roomId) async {
-    disposeWebSocket();
-    _channel = IOWebSocketChannel.connect('${Address.wsAddr}ws?roomId=$roomId');
-    //_channel!.stream.listen((event)
-        await for(final event in _channel!.stream) {
-      Map<String, dynamic> messageData = jsonDecode(event);
-      List<Message> messages = List<Message>.from(state.messages!)
-        ..add(Message.fromJson(messageData));
-      emit(ChatChange(messages: messages, controller: state.controller));
+    if(curruntVideo != roomId){
+      curruntVideo=roomId;
+      disposeWebSocket();
+      _channel = IOWebSocketChannel.connect('${Address.wsAddr}ws?roomId=$roomId');
+      clearMessages(emit);
+      //_channel!.stream.listen((event)
+      await for(final event in _channel!.stream) {
+        Map<String, dynamic> messageData = jsonDecode(event);
+        List<Message> messages = List<Message>.from(state.messages!)
+          ..add(Message.fromJson(messageData));
+        emit(ChatChange(messages: messages, controller: state.controller,isLoading: false));
         // WidgetsBinding.instance.addPostFrameCallback((_) {
         //
         // });
+      }
     }
+
   }
 
   void disposeWebSocket() {
@@ -86,21 +90,22 @@ class NewChatEvent extends ChatEvent {
 abstract class ChatState extends Equatable {
   final List<Message>? messages;
   final TextEditingController? controller;
+  final bool? isLoading;
 
-  ChatState({this.messages, this.controller});
+  ChatState({this.messages, this.controller,this.isLoading});
 }
 
 // ChatState
 class ChatChange extends ChatState {
-  ChatChange({super.messages, super.controller});
+  ChatChange({super.messages, super.controller,super.isLoading});
 
   @override
-  List<Object?> get props => [messages, controller];
+  List<Object?> get props => [messages, controller,isLoading];
 }
 
 class ChatInitial extends ChatState {
-  ChatInitial() : super(messages: [], controller: TextEditingController());
+  ChatInitial() : super(messages: [], controller: TextEditingController(),isLoading: true);
 
   @override
-  List<Object?> get props => [messages, controller];
+  List<Object?> get props => [messages, controller,isLoading];
 }

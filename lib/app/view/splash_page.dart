@@ -9,15 +9,20 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
+class VideoAspectRatio{
+  static double? aspectRatio;
+}
+
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<VideoStreamBloc>().add(LoadVideoEvent());
+    context.read<VideoStreamBloc>().add(LoadVideoEvent(page: 0));
   }
 
   @override
   Widget build(BuildContext context) {
+    VideoAspectRatio.aspectRatio = MediaQuery.of(context).size.width/(MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top-kBottomNavigationBarHeight);
     return Scaffold(
       body: BlocListener<SplashBloc, bool>(
         listenWhen: (previous, current) => current,

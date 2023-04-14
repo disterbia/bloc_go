@@ -6,8 +6,11 @@ import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:eatall/app/model/video_object.dart';
 import 'package:eatall/app/repository/video_upload_repository.dart';
+import 'package:eatall/app/view/splash_page.dart';
+import 'package:eatall/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 
@@ -15,6 +18,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
   final VideoUploadRepository videoUploadRepository ;
   final _picker = ImagePicker();
+  BetterPlayerController? controller;
 
   VideoUploadBloc(this.videoUploadRepository) : super(VideoState(titleController: TextEditingController())) {
     on<PickVideoEvent>((event, emit) async{
@@ -23,6 +27,14 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
     on<UploadVideoEvent>((event, emit) async{
       await _uploadVideos(event,emit);
     });
+
+    on<DisposePlayerControllerEvent>((event, emit) {
+      if (state.videoPlayerController != null) {
+        state.videoPlayerController!.dispose();
+        emit(VideoState(titleController: state.titleController,videoPlayerController: null,videos: null));
+      }
+    });
+
     on<ResetSnackBarEvent>((event, emit) {
       if (state is SnackBarState) {
         emit(VideoState(videoPlayerController: state.videoPlayerController,titleController: state.titleController));
@@ -30,22 +42,41 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
     });
   }
 
-  Future<void> _pickVideos(PickVideoEvent event,emit) async {
 
+  Future<void> _pickVideos(PickVideoEvent event,emit) async {
     final pickedFiles = await _picker.pickVideo(source: ImageSource.gallery);
     if (pickedFiles != null) {
+      if(controller!=null) controller!.dispose();
+      if(state.videoPlayerController!=null) state.videoPlayerController!.dispose();
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
           BetterPlayerDataSourceType.file,pickedFiles.path);
       BetterPlayerConfiguration betterPlayerConfiguration =
-      BetterPlayerConfiguration(
-          autoPlay: false,
-          looping: false,
-          autoDispose: false,
+       BetterPlayerConfiguration(
+          aspectRatio: VideoAspectRatio.aspectRatio!*1.5,
+          autoPlay: true,
+          looping: true,
+          autoDispose: true,
           controlsConfiguration: BetterPlayerControlsConfiguration(
-              showControlsOnInitialize: false));
-      BetterPlayerController controller = BetterPlayerController(betterPlayerConfiguration,betterPlayerDataSource: betterPlayerDataSource,);
-        controller.play();
-        emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: state.titleController));
+            showControls: true,
+            showControlsOnInitialize: false,
+            controlBarColor: Colors.transparent,
+            controlsHideTime: Duration.zero,
+            enablePlayPause: false,
+            enableFullscreen: false,
+            enableMute: false,
+            enableProgressText: false,
+            enableSkips: false,
+            enableAudioTracks: false,
+            enableOverflowMenu: false,
+            enablePlaybackSpeed: false,
+            enableSubtitles: false,
+            enableQualities: false,
+            enablePip: false,
+            enableRetry: false,
+          ));
+       controller = BetterPlayerController(betterPlayerConfiguration,betterPlayerDataSource: betterPlayerDataSource,);
+
+      emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: state.titleController));
   }
 
   }
@@ -57,7 +88,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
       videoObjects.add(
         VideoObject(
           title: titles[i],
-          uploader: '사용자 이름', // 업로더 정보를 적절하게 수정하세요.
+          uploader: UserID.uid!,
           path: state.videos![i].path,
         ),
       );
@@ -72,10 +103,10 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
     }
     emit(UploadingState(videos: state.videos, videoPlayerController: state.videoPlayerController,titleController: state.titleController));
 
-    // 여기서 titles를 적절한 값으로 설정하십시오.
+
     List<String> titles = [
       event.text
-    ]; // 동영상 제목을 사용자로부터 입력받아 설정하세요.
+    ];
 
     try {
       List<MultipartFile> files = [];
@@ -115,6 +146,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
   Future<void> close() {
     state.videoPlayerController?.dispose();
     state.titleController?.dispose();
+    controller?.dispose();
     return super.close();
   }
 }
@@ -133,6 +165,11 @@ class UploadVideoEvent extends UploadEvent{
   @override
   List<Object?> get props => [text];
 
+}
+
+class DisposePlayerControllerEvent extends UploadEvent {
+  @override
+  List<Object?> get props => [];
 }
 
 class ResetSnackBarEvent extends UploadEvent {

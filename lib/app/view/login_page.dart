@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
         listener: (context, state) =>
-            context.pushReplacement("/middle", extra: state.uid),
+            context.pushReplacement("/home"),
         listenWhen: (previous, current) => current.isLogin!,
         child:  Column(mainAxisAlignment: MainAxisAlignment.center,
             children: [

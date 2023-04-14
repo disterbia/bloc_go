@@ -1,17 +1,13 @@
-import 'package:eatall/app/bloc/image_bloc.dart';
-import 'package:eatall/app/bloc/login_bloc.dart';
-import 'package:eatall/app/repository/image_repository.dart';
-import 'package:eatall/app/repository/login_repository.dart';
-import 'package:eatall/app/view/four_page.dart';
+
 import 'package:eatall/app/view/home_page.dart';
-import 'package:eatall/app/view/middle_page.dart';
 import 'package:eatall/app/view/splash_page.dart';
 import 'package:eatall/app/view/login_page.dart';
+import 'package:eatall/app/view/take_video_page.dart';
 import 'package:eatall/app/view/upload_page.dart';
 import 'package:eatall/app/view/video_upload.dart';
 import 'package:eatall/app/view/videostream.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:go_router/go_router.dart';
 
 class MyRoutes {
@@ -20,14 +16,15 @@ class MyRoutes {
   static const Login = '/login';
   static const UPLOAD = '/upload';
   static const VIDEO = '/video';
-  static const MIDDLE = '/middle';
   static const FOUR = '/four';
   static const VIDEOUPLOAD = '/video_upload';
+  static const TAKEVIDEO = '/take_video';
 
 }
 
 class MyPages {
   static late final  router = GoRouter(
+    
     initialLocation: "/",
     errorBuilder: (context, state) => Container(child: Text("dd"),),
     routes: [
@@ -40,21 +37,16 @@ class MyPages {
           builder: (context, state) => HomePage()
       ),
       GoRoute(
-          path: MyRoutes.FOUR,
-          builder: (context, state) => FourWayPageView()
+          path: MyRoutes.TAKEVIDEO,
+          builder: (context, state) => TakeVideoScreen()
       ),
-
       GoRoute(
           path: MyRoutes.VIDEOUPLOAD,
-          builder: (context, state) => VideoUploadScreen(state.extra.toString())
-      ),
-      GoRoute(
-          path: MyRoutes.MIDDLE,
-          builder: (context, state) => MiddlePage(state.extra.toString())
+          builder: (context, state) => VideoUploadScreen()
       ),
       GoRoute(
           path: MyRoutes.VIDEO,
-          builder: (context, state) => VideoScreenPage(state.extra.toString())),
+          builder: (context, state) => VideoScreenPage()),
       GoRoute(
           path: MyRoutes.Login,
           builder: (context, state) =>  LoginPage(),

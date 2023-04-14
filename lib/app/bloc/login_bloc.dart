@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:eatall/app/const/addr.dart';
 import 'package:eatall/app/repository/login_repository.dart';
+import 'package:eatall/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -21,6 +23,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           bool temp = await loginRepository.login(result);
 
           if (temp) {
+            await SharedPreferencesHelper.saveUserUid(result); // Save uid
+            UserID.uid=result;
             emit(LoginState(uid: result, isLogin: temp));
           } else {
             print("fuck you");
@@ -35,6 +39,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             String result = await loginRepository.kakaoLogin(token);
             bool temp = await loginRepository.login(result);
             if (temp) {
+              await SharedPreferencesHelper.saveUserUid(result); // Save uid
+              UserID.uid=result;
               emit(LoginState(uid: result, isLogin: temp));
             } else {
               print("fuck you");
@@ -51,6 +57,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           String result = await loginRepository.kakaoLogin(token);
           bool temp = await loginRepository.login(result);
           if (temp) {
+            await SharedPreferencesHelper.saveUserUid(result); // Save uid
+            UserID.uid=result;
             emit(LoginState(uid: result, isLogin: temp));
           } else {
             print("fuck you");
@@ -76,6 +84,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             ),
           ),
         );
+        await SharedPreferencesHelper.saveUserUid(credential.userIdentifier!); // Save uid
+        UserID.uid=credential.userIdentifier!;
         emit(LoginState(isLogin: true,uid: credential.userIdentifier));
       } catch (error) {
         print('error = $error');
@@ -98,6 +108,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       bool temp = await loginRepository.login(result.user!.uid);
 
       if (temp) {
+        await SharedPreferencesHelper.saveUserUid(result.user!.uid); // Save uid
+        UserID.uid=result.user!.uid;
         emit(LoginState(isLogin: true,uid: result.user!.uid));
       } else {
         print("fuck you");
@@ -112,6 +124,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if (result.status == NaverLoginStatus.loggedIn) {
           bool temp = await loginRepository.login(result.account.id);
           if (temp) {
+            await SharedPreferencesHelper.saveUserUid(result.account.id); // Save uid
+            UserID.uid=result.account.id;
             emit(LoginState(uid: result.account.id,isLogin: true));
           } else {
             print("fuck you");

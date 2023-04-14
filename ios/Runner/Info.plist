@@ -106,5 +106,7 @@
     <string>Access to pick a photo</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Access to pick a photo</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>your usage description here</string>
 </dict>
 </plist>
