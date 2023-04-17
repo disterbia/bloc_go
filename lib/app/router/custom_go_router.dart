@@ -4,6 +4,7 @@ import 'package:eatall/app/view/splash_page.dart';
 import 'package:eatall/app/view/login_page.dart';
 import 'package:eatall/app/view/take_video_page.dart';
 import 'package:eatall/app/view/upload_page.dart';
+import 'package:eatall/app/view/video_review_page.dart';
 import 'package:eatall/app/view/video_upload.dart';
 import 'package:eatall/app/view/videostream.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +20,7 @@ class MyRoutes {
   static const FOUR = '/four';
   static const VIDEOUPLOAD = '/video_upload';
   static const TAKEVIDEO = '/take_video';
+  static const VIDEOREVIEW = '/video_review';
 
 }
 
@@ -44,6 +46,11 @@ class MyPages {
           path: MyRoutes.VIDEOUPLOAD,
           builder: (context, state) => VideoUploadScreen()
       ),
+      GoRoute(
+          path: MyRoutes.VIDEOREVIEW,
+          builder: (context, state) => VideoReviewScreen()
+      ),
+      
       GoRoute(
           path: MyRoutes.VIDEO,
           builder: (context, state) => VideoScreenPage()),

@@ -2,6 +2,8 @@ import 'package:eatall/app/bloc/chat_bloc.dart';
 import 'package:eatall/app/bloc/image_bloc.dart';
 import 'package:eatall/app/bloc/login_bloc.dart';
 import 'package:eatall/app/bloc/spalsh_bloc.dart';
+import 'package:eatall/app/bloc/take_video_bloc.dart';
+import 'package:eatall/app/bloc/user_profile_bloc.dart';
 import 'package:eatall/app/bloc/video_stream_bloc.dart';
 import 'package:eatall/app/bloc/video_upload_bloc.dart';
 import 'package:eatall/app/const/addr.dart';
@@ -39,6 +41,8 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => ImageBloc(ImageRepository())),
       BlocProvider(create: (context) => ChatBloc()),
       BlocProvider(create: (context) => VideoStreamBloc(VideoStreamRepository())),
+      BlocProvider(create: (context) => TakeVideoBloc(VideoUploadRepository())),
+      BlocProvider(create: (context) => UserProfileBloc(videoRepository: VideoStreamRepository())),
     ],
       child: MaterialApp.router(
         routerConfig: MyPages.router,

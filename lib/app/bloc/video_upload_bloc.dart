@@ -53,8 +53,8 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
       BetterPlayerConfiguration betterPlayerConfiguration =
        BetterPlayerConfiguration(
           aspectRatio: VideoAspectRatio.aspectRatio!*1.5,
-          autoPlay: true,
-          looping: true,
+          autoPlay: false,
+          looping: false,
           autoDispose: true,
           controlsConfiguration: BetterPlayerControlsConfiguration(
             showControls: true,

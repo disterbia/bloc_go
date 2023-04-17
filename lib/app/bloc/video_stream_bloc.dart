@@ -15,23 +15,10 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   final VideoStreamRepository repository;
   List<BetterPlayerController?>? updatedBetterPlayerControllers;
   List<String> videoUrls=[];
+  List<VideoStream>? videos=[];
 
   VideoStreamBloc(this.repository) : super(VideoInitial()) {
     on<LoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
-  }
-
-
-  Future<Uint8List?> generateThumbnail(String videoUrl) async {
-    final thumbnailData = await VideoThumbnail.thumbnailData(
-      video: videoUrl,
-      imageFormat: ImageFormat.JPEG,
-      maxWidth: 128,
-      maxHeight: 72,
-      quality: 25,
-    );
-    // Image.memory(thumbnailData)
-    return thumbnailData;
-
   }
 
   Future<void> _loadVideos(LoadVideoEvent event,Emitter<VideoState> emit) async {
@@ -51,8 +38,10 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
           await _initializeVideo(temp[i]);
       updatedBetterPlayerControllers!.add(betterPlayerController);
     }
+
+    videos!.addAll(temp);
     emit(VideoLoaded(
-        video:temp,
+        video:videos,
         betterPlayerControllers: updatedBetterPlayerControllers,
         videoUrl: videoUrls));
   }

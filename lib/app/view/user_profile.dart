@@ -1,7 +1,12 @@
-
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eatall/app/bloc/user_profile_bloc.dart';
+import 'package:eatall/app/model/video_stream.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserProfile extends StatelessWidget {
+  VideoStream video;
+  UserProfile(this.video);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,7 +15,7 @@ class UserProfile extends StatelessWidget {
         elevation: 1,
         centerTitle: true,
         title: Text(
-          'My Profile',
+         video.userInfo.id,
           style: TextStyle(color: Colors.black),
         ),
         leading: IconButton(
@@ -38,7 +43,7 @@ class UserProfile extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundImage: AssetImage('assets/images/profile_picture.png'), // Replace with your own image
+          backgroundImage:NetworkImage(video.userInfo.image), // Replace with your own image
         ),
         SizedBox(height: 8),
         Text(
@@ -46,7 +51,7 @@ class UserProfile extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
         ),
         SizedBox(height: 4),
-        Text('@your_username'),
+        Text(video.userInfo.id),
       ],
     );
   }
@@ -88,47 +93,51 @@ class UserProfile extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey.shade300, width: 1)),
-            ),
-            child: TabBar(
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.grey,
-              tabs: [
-                Tab(icon: Icon(Icons.grid_on_outlined)),
-                Tab(icon: Icon(Icons.favorite_border_outlined)),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 200,
-            child: TabBarView(
-              children: [
-                GridView.builder(
-                  itemCount: 3,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 2,
-                    mainAxisSpacing: 2,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Image.network(
-                      "videoUrls[index]",
-                      fit: BoxFit.cover,
-                    );
-                  },
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.grey.shade300, width: 1)),
                 ),
-                Center(child: Text('Your liked videos')),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+                child: TabBar(
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: [
+                    Tab(icon: Icon(Icons.grid_on_outlined)),
+                    Tab(icon: Icon(Icons.favorite_border_outlined)),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 400,
+                child: TabBarView(
+                  children: [
+                    BlocBuilder<UserProfileBloc,UserProfileState>(
+                      builder: (context,state) {
+                        if(state is UserProfileLoadingState) return Center(child: CircularProgressIndicator(),);
+                        return GridView.builder(
+                          itemCount: state.userVideos!.length,
+                          shrinkWrap: true,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 2,
+                            mainAxisSpacing: 2,
+                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            print( "---${state.userVideos![index].thumbnail}");
+                            return CachedNetworkImage(imageUrl:
+                              state.userVideos![index].thumbnail
+                            );
+                          },
+                        );
+                      }
+                    ),
+                    Center(child: Text('Your liked videos')),
+                  ],
+                ),
+              ),
+            ],
+          )
+      );
   }
 }

@@ -1,9 +1,12 @@
+import 'package:eatall/app/bloc/take_video_bloc.dart';
 import 'package:eatall/app/router/custom_go_router.dart';
 import 'package:eatall/app/view/login_page.dart';
 import 'package:eatall/app/view/mypage.dart';
 import 'package:eatall/app/view/video_upload.dart';
 import 'package:eatall/app/view/videostream.dart';
+import 'package:eatall/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,8 +36,13 @@ class _HomePageState extends State<HomePage> {
           currentIndex: _selectedIndex,
           onTap: (int index) {
             if(index==1){
-              //동영상 촬영
-              context.push(MyRoutes.TAKEVIDEO);
+              if(UserID.uid==null){
+                context.push(MyRoutes.Login);
+              }else{
+                context.read<TakeVideoBloc>().add(InitialEvent());
+                context.push(MyRoutes.TAKEVIDEO);
+              }
+
             }else{
               setState(() {
                 _selectedIndex = index;

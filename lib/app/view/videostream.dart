@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:eatall/app/bloc/chat_bloc.dart';
+import 'package:eatall/app/bloc/user_profile_bloc.dart';
 import 'package:eatall/app/bloc/video_stream_bloc.dart';
 import 'package:eatall/app/view/four_page.dart';
 import 'package:eatall/app/view/user_profile.dart';
@@ -13,13 +14,13 @@ class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController _verticalController = PageController();
   ScrollController _listViewController = ScrollController();
-
+  int _currentIndex = 0;
   Widget chatWidget(BuildContext context, String videoId) {
     context.read<ChatBloc>().add(NewChatEvent(videoId));
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, chatstate) {
         return Scaffold(
-          body: chatstate.isLoading!?Center(child: CircularProgressIndicator(),):Column(
+          body: chatstate is !ChatChange?Center(child: CircularProgressIndicator(),):Column(
             children: [
               Expanded(
                 child: ListView.builder(
@@ -83,13 +84,11 @@ class VideoScreenPage extends StatelessWidget {
     return BlocBuilder<VideoStreamBloc, VideoState>(
         builder: (context, videostate) {
               return PageView.builder(
-                onPageChanged: (value) {
+                onPageChanged: (value) async{
                   if (value != 1) { // 중앙 페이지(동영상 목록)가 아닌 경우
                     for (int i = 0; i < videostate.betterPlayerControllers!.length; i++) {
-                      if(videostate.betterPlayerControllers![i]!.isPlaying()!){
-                        videostate.betterPlayerControllers![i]!.videoPlayerController!.seekTo(Duration.zero);
-                        videostate.betterPlayerControllers![i]?.pause();
-                      }
+                        await videostate.betterPlayerControllers![i]!.videoPlayerController!.seekTo(Duration.zero);
+                        await videostate.betterPlayerControllers![i]?.pause();
                     }
                   }
                 },
@@ -101,6 +100,7 @@ class VideoScreenPage extends StatelessWidget {
                       scrollDirection: Axis.vertical,
                       controller: _verticalController,
                       itemBuilder: (BuildContext context, int aindex) {
+                        _currentIndex=aindex;
                         if (isFirst && aindex == 0) {
                           isFirst = false;
                           videostate.betterPlayerControllers![0]?.play();
@@ -193,10 +193,9 @@ class VideoScreenPage extends StatelessWidget {
                           if (i == nindex) {
                             await videostate.betterPlayerControllers![nindex]!.play();
                           } else {
-                            if(videostate.betterPlayerControllers![i]!.isPlaying()!){
                               await videostate.betterPlayerControllers![i]!.videoPlayerController!.seekTo(Duration.zero);
                               await videostate.betterPlayerControllers![i]?.pause();
-                            }
+
                           }
                         }
 
@@ -207,8 +206,10 @@ class VideoScreenPage extends StatelessWidget {
                       },
                     );
                   } else {
-                    if(hIndex==2)
-                    return UserProfile();
+                    if(hIndex==2){
+                      context.read<UserProfileBloc>().add(GetUserProfileVideosEvent(userId: videostate.video![_currentIndex].userInfo.id));
+                      return UserProfile(videostate.video![_currentIndex]);
+                    }
                     else return FollowingPage(
                       creators: [
                         Creator(
@@ -217,13 +218,6 @@ class VideoScreenPage extends StatelessWidget {
                           videoUrl: 'https://example.com/video1.jpg',
                           followers: 1000,
                           following: 50,
-                        ),
-                        Creator(
-                          name: 'Creator 2',
-                          imageUrl: 'https://example.com/image2.jpg',
-                          videoUrl: 'https://example.com/video2.jpg',
-                          followers: 2000,
-                          following: 100,
                         ),
                         // Add more creators if needed.
                       ],
