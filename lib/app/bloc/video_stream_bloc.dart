@@ -1,13 +1,9 @@
-import 'dart:typed_data';
-import 'dart:ui';
-
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:eatall/app/model/video_stream.dart';
+import 'package:eatall/app/view/home_page.dart';
 
-import 'package:eatall/app/view/splash_page.dart';
 import 'package:flutter/material.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:eatall/app/repository/video_stream_repository.dart';
 import 'package:equatable/equatable.dart';
 
@@ -75,6 +71,8 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
         BetterPlayerDataSource(BetterPlayerDataSourceType.network, video.url,
             cacheConfiguration: const BetterPlayerCacheConfiguration(
               useCache: true,
+              maxCacheSize: 100 * 1024 * 1024,
+              maxCacheFileSize: 10 * 1024 * 1024,
               preCacheSize: 10 * 1024 * 1024,
             ));
 

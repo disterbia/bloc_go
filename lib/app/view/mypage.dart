@@ -1,36 +1,45 @@
-
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eatall/app/bloc/mypage_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        centerTitle: true,
-        title: Text(
-          'My Profile',
-          style: TextStyle(color: Colors.black),
+    return BlocBuilder<MyPageBloc, MyPageState>(
+        builder: (context, state) {
+      if (state is! MyPageLoadedState)
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 1,
+          centerTitle: true,
+          title: Text(
+            state.mypage!.id,
+            style: TextStyle(color: Colors.black),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+        body: ListView(
+          children: [
+            SizedBox(height: 16),
+            _buildProfileHeader(),
+            SizedBox(height: 16),
+            _buildProfileStats(),
+            SizedBox(height: 16),
+            _buildProfileBio(),
+            SizedBox(height: 16),
+            _buildProfileTabs(state),
+          ],
         ),
-      ),
-      body: ListView(
-        children: [
-          SizedBox(height: 16),
-          _buildProfileHeader(),
-          SizedBox(height: 16),
-          _buildProfileStats(),
-          SizedBox(height: 16),
-          _buildProfileBio(),
-          SizedBox(height: 16),
-          _buildProfileTabs(),
-        ],
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildProfileHeader() {
@@ -38,7 +47,8 @@ class MyPage extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundImage: AssetImage('assets/images/profile_picture.png'), // Replace with your own image
+          backgroundImage: AssetImage(
+              'assets/images/profile_picture.png'), // Replace with your own image
         ),
         SizedBox(height: 8),
         Text(
@@ -75,16 +85,12 @@ class MyPage extends StatelessWidget {
   }
 
   Widget _buildProfileBio() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Text(
-        'Hello, this is my TikTok profile bio. I create awesome content!',
-        textAlign: TextAlign.center,
-      ),
-    );
+    return ElevatedButton(onPressed: (){
+
+    }, child: Text("동영상 업로드"));
   }
 
-  Widget _buildProfileTabs() {
+  Widget _buildProfileTabs(MyPageState state) {
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -92,7 +98,8 @@ class MyPage extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey.shade300, width: 1)),
+              border: Border(
+                  top: BorderSide(color: Colors.grey.shade300, width: 1)),
             ),
             child: TabBar(
               labelColor: Colors.black,
@@ -108,19 +115,16 @@ class MyPage extends StatelessWidget {
             child: TabBarView(
               children: [
                 GridView.builder(
-                  itemCount: 3,
+                  itemCount: state.mypage!.videos.length,
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 2,
                     mainAxisSpacing: 2,
                   ),
                   itemBuilder: (BuildContext context, int index) {
-                    return Image.network(
-                      "videoUrls[index]",
-                      fit: BoxFit.cover,
-                    );
+                    return CachedNetworkImage(
+                        imageUrl: state.mypage!.videos[index].thumbnail);
                   },
                 ),
                 Center(child: Text('Your liked videos')),

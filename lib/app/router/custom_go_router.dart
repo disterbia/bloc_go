@@ -12,8 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class MyRoutes {
-  static const SPLASH = '/';
-  static const HOME = '/home';
+  // static const SPLASH = '/';
+  static const HOME = '/';
   static const Login = '/login';
   static const UPLOAD = '/upload';
   static const VIDEO = '/video';
@@ -30,10 +30,10 @@ class MyPages {
     initialLocation: "/",
     errorBuilder: (context, state) => Container(child: Text("dd"),),
     routes: [
-      GoRoute(
-          path: MyRoutes.SPLASH,
-          builder: (context, state) => SplashScreen()
-      ),
+      // GoRoute(
+      //     path: MyRoutes.SPLASH,
+      //     builder: (context, state) => SplashScreen()
+      // ),
       GoRoute(
           path: MyRoutes.HOME,
           builder: (context, state) => HomePage()

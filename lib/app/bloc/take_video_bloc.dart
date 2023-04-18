@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:eatall/app/repository/video_upload_repository.dart';
-import 'package:eatall/app/view/splash_page.dart';
+import 'package:eatall/app/view/home_page.dart';
 import 'package:eatall/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +32,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
   Future<void> close() {
     state.controller?.dispose();
     state.betterPlayerController?.dispose();
+    _controller?.dispose();
     return super.close();
   }
 
@@ -124,7 +124,9 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
         videoThumbnailPath: _videoThumbnailPath,
         betterPlayerController: _betterPlayerController,
         isRecording: false,
-        videoPath: state.videoPath));
+        videoPath: state.videoPath,
+    cameras: state.cameras,
+    controller: state.controller));
   }
 
   Future<void> _uploadVideo() async {
@@ -226,7 +228,9 @@ class VideoReviewState extends TakeVideoState {
       super.betterPlayerController,
       super.videoThumbnailPath,
       super.isRecording,
-      super.videoPath});
+      super.videoPath,
+      super.cameras,
+      super.controller});
 
   @override
   List<Object?> get props => [
@@ -234,6 +238,8 @@ class VideoReviewState extends TakeVideoState {
         betterPlayerController,
         videoThumbnailPath,
         isRecording,
-        videoPath
+        videoPath,
+    cameras,
+    controller
       ];
 }

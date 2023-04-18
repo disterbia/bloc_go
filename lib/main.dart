@@ -1,6 +1,7 @@
 import 'package:eatall/app/bloc/chat_bloc.dart';
 import 'package:eatall/app/bloc/image_bloc.dart';
 import 'package:eatall/app/bloc/login_bloc.dart';
+import 'package:eatall/app/bloc/mypage_bloc.dart';
 import 'package:eatall/app/bloc/spalsh_bloc.dart';
 import 'package:eatall/app/bloc/take_video_bloc.dart';
 import 'package:eatall/app/bloc/user_profile_bloc.dart';
@@ -9,20 +10,23 @@ import 'package:eatall/app/bloc/video_upload_bloc.dart';
 import 'package:eatall/app/const/addr.dart';
 import 'package:eatall/app/repository/image_repository.dart';
 import 'package:eatall/app/repository/login_repository.dart';
+import 'package:eatall/app/repository/mypage_repository.dart';
 import 'package:eatall/app/repository/video_stream_repository.dart';
 import 'package:eatall/app/repository/video_upload_repository.dart';
 import 'package:eatall/app/router/custom_go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   //await SharedPreferencesHelper.removeUserUid();
   UserID.uid = await SharedPreferencesHelper.getUserUid();
   KakaoSdk.init(nativeAppKey: '165742d2ef90b67385060e3bbc9231d9');
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
 
@@ -36,15 +40,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(providers: [
       BlocProvider(create: (context) => LoginBloc(LoginRepository())),
-      BlocProvider(create: (context) => SplashBloc()),
       BlocProvider(create: (context) => VideoUploadBloc(VideoUploadRepository())),
       BlocProvider(create: (context) => ImageBloc(ImageRepository())),
       BlocProvider(create: (context) => ChatBloc()),
       BlocProvider(create: (context) => VideoStreamBloc(VideoStreamRepository())),
       BlocProvider(create: (context) => TakeVideoBloc(VideoUploadRepository())),
       BlocProvider(create: (context) => UserProfileBloc(videoRepository: VideoStreamRepository())),
+      BlocProvider(create: (context) => MyPageBloc(myPageRepository: MyPageRepository())),
     ],
-      child: MaterialApp.router(
+      child: MaterialApp.router(debugShowCheckedModeBanner: false,
         routerConfig: MyPages.router,
         title: 'Flutter Demo',
         theme: ThemeData(
