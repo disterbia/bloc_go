@@ -1,7 +1,9 @@
 import 'package:eatall/app/bloc/chat_bloc.dart';
+import 'package:eatall/app/router/custom_go_router.dart';
 import 'package:eatall/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 ScrollController _listViewController = ScrollController();
 Widget chatWidget(BuildContext context, String videoId) {
@@ -53,7 +55,8 @@ Widget chatWidget(BuildContext context, String videoId) {
                   ),
                   IconButton(
                     icon: Icon(Icons.send, color: Colors.black),
-                    onPressed: () => context.read<ChatBloc>().add(
+                    onPressed: () => UserID.uid==null?context.push(MyRoutes.Login):
+                        context.read<ChatBloc>().add(
                         SendMessageEvent(
                             text: chatstate.controller!.text,
                             userId: UserID.uid!)),

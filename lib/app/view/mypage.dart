@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eatall/app/bloc/mypage_bloc.dart';
+import 'package:eatall/app/bloc/video_upload_bloc.dart';
+import 'package:eatall/app/router/custom_go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class MyPage extends StatelessWidget {
   @override
@@ -85,9 +88,18 @@ class MyPage extends StatelessWidget {
   }
 
   Widget _buildProfileBio() {
-    return ElevatedButton(onPressed: (){
-
-    }, child: Text("동영상 업로드"));
+    return BlocConsumer<VideoUploadBloc,UploadState>(
+      listener: (context, state) {
+      if (state.videos != null && state.videoPlayerController != null)
+        context.push(MyRoutes.VIDEOUPLOAD);
+    },
+      builder: (context,state) {
+        return ElevatedButton(onPressed: () async{
+          context.read<VideoUploadBloc>().add(PickVideoEvent());
+          print("-=-=-=-=-=-=");
+        }, child: Text("동영상 업로드"));
+      }
+    );
   }
 
   Widget _buildProfileTabs(MyPageState state) {

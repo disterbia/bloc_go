@@ -22,11 +22,11 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 void main() async{
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp();
   //await SharedPreferencesHelper.removeUserUid();
   UserID.uid = await SharedPreferencesHelper.getUserUid();
   KakaoSdk.init(nativeAppKey: '165742d2ef90b67385060e3bbc9231d9');
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
 

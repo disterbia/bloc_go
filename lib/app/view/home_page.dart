@@ -1,12 +1,8 @@
 import 'package:eatall/app/bloc/mypage_bloc.dart';
 import 'package:eatall/app/bloc/take_video_bloc.dart';
-import 'package:eatall/app/bloc/user_profile_bloc.dart';
 import 'package:eatall/app/bloc/video_stream_bloc.dart';
 import 'package:eatall/app/router/custom_go_router.dart';
-import 'package:eatall/app/view/login_page.dart';
 import 'package:eatall/app/view/mypage.dart';
-import 'package:eatall/app/view/splash_page.dart';
-import 'package:eatall/app/view/video_upload.dart';
 import 'package:eatall/app/view/videostream.dart';
 import 'package:eatall/main.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +41,8 @@ class _HomePageState extends State<HomePage> {
 
   void initialization() async {
     context.read<VideoStreamBloc>().add(LoadVideoEvent(page: 0));
-    Future.delayed(Duration(seconds: 2),()=> FlutterNativeSplash.remove());
+    Future.delayed(Duration(seconds: 2),()=>FlutterNativeSplash.remove());
+
   }
 
   @override

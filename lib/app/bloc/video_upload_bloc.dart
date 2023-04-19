@@ -7,7 +7,6 @@ import 'package:dio/dio.dart';
 import 'package:eatall/app/model/video_object.dart';
 import 'package:eatall/app/repository/video_upload_repository.dart';
 import 'package:eatall/app/view/home_page.dart';
-import 'package:eatall/app/view/splash_page.dart';
 import 'package:eatall/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';

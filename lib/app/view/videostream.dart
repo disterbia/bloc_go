@@ -1,6 +1,7 @@
 import 'package:better_player/better_player.dart';
 import 'package:eatall/app/bloc/user_profile_bloc.dart';
 import 'package:eatall/app/bloc/video_stream_bloc.dart';
+import 'package:eatall/app/model/video_stream.dart';
 import 'package:eatall/app/view/four_page.dart';
 import 'package:eatall/app/view/user_profile.dart';
 import 'package:eatall/app/widget/chat_widget.dart';
@@ -13,22 +14,21 @@ class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController _verticalController = PageController();
   int _currentIndex = 0;
-
+  bool isbackHorizon=false;
+  BetterPlayerController? controller;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<VideoStreamBloc, VideoState>(
         builder: (context, videostate) {
-              return PageView.builder(
+          List<VideoStream>? videos = videostate.video;
+          return PageView.builder(
                 onPageChanged: (hNextIndex) async{
-                  if (hNextIndex != 1) { // 중앙 페이지(동영상 목록)가 아닌 경우
-                        await videostate.betterPlayerControllers![_currentIndex]!.videoPlayerController!.seekTo(Duration.zero);
-                        await videostate.betterPlayerControllers![_currentIndex]?.pause();
-                  }
-                  else{
+                  context.read<VideoStreamBloc>().add(PlayAndPauseEvent());
+                  if (hNextIndex == 1) { // 중앙 페이지(동영상 목록)가 아닌 경우
+                    isbackHorizon=true;
                     _verticalController.jumpToPage(_currentIndex);
-                    await Future.delayed(Duration(milliseconds: 500));
-                    await videostate.betterPlayerControllers![_currentIndex]?.play();
+                    isbackHorizon=false;
                   }
                 },
                 controller: _horizontalController,
@@ -38,40 +38,53 @@ class VideoScreenPage extends StatelessWidget {
                     return PageView.builder(
                       scrollDirection: Axis.vertical,
                       controller: _verticalController,
-                      itemCount: videostate.betterPlayerControllers!.length,
-                      onPageChanged: (vNextindex) async {
-                          await videostate.betterPlayerControllers![vNextindex]!.play();
-                          await videostate.betterPlayerControllers![_currentIndex]!.videoPlayerController!.seekTo(Duration.zero);
-                          await videostate.betterPlayerControllers![_currentIndex]?.pause();
-                          if (vNextindex ==
-                              videostate.betterPlayerControllers!.length - 2 && vNextindex>_currentIndex) {
-                            context.read<VideoStreamBloc>().add(LoadVideoEvent(page:videostate.betterPlayerControllers!.length,url: videostate.videoUrl![0]));
+                      itemCount: videostate.video!.length,
+                      onPageChanged: (vNextIndex) async {
+                        if(isbackHorizon) return;
+                          // 이전 동영상으로 이동
+                          if (vNextIndex < _currentIndex) {
+                              if (videostate.nextController != null) {
+                                videostate.nextController!.dispose(forceDispose: true);
+                              }
+                                context.read<VideoStreamBloc>().add(UpdatePrevVideoControllers(currentIndex: _currentIndex));
+
                           }
-                          _currentIndex = vNextindex;
+                          // 다음 동영상으로 이동
+                          else {
+                              if (videostate.prevController != null) {
+                                videostate.prevController!.dispose(forceDispose: true);
+                              }
+                              context.read<VideoStreamBloc>().add(UpdateNextVideoControllers(currentIndex: _currentIndex));
+                          }
 
-
+                          // 새로운 인덱스로 업데이트하고 다음 동영상 재생
+                          _currentIndex = vNextIndex;
                       },
                       itemBuilder: (BuildContext context, int vindex) {
                         if (isFirst && vindex == 0) {
                           isFirst = false;
-                          videostate.betterPlayerControllers![0]?.play();
+                          videostate.currentController?.play();
+                        }
+
+                        if (vindex == _currentIndex) {
+                          controller = videostate.currentController;
+                        } else if (vindex == _currentIndex - 1) {
+                          controller = videostate.prevController;
+                        } else if (vindex == _currentIndex + 1) {
+                          controller = videostate.nextController;
                         }
                         return WillPopScope(
                           onWillPop: () async {
-                            await videostate.betterPlayerControllers![vindex]!
-                                .videoPlayerController!
-                                .seekTo(Duration.zero);
-                            await videostate.betterPlayerControllers![vindex]
-                                ?.pause();
+                            await videostate.currentController?.seekTo(Duration.zero);
+                            await videostate.currentController?.pause();
                             return true;
                           },
                           child: Stack(
                             children: [
-                              videostate.betterPlayerControllers![vindex] !=
+                          videostate.currentController !=
                                   null
                                   ? BetterPlayer(
-                                  controller: videostate
-                                      .betterPlayerControllers![vindex]!)
+                                  controller: controller!)
                                   : Center(child: CircularProgressIndicator()),
                               Positioned(
                                 bottom: 25,
@@ -79,9 +92,9 @@ class VideoScreenPage extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(videostate.video![vindex].title),
-                                    Text(videostate.video![vindex].uploader),
-                                    Text(videostate.video![vindex].likeCount.toString()),
+                                    Text(videos![vindex].title),
+                                    Text(videos[vindex].uploader),
+                                    Text(videos[vindex].likeCount.toString()),
                                   ],
                                 ),
                               ),
@@ -141,8 +154,8 @@ class VideoScreenPage extends StatelessWidget {
                     );
                   } else {
                     if(hIndex==2){
-                      context.read<UserProfileBloc>().add(GetUserProfileVideosEvent(userId: videostate.video![_currentIndex].userInfo.id));
-                      return UserProfile(videostate.video![_currentIndex]);
+                      context.read<UserProfileBloc>().add(GetUserProfileVideosEvent(userId: videos![_currentIndex].userInfo.id));
+                      return UserProfile(videos[_currentIndex]);
                     }
                     else return FollowingPage(
                       creators: [

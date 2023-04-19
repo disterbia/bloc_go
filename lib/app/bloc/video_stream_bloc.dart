@@ -9,37 +9,78 @@ import 'package:equatable/equatable.dart';
 
 class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   final VideoStreamRepository repository;
-  List<BetterPlayerController?>? updatedBetterPlayerControllers;
-  List<String> videoUrls=[];
   List<VideoStream>? videos=[];
 
   VideoStreamBloc(this.repository) : super(VideoInitial()) {
     on<LoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
+    on<UpdatePrevVideoControllers>((event, emit) async => await _updatePrevControllers(event, emit));
+    on<UpdateNextVideoControllers>((event, emit) async => await _updateNextControllers(event, emit));
+    on<PlayAndPauseEvent>((event, emit) async => await _playAndPause(event, emit));
   }
 
-  Future<void> _loadVideos(LoadVideoEvent event,Emitter<VideoState> emit) async {
-    List<VideoStream> temp =
-        await repository.fetchVideosFromServer(event.page!,event.url);
-    print(temp);
+
+  Future<void> _playAndPause(PlayAndPauseEvent event, Emitter<VideoState> emit) async {
+    if(state.currentController!.isPlaying()!){
+      await state.currentController!.seekTo(Duration.zero);
+      await state.currentController!.pause();
+    }else {
+      await state.currentController!.play();
+    }
+  }
+
+  Future<void> _updatePrevControllers(UpdatePrevVideoControllers event, Emitter<VideoState> emit) async {
+    if(event.currentIndex! == 1){ // 첫동영상으로 갔을때
+      emit(VideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video: videos));
+      await state.nextController!.seekTo(Duration.zero);
+      await state.nextController!.pause();
+      await state.currentController!.play();
+    }else{
+      BetterPlayerController? prevController = await _initializeVideo(state.video![event.currentIndex!-2]);
+      emit(VideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: videos));
+      await state.nextController!.seekTo(Duration.zero);
+      await state.nextController!.pause();
+      await state.currentController!.play();
+    }
+  }
+
+  Future<void> _updateNextControllers(UpdateNextVideoControllers event, Emitter<VideoState> emit) async {
+    if(event.currentIndex!+2 == state.video!.length){ // 마지막 동영상으로 갔을때
+      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: videos));
+      await state.prevController!.seekTo(Duration.zero);
+      await state.prevController!.pause();
+      await state.currentController!.play();
+      await _getMoreVideos(state.video!.length,state.video![0].url,emit);
+    }else{
+      BetterPlayerController? nextController =  await _initializeVideo(state.video![event.currentIndex!+2]);
+      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: videos));
+      await state.prevController!.seekTo(Duration.zero);
+      await state.prevController!.pause();
+      await state.currentController!.play();
+    }
+  }
+
+  Future<void> _getMoreVideos(int page,String firstUrl,Emitter<VideoState> emit) async{
+    List<VideoStream> temp = await repository.fetchVideosFromServer(page,firstUrl);
     if (temp.isEmpty) {
       return;
     }
-
-    updatedBetterPlayerControllers =
-        List<BetterPlayerController>.from(state.betterPlayerControllers!);
-
-    for (int i = 0; i < temp.length; i++) {
-      videoUrls!.add(temp[i].url);
-      BetterPlayerController betterPlayerController =
-          await _initializeVideo(temp[i]);
-      updatedBetterPlayerControllers!.add(betterPlayerController);
-    }
-
+    BetterPlayerController newController= await _initializeVideo(temp.first);
     videos!.addAll(temp);
-    emit(VideoLoaded(
-        video:videos,
-        betterPlayerControllers: updatedBetterPlayerControllers,
-        videoUrl: videoUrls));
+    emit(VideoLoaded(prevController: state.prevController, currentController: state.currentController, nextController: newController, video: videos));
+  }
+
+  Future<void> _loadVideos(LoadVideoEvent event, Emitter<VideoState> emit) async {
+    List<VideoStream> temp = await repository.fetchVideosFromServer(event.page!, event.url);
+    if (temp.isEmpty) {
+      return;
+    }
+    // 최초 로드 시 0번째, 1번째 동영상 컨트롤러 로드
+    if (state.currentController == null) {
+      BetterPlayerController currentController = await _initializeVideo(temp[0]);
+      BetterPlayerController nextController = await _initializeVideo(temp[1]);
+      videos!.addAll(temp);
+      emit(VideoLoaded(prevController: null, currentController: currentController, nextController: nextController, video: videos));
+    }
   }
 
   Future<BetterPlayerController> _initializeVideo(VideoStream video) async {
@@ -71,7 +112,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
         BetterPlayerDataSource(BetterPlayerDataSourceType.network, video.url,
             cacheConfiguration: const BetterPlayerCacheConfiguration(
               useCache: true,
-              maxCacheSize: 100 * 1024 * 1024,
+              maxCacheSize: 10 * 1024 * 1024,
               maxCacheFileSize: 10 * 1024 * 1024,
               preCacheSize: 10 * 1024 * 1024,
             ));
@@ -85,10 +126,10 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 
   @override
   Future<void> close() {
-    for (BetterPlayerController? betterPlayerController
-        in state.betterPlayerControllers!) {
-      betterPlayerController?.dispose();
-    }
+    state.nextController?.dispose();
+    state.currentController?.dispose();
+    state.prevController?.dispose();
+
     return super.close();
   }
 }
@@ -97,38 +138,65 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 
 abstract class VideoEvent extends Equatable {
   final String? url;
-  final int page;
-  VideoEvent({required this.page,this.url});
+  final int? page;
+  final int? currentIndex;
+  VideoEvent({this.page,this.url,this.currentIndex});
 }
 
 class LoadVideoEvent extends VideoEvent {
-  LoadVideoEvent({required super.page,super.url});
+  LoadVideoEvent({super.page,super.url,super.currentIndex});
 
   @override
-  List<Object?> get props => [page,url];
+  List<Object?> get props => [page,url,currentIndex];
 }
 
+class UpdatePrevVideoControllers extends VideoEvent {
+
+  UpdatePrevVideoControllers({super.page,super.url,super.currentIndex});
+
+  @override
+  List<Object?> get props => [page,url,currentIndex];
+}
+
+class PlayAndPauseEvent extends VideoEvent {
+
+  PlayAndPauseEvent({super.page,super.url,super.currentIndex});
+
+  @override
+  List<Object?> get props => [page,url,currentIndex];
+}
+
+class UpdateNextVideoControllers extends VideoEvent {
+
+  UpdateNextVideoControllers({super.page,super.url,super.currentIndex});
+
+  @override
+  List<Object?> get props => [page,url,currentIndex];
+}
 
 // VideoState
 
 abstract class VideoState extends Equatable {
-  final List<BetterPlayerController?>? betterPlayerControllers;
+  final BetterPlayerController? prevController;
+  final BetterPlayerController? currentController;
+  final BetterPlayerController? nextController;
   final List<VideoStream>? video;
-  final List<String>? videoUrl;
 
-  VideoState({this.betterPlayerControllers, this.video,this.videoUrl});
+  VideoState({this.prevController,this.currentController,this.nextController, this.video});
 }
 
 class VideoInitial extends VideoState {
-  VideoInitial() : super(betterPlayerControllers: [], video: [],videoUrl: []);
+  VideoInitial()
+      : super(prevController: null, currentController: null, nextController: null, video: []);
 
   @override
-  List<Object?> get props => [betterPlayerControllers,video,videoUrl];
+  List<Object?> get props => [prevController, currentController, nextController, video];
 }
 
 class VideoLoaded extends VideoState {
-  VideoLoaded({super.betterPlayerControllers, super.video,super.videoUrl});
+  VideoLoaded({super.prevController, super.currentController, super.nextController, super.video});
 
   @override
-  List<Object?> get props => [betterPlayerControllers,video,videoUrl];
+  List<Object?> get props => [prevController, currentController, nextController, video];
 }
+

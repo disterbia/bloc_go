@@ -20,7 +20,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
   TextEditingController _titleController = TextEditingController();
   BetterPlayerController? _betterPlayerController;
 
-  TakeVideoBloc(this.repository) : super(InitialState(isRecording: false)) {
+  TakeVideoBloc(this.repository) : super(InitialState(isRecording: false,)) {
     on<InitialEvent>((event, emit) async => await _initializeCameras());
     on<StartVideoRecording>(
         (event, emit) async => await _startVideoRecording());
@@ -30,6 +30,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
 
   @override
   Future<void> close() {
+    print("=====-------==");
     state.controller?.dispose();
     state.betterPlayerController?.dispose();
     _controller?.dispose();
@@ -37,6 +38,11 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
   }
 
   Future<void> _initializeCameras() async {
+    if(_controller!=null) {
+      emit(InitialState(
+          isRecording: false, controller: null, cameras: _cameras));
+      await _controller!.dispose();
+    }
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
       _controller = CameraController(_cameras![0], ResolutionPreset.high);
