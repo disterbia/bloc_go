@@ -1,9 +1,9 @@
 
 import 'package:eatall/app/view/home_page.dart';
-import 'package:eatall/app/view/splash_page.dart';
 import 'package:eatall/app/view/login_page.dart';
 import 'package:eatall/app/view/take_video_page.dart';
 import 'package:eatall/app/view/upload_page.dart';
+import 'package:eatall/app/view/user_video_page.dart';
 import 'package:eatall/app/view/video_review_page.dart';
 import 'package:eatall/app/view/video_upload.dart';
 import 'package:eatall/app/view/videostream.dart';
@@ -21,6 +21,7 @@ class MyRoutes {
   static const VIDEOUPLOAD = '/video_upload';
   static const TAKEVIDEO = '/take_video';
   static const VIDEOREVIEW = '/video_review';
+  static const USERVIDEO = '/user_video';
 
 }
 
@@ -45,6 +46,10 @@ class MyPages {
       GoRoute(
           path: MyRoutes.VIDEOUPLOAD,
           builder: (context, state) => VideoUploadScreen()
+      ),
+      GoRoute(
+          path: MyRoutes.USERVIDEO,
+          builder: (context, state) => UserVideoPage(int.parse(state.extra.toString()))
       ),
       GoRoute(
           path: MyRoutes.VIDEOREVIEW,

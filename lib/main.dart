@@ -5,6 +5,7 @@ import 'package:eatall/app/bloc/mypage_bloc.dart';
 import 'package:eatall/app/bloc/spalsh_bloc.dart';
 import 'package:eatall/app/bloc/take_video_bloc.dart';
 import 'package:eatall/app/bloc/user_profile_bloc.dart';
+import 'package:eatall/app/bloc/user_video_bloc.dart';
 import 'package:eatall/app/bloc/video_stream_bloc.dart';
 import 'package:eatall/app/bloc/video_upload_bloc.dart';
 import 'package:eatall/app/const/addr.dart';
@@ -16,6 +17,7 @@ import 'package:eatall/app/repository/video_upload_repository.dart';
 import 'package:eatall/app/router/custom_go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -38,6 +40,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MultiBlocProvider(providers: [
       BlocProvider(create: (context) => LoginBloc(LoginRepository())),
       BlocProvider(create: (context) => VideoUploadBloc(VideoUploadRepository())),
@@ -47,6 +53,7 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => TakeVideoBloc(VideoUploadRepository())),
       BlocProvider(create: (context) => UserProfileBloc(videoRepository: VideoStreamRepository())),
       BlocProvider(create: (context) => MyPageBloc(myPageRepository: MyPageRepository())),
+      BlocProvider(create: (context) => UserVideoBloc()),
     ],
       child: MaterialApp.router(debugShowCheckedModeBanner: false,
         routerConfig: MyPages.router,

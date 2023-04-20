@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 
 class VideoAspectRatio{
   static double? aspectRatio;
+  static double? aspectRatio2;
 }
 
 class HomePage extends StatefulWidget {
@@ -47,55 +48,59 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    VideoAspectRatio.aspectRatio = MediaQuery.of(context).size.width/(MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top-kBottomNavigationBarHeight);
-    return SafeArea(
-      child: Scaffold(
-        body: _widgetOptions.elementAt(_selectedIndex),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (int index) {
-            if(index==0){
-              setState(() {
-                _selectedIndex = index;
-              });
-            }
-            else if(index==1){
-              if(UserID.uid==null){
-                context.push(MyRoutes.Login);
-              }else{
-                context.read<TakeVideoBloc>().add(InitialEvent());
-                context.push(MyRoutes.TAKEVIDEO);
-              }
-
-            }
-            else if(index==2){
-              if(UserID.uid==null){
-                context.push(MyRoutes.Login);
-              }else{
-                context.read<MyPageBloc>().add(GetMyPageEvent(userId: UserID.uid!));
+    VideoAspectRatio.aspectRatio = MediaQuery.of(context).size.width/( MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top-kBottomNavigationBarHeight );
+    VideoAspectRatio.aspectRatio2 = MediaQuery.of(context).size.width/( MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top);
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: SafeArea(
+        child: Scaffold(
+          body: _widgetOptions.elementAt(_selectedIndex),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (int index) {
+              if(index==0){
                 setState(() {
                   _selectedIndex = index;
                 });
               }
-            }
-          },
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              label: 'Add',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey,
+              else if(index==1){
+                if(UserID.uid==null){
+                  context.push(MyRoutes.Login);
+                }else{
+                  context.read<TakeVideoBloc>().add(InitialEvent());
+                  context.push(MyRoutes.TAKEVIDEO);
+                }
+
+              }
+              else if(index==2){
+                if(UserID.uid==null){
+                  context.push(MyRoutes.Login);
+                }else{
+                  context.read<MyPageBloc>().add(GetMyPageEvent(userId: UserID.uid!));
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                }
+              }
+            },
+            type: BottomNavigationBarType.fixed,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add),
+                label: 'Add',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.grey,
+          ),
         ),
       ),
     );

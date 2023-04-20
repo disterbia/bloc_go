@@ -6,6 +6,7 @@ class VideoStream {
   final String url;
   final int likeCount;
   final String uploadTime;
+  final bool isNew;
   final UserInfo userInfo;
 
   VideoStream({
@@ -15,6 +16,7 @@ class VideoStream {
     required this.uploadTime,
     required this.likeCount,
     required this.userInfo,
+    required this.isNew
   });
 
   factory VideoStream.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class VideoStream {
         url: json['url'],
         uploadTime: json['upload_time'],
         likeCount: json['like_count'],
+        isNew: json['is_new'],
         userInfo: UserInfo.fromJson(json['user_info']));
   }
 }

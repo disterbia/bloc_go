@@ -10,11 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class VideoScreenPage extends StatelessWidget {
 
-  bool isFirst = true;
   PageController _horizontalController = PageController(initialPage: 1);
-  PageController _verticalController = PageController();
+  PageController? _verticalController ;
   int _currentIndex = 0;
-  bool isbackHorizon=false;
   BetterPlayerController? controller;
 
   @override
@@ -25,22 +23,21 @@ class VideoScreenPage extends StatelessWidget {
           return PageView.builder(
                 onPageChanged: (hNextIndex) async{
                   context.read<VideoStreamBloc>().add(PlayAndPauseEvent());
-                  if (hNextIndex == 1) { // 중앙 페이지(동영상 목록)가 아닌 경우
-                    isbackHorizon=true;
-                    _verticalController.jumpToPage(_currentIndex);
-                    isbackHorizon=false;
-                  }
                 },
                 controller: _horizontalController,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (BuildContext context, int hIndex) {
+                  if(_verticalController!=null){
+                    _verticalController!.dispose();
+                    _verticalController=null;
+                  }
+                  _verticalController=PageController(initialPage: _currentIndex);
                   if (hIndex == 1) {
                     return PageView.builder(
                       scrollDirection: Axis.vertical,
                       controller: _verticalController,
                       itemCount: videostate.video!.length,
                       onPageChanged: (vNextIndex) async {
-                        if(isbackHorizon) return;
                           // 이전 동영상으로 이동
                           if (vNextIndex < _currentIndex) {
                               if (videostate.nextController != null) {
@@ -61,11 +58,6 @@ class VideoScreenPage extends StatelessWidget {
                           _currentIndex = vNextIndex;
                       },
                       itemBuilder: (BuildContext context, int vindex) {
-                        if (isFirst && vindex == 0) {
-                          isFirst = false;
-                          videostate.currentController?.play();
-                        }
-
                         if (vindex == _currentIndex) {
                           controller = videostate.currentController;
                         } else if (vindex == _currentIndex - 1) {
@@ -77,7 +69,7 @@ class VideoScreenPage extends StatelessWidget {
                           onWillPop: () async {
                             await videostate.currentController?.seekTo(Duration.zero);
                             await videostate.currentController?.pause();
-                            return true;
+                            return Future(() => true);
                           },
                           child: Stack(
                             children: [
@@ -99,7 +91,7 @@ class VideoScreenPage extends StatelessWidget {
                                 ),
                               ),
                               Positioned(
-                                bottom: 25,
+                                bottom: 100,
                                 right: 25,
                                 child: Column(
                                   children: [

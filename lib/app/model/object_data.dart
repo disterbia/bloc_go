@@ -1,13 +1,11 @@
 class ObjectData {
-  final String title;
-  final String description;
+  final String userId;
   final List<String> imageFiles;
 
-  ObjectData({required this.title, required this.description, required this.imageFiles});
+  ObjectData({required this.userId,  required this.imageFiles});
 
   Map<String, dynamic> toJson() => {
-    'title': title,
-    'description': description,
+    'user_id': userId,
     'imageFiles': imageFiles,
   };
 }

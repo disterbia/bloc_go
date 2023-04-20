@@ -115,6 +115,8 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
       for (VideoObject videoObject in videoObjects) {
         final videoFile = File(videoObject.path);
+        int fileSize = await videoFile.length();
+        print('File size: $fileSize bytes');
         final file = await MultipartFile.fromFile(
             videoFile.path, filename: videoFile.path
             .split('/')

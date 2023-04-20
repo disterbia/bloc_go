@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
@@ -145,12 +146,16 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
         }
       ];
 
+      File videoFile = File(state.videoPath!);
+      int fileSize = await videoFile.length();
+
+      print('File size: $fileSize bytes');
       // FormData
       FormData formData = FormData.fromMap({
         'metadata': jsonEncode(metadata),
         'files': await MultipartFile.fromFile(
           state.videoPath!,
-          filename: 'myVideo.mp4',
+          filename: state.videoPath!.split("/").last,
         ),
       });
       // Send request

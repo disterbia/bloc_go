@@ -30,13 +30,13 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 
   Future<void> _updatePrevControllers(UpdatePrevVideoControllers event, Emitter<VideoState> emit) async {
     if(event.currentIndex! == 1){ // 첫동영상으로 갔을때
-      emit(VideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video: videos));
+      emit(VideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video:state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
       await state.currentController!.play();
     }else{
       BetterPlayerController? prevController = await _initializeVideo(state.video![event.currentIndex!-2]);
-      emit(VideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: videos));
+      emit(VideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
       await state.currentController!.play();
@@ -45,14 +45,14 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 
   Future<void> _updateNextControllers(UpdateNextVideoControllers event, Emitter<VideoState> emit) async {
     if(event.currentIndex!+2 == state.video!.length){ // 마지막 동영상으로 갔을때
-      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: videos));
+      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
       await state.currentController!.play();
       await _getMoreVideos(state.video!.length,state.video![0].url,emit);
     }else{
       BetterPlayerController? nextController =  await _initializeVideo(state.video![event.currentIndex!+2]);
-      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: videos));
+      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
       await state.currentController!.play();
@@ -65,7 +65,12 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       return;
     }
     BetterPlayerController newController= await _initializeVideo(temp.first);
-    videos!.addAll(temp);
+    if(temp.first.isNew){
+      videos!.insert(0, temp.first);
+    }else{
+      videos!.addAll(temp);
+    }
+
     emit(VideoLoaded(prevController: state.prevController, currentController: state.currentController, nextController: newController, video: videos));
   }
 
@@ -80,6 +85,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       BetterPlayerController nextController = await _initializeVideo(temp[1]);
       videos!.addAll(temp);
       emit(VideoLoaded(prevController: null, currentController: currentController, nextController: nextController, video: videos));
+      await state.currentController!.play();
     }
   }
 
@@ -126,9 +132,9 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 
   @override
   Future<void> close() {
-    state.nextController?.dispose();
-    state.currentController?.dispose();
-    state.prevController?.dispose();
+    state.nextController?.dispose(forceDispose: true);
+    state.currentController?.dispose(forceDispose: true);
+    state.prevController?.dispose(forceDispose: true);
 
     return super.close();
   }

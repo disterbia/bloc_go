@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eatall/app/bloc/image_bloc.dart';
 import 'package:eatall/app/bloc/mypage_bloc.dart';
+import 'package:eatall/app/bloc/user_video_bloc.dart';
 import 'package:eatall/app/bloc/video_upload_bloc.dart';
 import 'package:eatall/app/router/custom_go_router.dart';
+import 'package:eatall/app/view/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -29,29 +32,38 @@ class MyPage extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        body: ListView(
-          children: [
-            SizedBox(height: 16),
-            _buildProfileHeader(),
-            SizedBox(height: 16),
-            _buildProfileStats(),
-            SizedBox(height: 16),
-            _buildProfileBio(),
-            SizedBox(height: 16),
-            _buildProfileTabs(state),
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 16),
+              _buildProfileHeader(context,state),
+              SizedBox(height: 16),
+              _buildProfileStats(),
+              SizedBox(height: 16),
+              _buildProfileBio(),
+              SizedBox(height: 16),
+              _buildProfileTabs(state),
+            ],
+          ),
         ),
       );
     });
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(BuildContext context,MyPageState state) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 50,
-          backgroundImage: AssetImage(
-              'assets/images/profile_picture.png'), // Replace with your own image
+        InkWell(onTap: (){
+           context.read<ImageBloc>().add(ImageUploadEvent());
+        },
+          child: BlocBuilder<ImageBloc,String>(
+            builder: (context,astate) {
+              return CircleAvatar(
+                backgroundImage: NetworkImage(astate==""?state.mypage!.image:astate),
+                radius: 50, // Replace with your own image
+              );
+            }
+          ),
         ),
         SizedBox(height: 8),
         Text(
@@ -123,7 +135,7 @@ class MyPage extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 200,
+            height: 400,
             child: TabBarView(
               children: [
                 GridView.builder(
@@ -131,12 +143,19 @@ class MyPage extends StatelessWidget {
                   shrinkWrap: true,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
-                    crossAxisSpacing: 2,
                     mainAxisSpacing: 2,
+                    crossAxisSpacing: 2,
+                    childAspectRatio: VideoAspectRatio.aspectRatio!*1.5,
                   ),
                   itemBuilder: (BuildContext context, int index) {
-                    return CachedNetworkImage(
-                        imageUrl: state.mypage!.videos[index].thumbnail);
+                    return InkWell(
+                      onTap: (){
+                        context.read<UserVideoBloc>().add(LoadVideoEvent(currentIndex: index,userVideo: state.mypage!.videos));
+                        context.push(MyRoutes.USERVIDEO,extra: index);
+                      },
+                      child: CachedNetworkImage(
+                          imageUrl: state.mypage!.videos[index].thumbnail,fit: BoxFit.fill,),
+                    );
                   },
                 ),
                 Center(child: Text('Your liked videos')),
