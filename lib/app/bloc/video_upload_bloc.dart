@@ -58,7 +58,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
           autoDispose: true,
           controlsConfiguration: BetterPlayerControlsConfiguration(
             showControls: true,
-            showControlsOnInitialize: false,
+            showControlsOnInitialize: true,
             controlBarColor: Colors.transparent,
             controlsHideTime: Duration.zero,
             enablePlayPause: false,

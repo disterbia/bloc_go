@@ -1,4 +1,5 @@
 import 'package:better_player/better_player.dart';
+import 'package:eatall/app/bloc/chat_bloc.dart';
 import 'package:eatall/app/bloc/user_video_bloc.dart';
 import 'package:eatall/app/model/user_video.dart';
 import 'package:eatall/app/widget/chat_widget.dart';
@@ -68,73 +69,76 @@ class UserVideoPage extends StatelessWidget {
                   } else if (vindex == _currentIndex + 1) {
                     controller = videostate.nextController;
                   }
-                  return Stack(
-                    children: [
-                      videostate.currentController != null
-                          ? BetterPlayer(controller: controller!)
-                          : Center(child: CircularProgressIndicator()),
-                      Positioned(
-                        bottom: 25,
-                        left: 25,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(videos![vindex].title),
-                            Text(videos[vindex].uploader),
-                            Text(videos[vindex].likeCount.toString()),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 100,
-                        right: 25,
-                        child: Column(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                showModalBottomSheet(
-                                  context:context,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (BuildContext context) {
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15),
-                                          topRight: Radius.circular(15),
-                                        ),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                IconButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  icon: Icon(Icons.close, color: Colors.white),
-                                                ),
-                                              ],
+                  return BlocBuilder<ChatBloc,ChatState>(
+                    builder: (context,chatstate) {
+                      return Stack(
+                        children: [
+                          videostate.currentController != null
+                              ? BetterPlayer(controller: controller!)
+                              : Center(child: CircularProgressIndicator()),
+                          Positioned(
+                            bottom: 25,
+                            left: 25,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(videos![vindex].title),
+                                Text(videos[vindex].uploader),
+                                Text(videos[vindex].likeCount.toString()),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 100,
+                            right: 25,
+                            child: Column(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      context:context,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (BuildContext context) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(15),
+                                              topRight: Radius.circular(15),
                                             ),
                                           ),
-                                          Expanded(
-                                            child: chatWidget(context, videostate.video![vindex].url),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      icon: Icon(Icons.close, color: Colors.white),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: chatWidget(context, videostate.video![vindex].url,chatstate),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
+                                        );
+                                      },
                                     );
                                   },
-                                );
-                              },
-                              child: Icon(Icons.comment),
+                                  child: Icon(Icons.comment),
+                                ),
+                              ],
                             ),
-                            // 다른 아이콘들을 여기에 추가하세요.
-                          ],
-                        ),
-                      ),
-                    ],
+                          ),
+                        ],
+                      );
+                    }
                   );
                 },
               ),

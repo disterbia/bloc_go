@@ -4,10 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:eatall/app/const/addr.dart';
 import 'package:eatall/app/model/object_data.dart';
 
-class ImageRepository{
+class ImageRepository {
+  final dio = Dio();
+
   Future<String> uploadObjects(List<ObjectData> objects) async {
     try {
-      final dio = Dio();
       final data = jsonEncode(objects.map((obj) => obj.toJson()).toList());
       print('Uploading image...');
       final startTime = DateTime.now();
@@ -20,13 +21,9 @@ class ImageRepository{
       final duration = endTime.difference(startTime);
       print('Image uploaded in ${duration.inMilliseconds} ms');
       return response.data["image_url"];
-
     } catch (e) {
       print(e);
       return "";
-
     }
   }
 }
-
-
