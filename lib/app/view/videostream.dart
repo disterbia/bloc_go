@@ -92,7 +92,7 @@ class _ChatStateWidgetState extends State<ChatStateWidget> {
                                 ),
                               ),
                               Expanded(
-                                child: chatWidget(context, widget.videoState.video![widget.videoIndex].url,chatState),
+                                child: chatWidget(context, widget.videoState.video![widget.videoIndex].url),
                               ),
                             ],
                           ),
