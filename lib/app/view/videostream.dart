@@ -6,9 +6,111 @@ import 'package:eatall/app/model/video_stream.dart';
 import 'package:eatall/app/view/four_page.dart';
 import 'package:eatall/app/view/user_profile.dart';
 import 'package:eatall/app/widget/chat_widget.dart';
+import 'package:eatall/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+class ChatStateWidget extends StatefulWidget {
+  final int videoIndex;
+  final VideoState videoState;
+  final List<VideoStream>? videos;
+  final int currentIndex;
+  const ChatStateWidget({required this.videoIndex, required this.videoState,required this.videos,required this.currentIndex});
+
+  @override
+  _ChatStateWidgetState createState() => _ChatStateWidgetState();
+}
+
+class _ChatStateWidgetState extends State<ChatStateWidget> {
+
+  @override
+  void initState() {
+    print("-=-=-==");
+    context.read<ChatBloc>().add(NewChatEvent(widget.videos![widget.currentIndex].id));
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ChatBloc,ChatState>(
+      builder: (context,chatState) {
+        return Stack(children: [
+          Positioned(
+            bottom: 150,
+            right: 25,
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    context.read<ChatBloc>().add(LikeOrDisLikeEvent(UserID.uid!));
+                  },
+                  child: Icon(
+                    Icons.favorite,
+                    color: chatState.isLike!
+                        ? Colors.red
+                        : Colors.grey,
+                  ),
+                ),
+                Text(chatState.totalLike.toString()),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 100,
+            right: 25,
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      builder: (BuildContext context) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: Icon(Icons.close,
+                                          color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: chatWidget(context, widget.videoState.video![widget.videoIndex].url,chatState),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Icon(Icons.comment),
+                ),
+                Text((chatState.messages!.isNotEmpty?chatState.messages!.last.totalCount:0).toString())
+              ],
+            ),
+          ),
+        ],);
+      }
+    );
+  }
+}
 class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController? _verticalController;
@@ -75,102 +177,26 @@ class VideoScreenPage extends StatelessWidget {
                       await videostate.currentController?.pause();
                       return Future(() => true);
                     },
-                    child: BlocBuilder<ChatBloc,ChatState>(
-                      builder: (context,chatstate) {
-                        context.read<ChatBloc>().add(NewChatEvent(videos![vindex].url));
-                        return Stack(
-                          children: [
-                            videostate.currentController != null
-                                ? BetterPlayer(controller: controller!)
-                                : Center(child: CircularProgressIndicator()),
-                            Positioned(
-                              bottom: 25,
-                              left: 25,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(videos![vindex].title),
-                                  Text(videos[vindex].uploader),
-                                  Text(videos[vindex].likeCount.toString()),
-                                ],
+                    child: Stack(
+                            children: [
+                              videostate.currentController != null
+                                  ? BetterPlayer(controller: controller!)
+                                  : Center(child: CircularProgressIndicator()),
+                              Positioned(
+                                bottom: 25,
+                                left: 25,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(videos![vindex].id),
+                                    Text(videos![vindex].title),
+                                    Text(videos[vindex].uploader),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Positioned(
-                              bottom: 150,
-                              right: 25,
-                              child: Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-
-                                    },
-                                    child: Icon(
-                                      Icons.favorite,
-                                      color: videostate.video![vindex].userLiked
-                                          ? Colors.red
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  Text(videostate.video![vindex].likeCount.toString()),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 100,
-                              right: 25,
-                              child: Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        backgroundColor: Colors.transparent,
-                                        builder: (BuildContext context) {
-                                          return Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(15),
-                                                topRight: Radius.circular(15),
-                                              ),
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.center,
-                                                    children: [
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(context);
-                                                        },
-                                                        icon: Icon(Icons.close,
-                                                            color: Colors.white),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: chatWidget(context, videostate.video![vindex].url,chatstate),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Icon(Icons.comment),
-                                  ),
-                                  Text(videostate.video![vindex].chatCount.toString())
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                    ),
+                              ChatStateWidget(videoIndex: vindex, videoState: videostate, videos: videos,currentIndex:vindex)
+                            ],
+                          )
                   );
                 },
               );

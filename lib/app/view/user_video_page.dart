@@ -84,7 +84,6 @@ class UserVideoPage extends StatelessWidget {
                               children: [
                                 Text(videos![vindex].title),
                                 Text(videos[vindex].uploader),
-                                Text(videos[vindex].likeCount.toString()),
                               ],
                             ),
                           ),

@@ -5,11 +5,8 @@ class UserVideo {
   final String title;
   final String uploader;
   final String url;
-  final int likeCount;
   final String uploadTime;
   final String thumbnail;
-  final bool userLiked;
-  final int chatCount;
 
   UserVideo({
     required this.id,
@@ -17,10 +14,7 @@ class UserVideo {
     required this.uploader,
     required this.url,
     required this.uploadTime,
-    required this.likeCount,
     required this.thumbnail,
-    required this.userLiked,
-    required this.chatCount,
   });
 
   factory UserVideo.fromJson(Map<String, dynamic> json) {
@@ -30,10 +24,7 @@ class UserVideo {
         uploader: json['uploader'],
         url: json['url'],
         uploadTime: json['upload_time'],
-        likeCount: json['like_count'],
         thumbnail: json['thumbnail'],
-        userLiked: json['user_liked'],
-        chatCount: json['chat_count']
     );
   }
 }
