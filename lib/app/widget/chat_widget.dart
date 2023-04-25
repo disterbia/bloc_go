@@ -7,11 +7,11 @@ import 'package:go_router/go_router.dart';
 
 ScrollController _listViewController = ScrollController();
 
-Widget chatWidget(BuildContext context, String videoId,) {
+Widget chatWidget(BuildContext context, String videoId,SocketState? socketState) {
   return BlocBuilder<ChatBloc,ChatState>(
     builder: (context,chatstate) {
       return Scaffold(
-        body: chatstate is! ChatChange
+        body: chatstate is ChatLoading
             ? Center(
                 child: CircularProgressIndicator(),
               )
@@ -20,7 +20,7 @@ Widget chatWidget(BuildContext context, String videoId,) {
                   Expanded(
                     child: ListView.builder(
                       controller: _listViewController,
-                      itemCount: chatstate.messages!.length,
+                      itemCount: socketState!.messages!.length,
                       itemBuilder: (context, bindex) {
                         return Padding(
                           padding:
@@ -29,12 +29,12 @@ Widget chatWidget(BuildContext context, String videoId,) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                chatstate.messages![bindex].username,
+                                socketState.messages![bindex].username,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              Text(chatstate.messages![bindex].text),
+                              Text(socketState.messages![bindex].text),
                               Text(
-                                chatstate.messages![bindex].sendTime!,
+                                socketState.messages![bindex].sendTime!,
                                 style: TextStyle(color: Colors.grey, fontSize: 10),
                               ),
                             ],

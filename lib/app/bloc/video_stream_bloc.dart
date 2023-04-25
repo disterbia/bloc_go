@@ -12,7 +12,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   List<VideoStream>? videos=[];
 
   VideoStreamBloc(this.repository) : super(VideoInitial()) {
-    on<LoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
+    on<LoadVideoEvent>((event, emit) async => await _loadVideos(emit));
     on<UpdatePrevVideoControllers>((event, emit) async => await _updatePrevControllers(event, emit));
     on<UpdateNextVideoControllers>((event, emit) async => await _updateNextControllers(event, emit));
     on<PlayAndPauseEvent>((event, emit) async => await _playAndPause(event, emit));
@@ -24,7 +24,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       await state.currentController!.seekTo(Duration.zero);
       await state.currentController!.pause();
     }else {
-      await state.currentController!.play();
+     // await state.currentController!.play();
     }
   }
 
@@ -33,13 +33,13 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       emit(VideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video:state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
-      await state.currentController!.play();
+    //  await state.currentController!.play();
     }else{
       BetterPlayerController? prevController = await _initializeVideo(state.video![event.currentIndex!-2]);
       emit(VideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
-      await state.currentController!.play();
+     // await state.currentController!.play();
     }
   }
 
@@ -48,14 +48,14 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
-      await state.currentController!.play();
+    //  await state.currentController!.play();
       await _getMoreVideos(state.video!.length,state.video![0].url,emit);
     }else{
       BetterPlayerController? nextController =  await _initializeVideo(state.video![event.currentIndex!+2]);
       emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
-      await state.currentController!.play();
+      //await state.currentController!.play();
     }
   }
 
@@ -74,8 +74,8 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
     emit(VideoLoaded(prevController: state.prevController, currentController: state.currentController, nextController: newController, video: videos));
   }
 
-  Future<void> _loadVideos(LoadVideoEvent event, Emitter<VideoState> emit) async {
-    List<VideoStream> temp = await repository.fetchVideosFromServer(event.page!, event.url);
+  Future<void> _loadVideos(Emitter<VideoState> emit) async {
+    List<VideoStream> temp = await repository.fetchVideosFromServer(0, null);
     if (temp.isEmpty) {
       return;
     }
@@ -85,7 +85,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       BetterPlayerController nextController = await _initializeVideo(temp[1]);
       videos!.addAll(temp);
       emit(VideoLoaded(prevController: null, currentController: currentController, nextController: nextController, video: videos));
-      await state.currentController!.play();
+      //await state.currentController!.play();
     }
   }
 
@@ -143,41 +143,39 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 // VideoEvent
 
 abstract class VideoEvent extends Equatable {
-  final String? url;
-  final int? page;
   final int? currentIndex;
-  VideoEvent({this.page,this.url,this.currentIndex});
+  VideoEvent({this.currentIndex});
 }
 
 class LoadVideoEvent extends VideoEvent {
-  LoadVideoEvent({super.page,super.url,super.currentIndex});
+  LoadVideoEvent();
 
   @override
-  List<Object?> get props => [page,url,currentIndex];
+  List<Object?> get props => [];
 }
 
 class UpdatePrevVideoControllers extends VideoEvent {
 
-  UpdatePrevVideoControllers({super.page,super.url,super.currentIndex});
+  UpdatePrevVideoControllers({super.currentIndex});
 
   @override
-  List<Object?> get props => [page,url,currentIndex];
+  List<Object?> get props => [currentIndex];
 }
 
 class PlayAndPauseEvent extends VideoEvent {
 
-  PlayAndPauseEvent({super.page,super.url,super.currentIndex});
+  PlayAndPauseEvent({super.currentIndex});
 
   @override
-  List<Object?> get props => [page,url,currentIndex];
+  List<Object?> get props => [currentIndex];
 }
 
 class UpdateNextVideoControllers extends VideoEvent {
 
-  UpdateNextVideoControllers({super.page,super.url,super.currentIndex});
+  UpdateNextVideoControllers({super.currentIndex});
 
   @override
-  List<Object?> get props => [page,url,currentIndex];
+  List<Object?> get props => [currentIndex];
 }
 
 // VideoState

@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => LoginBloc(LoginRepository())),
       BlocProvider(create: (context) => VideoUploadBloc(VideoUploadRepository())),
       BlocProvider(create: (context) => ImageBloc(ImageRepository())),
-      BlocProvider(create: (context) => ChatBloc()),
+      BlocProvider(create: (context) => ChatBloc(VideoStreamRepository())),
       BlocProvider(create: (context) => VideoStreamBloc(VideoStreamRepository())),
       BlocProvider(create: (context) => TakeVideoBloc(VideoUploadRepository())),
       BlocProvider(create: (context) => UserProfileBloc(videoRepository: VideoStreamRepository())),

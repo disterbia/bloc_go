@@ -121,9 +121,9 @@ class UserVideoPage extends StatelessWidget {
                                                   ],
                                                 ),
                                               ),
-                                              Expanded(
-                                                child: chatWidget(context, videostate.video![vindex].url),
-                                              ),
+                                              // Expanded(
+                                              //   child: chatWidget(context, videostate.video![vindex].url),
+                                              // ),
                                             ],
                                           ),
                                         );

@@ -1,3 +1,4 @@
+import 'package:eatall/app/bloc/chat_bloc.dart';
 import 'package:eatall/app/bloc/mypage_bloc.dart';
 import 'package:eatall/app/bloc/take_video_bloc.dart';
 import 'package:eatall/app/bloc/video_stream_bloc.dart';
@@ -41,7 +42,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initialization() async {
-    context.read<VideoStreamBloc>().add(LoadVideoEvent(page: 0));
+    context.read<VideoStreamBloc>().add(LoadVideoEvent());
+    context.read<ChatBloc>().add(InitailConnectEvent());
     Future.delayed(Duration(seconds: 2),()=>FlutterNativeSplash.remove());
 
   }
