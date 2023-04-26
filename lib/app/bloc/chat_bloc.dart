@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:eatall/app/const/addr.dart';
+import 'package:eatall/app/model/chat_room_state.dart';
 import 'package:eatall/app/model/message.dart';
 import 'package:eatall/app/model/socket_event.dart';
 import 'package:eatall/app/model/video_stream.dart';
@@ -13,429 +14,272 @@ import 'package:web_socket_channel/io.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final VideoStreamRepository repository;
-  IOWebSocketChannel? _prevChannel;
-  IOWebSocketChannel? _currentChannel;
-  IOWebSocketChannel? _nextChannel;
+  Map<String, IOWebSocketChannel> _channels = {};
+  String? currentVideo;
 
-  ChatBloc(this.repository) : super(ChatInitial()) {
+
+  ChatBloc(this.repository) : super(ChatInitial(chatRoomStates: {})) {
     on<SendMessageEvent>((event, emit) {
-      _sendMessage(event.text, event.userId);
+      _sendMessage(event.roomId,event.text, event.userId);
     });
     on<LikeOrDisLikeEvent>((event, emit) {
-      _likeOrDislike(event.userId);
+      _likeOrDislike(event.roomId,event.userId);
     });
-    on<InitailConnectEvent>((event, emit) async {
-       await initialConnect(emit);
+    on<FirstChangeEvent>((event, emit) {
+      emit(FirstChange(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
     });
-    on<UpdatePrevConnectEvent>((event, emit) async {
-      await updatePrevWebSocket(emit, event.videos, event.currentIndex);
+    on<InitialChatEvent>((event, emit) {
+      initialLoad();
     });
-    on<UpdateNextConnectEvent>((event, emit) async {
-      await updateNextWebSocket(emit, event.videos, event.currentIndex);
+    on<ChatChangeEvent>((event, emit) {
+      emit(ChatChange(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
     });
+    on<LikeChangeEvent>((event, emit) {
+      emit(LikeChange(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
+    });
+    on<ChangeRoomEvent>((event, emit) {
+      changeRoom(emit, event.removeRoomId, event.newRoomId);
+    });
+
   }
 
-  Future<void> initialConnect(Emitter<ChatState> emit) async {
+  Future<void> initialLoad() async{
     List<VideoStream> temp = await repository.fetchVideosFromServer(0, null);
-      connectWebSocket(emit, temp[0].id, 0);
-    await connectWebSocket(emit, temp[1].id, 0);
-
-  }
-
-  Future<void> updatePrevWebSocket(Emitter<ChatState> emit,
-      List<VideoStream> video, int currentIndex) async {
-    if (currentIndex == 1) {
-      //처음으로갈때
-      _nextChannel?.sink.close();
-      _nextChannel = _currentChannel;
-      _currentChannel = _prevChannel;
-      _prevChannel=null;
-    } else {
-      _nextChannel?.sink.close();
-      _nextChannel = _currentChannel;
-      _currentChannel = _prevChannel;
-      await connectWebSocket(emit, video[currentIndex - 2].id, -1);
+    if (temp.isEmpty) {
+      return;
     }
+    connectWebSocket(temp[0].id);
+    connectWebSocket(temp[1].id);
   }
 
-  Future<void> updateNextWebSocket(Emitter<ChatState> emit,
-      List<VideoStream> video, int currentIndex) async {
-    if (currentIndex + 2 == video.length) {
-      //마지막으로 갈때
-      await _prevChannel?.sink.close();
-      _prevChannel = _currentChannel;
-      _currentChannel = _nextChannel;
-      _nextChannel=null;
-    } else {
-      await _prevChannel?.sink.close();
-      _prevChannel = _currentChannel;
-      _currentChannel = _nextChannel;
-     await connectWebSocket(emit, video[currentIndex + 2].id, 1);
-    }
-  }
+  void connectWebSocket(String roomId)  {
+      //
+      // if (_channels.containsKey(roomId)) {
+      //   _channels[roomId]?.sink.close();
+      //   _channels.remove(roomId);
+      // }
+      IOWebSocketChannel channel =
+      IOWebSocketChannel.connect('${Address.wsAddr}ws?room_id=$roomId&user_id=${UserID.uid}');
+      _channels[roomId] = channel;
 
-
-  Future<void> connectWebSocket(
-      Emitter<ChatState> emit, String roomId, int notice) async {
-    //_channel!.stream.listen((event)
-    emit(ChatLoading(
-        controller: state.controller,
-        prevInfo: state.prevInfo,
-        currentInfo: state.currentInfo,
-        nextInfo: state.nextInfo));
-    List<Message> messages = [];
-    if (notice == -1) {
-      _prevChannel = IOWebSocketChannel.connect(
-          '${Address.wsAddr}ws?room_id=$roomId&user_id=${UserID.uid}');
-      await for (final event in _prevChannel!.stream) {
+      if (!state.chatRoomStates.containsKey(roomId)) {
+        state.chatRoomStates[roomId] = ChatRoomState.initial();
+      }
+      // await for(final event in _channel!.stream)
+      List<Message> messages=[];
+      channel.stream.listen((event) {
         Map<String, dynamic> eventData = jsonDecode(event);
         SocketEvent socketEvent = SocketEvent.fromJson(eventData);
-        if (socketEvent.evnetType == "first_message") {
+        ChatRoomState chatRoomState = state.chatRoomStates[roomId]!;
+
+        if (socketEvent.eventType == "first_message") {
           messages.add(socketEvent.message!);
-          emit(FirstState(
-              controller: state.controller,
-              prevInfo: SocketState(
-                  messages: messages,
-                  userLike: state.prevInfo?.userLike,
-                  totalLike: state.prevInfo?.totalLike),
-              currentInfo: state.currentInfo,
-              nextInfo: state.nextInfo));
-        } else if (socketEvent.evnetType == "first_like") {
+          ChatRoomState updatedChatRoomState = chatRoomState.copyWith(messages: messages);
+          add(FirstChangeEvent(updatedChatRoomState, roomId));
+        } else if (socketEvent.eventType == "first_like") {
+          ChatRoomState updatedChatRoomState;
           if (socketEvent.userId == UserID.uid) {
-            emit(FirstState(
-                controller: state.controller,
-                prevInfo: SocketState(
-                    messages: state.prevInfo?.messages,
-                    userLike: socketEvent.userLike,
-                    totalLike: socketEvent.totalLike),
-                currentInfo: state.currentInfo,
-                nextInfo: state.nextInfo));
+            updatedChatRoomState = chatRoomState.copyWith(
+              totalLike: socketEvent.totalLike,
+              isLike: socketEvent.userLike,
+            );
           } else {
-            emit(FirstState(
-                controller: state.controller,
-                prevInfo: SocketState(
-                    messages: state.prevInfo?.messages,
-                    userLike: state.prevInfo?.userLike,
-                    totalLike: socketEvent.totalLike),
-                currentInfo: state.currentInfo,
-                nextInfo: state.nextInfo));
+            updatedChatRoomState = chatRoomState.copyWith(
+              totalLike: socketEvent.totalLike,
+            );
           }
-        } else if (socketEvent.evnetType == "message") {
-          List<Message> messages = List<Message>.from(state.prevInfo!.messages!)
+          add(FirstChangeEvent(updatedChatRoomState, roomId));
+        }
+        else if (socketEvent.eventType == "message") {
+          List<Message> messages = List<Message>.from(chatRoomState.messages)
             ..add(socketEvent.message!);
-          emit(ChatChange(
-              controller: state.controller,
-              prevInfo: SocketState(
-                  messages: messages,
-                  totalLike: state.prevInfo?.totalLike,
-                  userLike: state.prevInfo?.userLike),
-              currentInfo: state.currentInfo,
-              nextInfo: state.nextInfo));
-        } else if (socketEvent.evnetType == "total_like") {
+
+          ChatRoomState updatedChatRoomState = chatRoomState.copyWith(messages: messages);
+          add(ChatChangeEvent(updatedChatRoomState, roomId));
+        } else if (socketEvent.eventType == "total_like") {
+          print("-==--=-=-=-=-=-=");
+          ChatRoomState updatedChatRoomState;
           if (socketEvent.userId == UserID.uid) {
-            emit(LikeChange(
-                controller: state.controller,
-                prevInfo: SocketState(
-                    messages: state.prevInfo?.messages,
-                    userLike: socketEvent.userLike,
-                    totalLike: socketEvent.totalLike),
-                currentInfo: state.currentInfo,
-                nextInfo: state.nextInfo));
+            updatedChatRoomState = chatRoomState.copyWith(
+              totalLike: socketEvent.totalLike,
+              isLike: socketEvent.userLike,
+            );
           } else {
-            emit(LikeChange(
-                controller: state.controller,
-                prevInfo: SocketState(
-                    messages: state.prevInfo?.messages,
-                    userLike: state.prevInfo?.userLike,
-                    totalLike: socketEvent.totalLike),
-                currentInfo: state.currentInfo,
-                nextInfo: state.nextInfo));
+            updatedChatRoomState = chatRoomState.copyWith(
+              totalLike: socketEvent.totalLike,
+            );
           }
+          add(LikeChangeEvent(updatedChatRoomState, roomId));
         }
-      }
-    } else if (notice == 0) {
-      _currentChannel = IOWebSocketChannel.connect(
-          '${Address.wsAddr}ws?room_id=$roomId&user_id=${UserID.uid}');
-      await for (final event in _currentChannel!.stream) {
-        Map<String, dynamic> eventData = jsonDecode(event);
-        SocketEvent socketEvent = SocketEvent.fromJson(eventData);
-        print("=-=-=-=${socketEvent.evnetType}");
-        if (socketEvent.evnetType == "first_message") {
-          messages.add(socketEvent.message!);
-          emit(FirstState(
-              controller: state.controller,
-              currentInfo: SocketState(
-                  messages: messages,
-                  userLike: state.currentInfo?.userLike,
-                  totalLike: state.currentInfo?.totalLike),
-              nextInfo: state.nextInfo,
-              prevInfo: state.prevInfo));
-        } else if (socketEvent.evnetType == "first_like") {
-          if (socketEvent.userId == UserID.uid) {
-            emit(FirstState(
-                controller: state.controller,
-                currentInfo: SocketState(
-                    messages: state.currentInfo?.messages,
-                    userLike: socketEvent.userLike,
-                    totalLike: socketEvent.totalLike),
-                nextInfo: state.nextInfo,
-                prevInfo: state.prevInfo));
-          } else {
-            emit(FirstState(
-                controller: state.controller,
-                currentInfo: SocketState(
-                    messages: state.currentInfo?.messages,
-                    userLike: state.currentInfo?.userLike,
-                    totalLike: socketEvent.totalLike),
-                nextInfo: state.nextInfo,
-                prevInfo: state.prevInfo));
-          }
-        } else if (socketEvent.evnetType == "message") {
-          List<Message> messages =
-              List<Message>.from(state.currentInfo!.messages!)
-                ..add(socketEvent.message!);
-          emit(ChatChange(
-              controller: state.controller,
-              currentInfo: SocketState(
-                  messages: messages,
-                  totalLike: state.currentInfo?.totalLike,
-                  userLike: state.currentInfo?.userLike),
-              nextInfo: state.nextInfo,
-              prevInfo: state.prevInfo));
-        } else if (socketEvent.evnetType == "total_like") {
-          if (socketEvent.userId == UserID.uid) {
-            emit(LikeChange(
-                controller: state.controller,
-                currentInfo: SocketState(
-                    messages: state.currentInfo?.messages,
-                    userLike: socketEvent.userLike,
-                    totalLike: socketEvent.totalLike),
-                nextInfo: state.nextInfo,
-                prevInfo: state.prevInfo));
-          } else {
-            emit(LikeChange(
-                controller: state.controller,
-                currentInfo: SocketState(
-                    messages: state.currentInfo?.messages,
-                    userLike: state.currentInfo?.userLike,
-                    totalLike: socketEvent.totalLike),
-                nextInfo: state.nextInfo,
-                prevInfo: state.prevInfo));
-          }
-        }
-      }
-    } else {
-      _nextChannel = IOWebSocketChannel.connect(
-          '${Address.wsAddr}ws?room_id=$roomId&user_id=${UserID.uid}');
-      await for (final event in _nextChannel!.stream) {
-        Map<String, dynamic> eventData = jsonDecode(event);
-        SocketEvent socketEvent = SocketEvent.fromJson(eventData);
-        if (socketEvent.evnetType == "first_message") {
-          messages.add(socketEvent.message!);
-          emit(FirstState(
-            controller: state.controller,
-            nextInfo: SocketState(
-                messages: messages,
-                userLike: state.nextInfo?.userLike,
-                totalLike: state.nextInfo?.totalLike),
-            prevInfo: state.prevInfo,
-            currentInfo: state.currentInfo,
-          ));
-        } else if (socketEvent.evnetType == "first_like") {
-          if (socketEvent.userId == UserID.uid) {
-            emit(FirstState(
-                controller: state.controller,
-                nextInfo: SocketState(
-                    messages: state.nextInfo?.messages,
-                    userLike: socketEvent.userLike,
-                    totalLike: socketEvent.totalLike),
-                prevInfo: state.prevInfo,
-                currentInfo: state.currentInfo));
-          } else {
-            emit(FirstState(
-                controller: state.controller,
-                nextInfo: SocketState(
-                    messages: state.nextInfo?.messages,
-                    userLike: state.nextInfo?.userLike,
-                    totalLike: socketEvent.totalLike),
-                prevInfo: state.prevInfo,
-                currentInfo: state.currentInfo));
-          }
-        } else if (socketEvent.evnetType == "message") {
-          List<Message> messages = List<Message>.from(state.nextInfo!.messages!)
-            ..add(socketEvent.message!);
-          emit(ChatChange(
-              controller: state.controller,
-              nextInfo: SocketState(
-                  messages: messages,
-                  totalLike: state.nextInfo?.totalLike,
-                  userLike: state.nextInfo?.userLike),
-              prevInfo: state.prevInfo,
-              currentInfo: state.currentInfo));
-        } else if (socketEvent.evnetType == "total_like") {
-          if (socketEvent.userId == UserID.uid) {
-            emit(LikeChange(
-                controller: state.controller,
-                nextInfo: SocketState(
-                    messages: state.nextInfo?.messages,
-                    userLike: socketEvent.userLike,
-                    totalLike: socketEvent.totalLike),
-                prevInfo: state.prevInfo,
-                currentInfo: state.currentInfo));
-          } else {
-            emit(LikeChange(
-                controller: state.controller,
-                nextInfo: SocketState(
-                    messages: state.nextInfo?.messages,
-                    userLike: state.nextInfo?.userLike,
-                    totalLike: socketEvent.totalLike),
-                prevInfo: state.prevInfo,
-                currentInfo: state.currentInfo));
-          }
-        }
-      }
-    }
+      });
+
   }
 
-  void _sendMessage(String text, String username) {
+  void changeRoom(Emitter<ChatState> emit,String removeRoomId,String newRoomId){
+    if(newRoomId=="") {
+      disposeWebSocket(removeRoomId);
+    } else if(removeRoomId=="") {
+      connectWebSocket( newRoomId);
+    } else{
+      disposeWebSocket(removeRoomId);
+      connectWebSocket( newRoomId);
+    }
+
+  }
+
+  void _sendMessage(String roomId, String text, String username) {
     if (text.isNotEmpty) {
       SocketEvent socketEvent = SocketEvent(
-        evnetType: "message",
+        eventType: "message",
         message: Message(username: username, text: text),
       );
-      _currentChannel?.sink.add(jsonEncode(socketEvent.toJson()));
-      state.controller!.clear();
+
+      _channels[roomId]?.sink.add(jsonEncode(socketEvent.toJson()));
+      state.chatRoomStates[roomId]?.controller.clear();
     }
   }
 
-  void _likeOrDislike(String userId) {
-    SocketEvent socketEvent = SocketEvent(evnetType: "like", userId: userId);
-    _currentChannel?.sink.add(jsonEncode(socketEvent.toJson()));
+  void _likeOrDislike(String roomId, String userId) {
+    SocketEvent socketEvent = SocketEvent(
+      eventType: "like",
+      userId: userId,
+    );
+
+    _channels[roomId]?.sink.add(jsonEncode(socketEvent.toJson()));
   }
 
-  void disposeWebSocket() {
-    if (_prevChannel != null) {
-      _prevChannel?.sink.close();
-      _prevChannel = null;
-    }
-    if (_currentChannel != null) {
-      _currentChannel?.sink.close();
-      _currentChannel = null;
-    }
-    if (_nextChannel != null) {
-      _nextChannel?.sink.close();
-      _nextChannel = null;
+
+  void disposeWebSocket(String roomId) {
+    if (_channels.containsKey(roomId)) {
+      _channels[roomId]?.sink.close();
+      _channels.remove(roomId);
     }
   }
+
 
   @override
   Future<void> close() {
-    print("-==-=--=-=-=");
-    disposeWebSocket();
+    _channels.forEach((roomId, channel) {
+      channel.sink.close();
+    });
+    _channels.clear();
     return super.close();
   }
 }
 
+
 abstract class ChatEvent extends Equatable {}
 
 class SendMessageEvent extends ChatEvent {
+  final String roomId;
   final String text;
   final String userId;
 
-  SendMessageEvent({required this.text, required this.userId});
+  SendMessageEvent({required this.roomId,required this.text,required this.userId});
 
   @override
-  List<Object?> get props => [text];
+  List<Object?> get props => [roomId,text,userId];
 }
 
 class LikeOrDisLikeEvent extends ChatEvent {
   final String userId;
+  final String roomId;
 
-  LikeOrDisLikeEvent(this.userId);
+  LikeOrDisLikeEvent({required this.userId, required this.roomId});
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [roomId,userId];
 }
 
-class InitailConnectEvent extends ChatEvent {
-  InitailConnectEvent();
+class InitialChatEvent extends ChatEvent {
+
+  InitialChatEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class UpdateNextConnectEvent extends ChatEvent {
-  final List<VideoStream> videos;
-  final int currentIndex;
 
-  UpdateNextConnectEvent(this.videos, this.currentIndex);
+class ChatChangeEvent extends ChatEvent {
 
-  @override
-  List<Object?> get props => [videos, currentIndex];
-}
+  final ChatRoomState chatRoomState;
+  final String roomId;
 
-class UpdatePrevConnectEvent extends ChatEvent {
-  final List<VideoStream> videos;
-  final int currentIndex;
-
-  UpdatePrevConnectEvent(this.videos, this.currentIndex);
+  ChatChangeEvent(this.chatRoomState,this.roomId);
 
   @override
-  List<Object?> get props => [videos, currentIndex];
+  List<Object?> get props => [chatRoomState,roomId];
 }
+
+class LikeChangeEvent extends ChatEvent {
+
+  final ChatRoomState chatRoomState;
+  final String roomId;
+
+  LikeChangeEvent(this.chatRoomState,this.roomId);
+
+  @override
+  List<Object?> get props => [chatRoomState,roomId];
+}
+
+class FirstChangeEvent extends ChatEvent {
+
+  final ChatRoomState chatRoomState;
+  final String roomId;
+
+  FirstChangeEvent(this.chatRoomState,this.roomId);
+
+  @override
+  List<Object?> get props => [chatRoomState,roomId];
+}
+
+
+class ChangeRoomEvent extends ChatEvent {
+
+  final String newRoomId;
+  final String removeRoomId;
+
+  ChangeRoomEvent({required this.newRoomId, required this.removeRoomId});
+
+  @override
+  List<Object?> get props => [newRoomId,removeRoomId];
+}
+
 
 abstract class ChatState extends Equatable {
-  final TextEditingController? controller;
-  final SocketState? prevInfo;
-  final SocketState? currentInfo;
-  final SocketState? nextInfo;
+  final Map<String, ChatRoomState> chatRoomStates;
 
-  ChatState({this.controller, this.prevInfo, this.currentInfo, this.nextInfo});
+  ChatState({required this.chatRoomStates});
 }
 
-// ChatState
-class ChatChange extends ChatState {
-  ChatChange(
-      {super.controller, super.prevInfo, super.currentInfo, super.nextInfo});
+
+class FirstChange extends ChatState {
+  FirstChange({required super.chatRoomStates});
 
   @override
-  List<Object?> get props => [controller, prevInfo, currentInfo, nextInfo];
+  List<Object?> get props => [chatRoomStates];
+}
+
+class ChatChange extends ChatState {
+  ChatChange({required super.chatRoomStates});
+
+  @override
+  List<Object?> get props => [chatRoomStates];
 }
 
 class LikeChange extends ChatState {
-  LikeChange(
-      {super.controller, super.prevInfo, super.currentInfo, super.nextInfo});
+  LikeChange({required super.chatRoomStates});
 
   @override
-  List<Object?> get props => [controller, prevInfo, currentInfo, nextInfo];
+  List<Object?> get props => [chatRoomStates];
 }
 
-class FirstState extends ChatState {
-  FirstState(
-      {super.controller, super.prevInfo, super.currentInfo, super.nextInfo});
-
-  @override
-  List<Object?> get props => [controller, prevInfo, currentInfo, nextInfo];
-}
 
 class ChatInitial extends ChatState {
-  ChatInitial() : super(controller: TextEditingController());
+  ChatInitial({required super.chatRoomStates});
 
   @override
-  List<Object?> get props => [controller];
+  List<Object?> get props => [chatRoomStates];
 }
 
-class ChatLoading extends ChatState {
-  ChatLoading(
-      {super.controller, super.prevInfo, super.currentInfo, super.nextInfo});
 
-  @override
-  List<Object?> get props => [controller, prevInfo, currentInfo, nextInfo];
-}
-
- class SocketState{
-  final List<Message>? messages;
-  final int? totalLike;
-  final bool? userLike;
-  SocketState({this.totalLike,this.userLike,this.messages});
-}

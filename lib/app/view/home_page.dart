@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
 
   void initialization() async {
     context.read<VideoStreamBloc>().add(LoadVideoEvent());
-    context.read<ChatBloc>().add(InitailConnectEvent());
+    context.read<ChatBloc>().add(InitialChatEvent());
     Future.delayed(Duration(seconds: 2),()=>FlutterNativeSplash.remove());
 
   }

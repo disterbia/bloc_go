@@ -8,8 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatStateWidget extends StatefulWidget {
   final VideoStream? video;
-  SocketState? socketState;
-  ChatStateWidget({required this.video,this.socketState});
+  ChatStateWidget({required this.video});
 
   @override
   _ChatStateWidgetState createState() => _ChatStateWidgetState();
@@ -74,18 +73,15 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
   Widget build(BuildContext context) {
     return BlocBuilder<ChatBloc,ChatState>(
         builder: (context,chatState) {
-
-          if(chatState is FirstState){
-            _startChatAnimation();
-            _startLikeAnimation();
-          }
+          print("-=-=-==-=${widget.video!.id}");
           if (chatState is ChatChange) {
             _startChatAnimation();
           } else if (chatState is LikeChange) {
             _startLikeAnimation();
           }
-          return chatState is ChatLoading || chatState is ChatInitial?Stack(
+          return chatState is ChatInitial?Stack(
             children: [
+
               Positioned( bottom: 150,
                   right: 25,child: CircularProgressIndicator(color: Colors.white,)),
             ],
@@ -97,20 +93,20 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                 children: [
                   InkWell(
                     onTap: () {
-                      context.read<ChatBloc>().add(LikeOrDisLikeEvent(UserID.uid!));
+                      context.read<ChatBloc>().add(LikeOrDisLikeEvent(roomId: widget.video!.id,userId: UserID.uid!));
                     },
                     child: AnimatedBuilder(
                         animation: _likeAnimation,
                         builder: (context, child) {
                           return Icon(
                             Icons.favorite,
-                            color: (widget.socketState?.userLike ?? false)?Colors.red:Colors.grey,
+                            color: (chatState.chatRoomStates[widget.video!.id]?.isLike==null?false:chatState.chatRoomStates[widget.video!.id]!.isLike)?Colors.red:Colors.grey,
                             size: iconSize+ (animaiteSize* _likeAnimationController.value),
                           );
                         }
                     ),
                   ),
-                  Text((widget.socketState?.totalLike).toString()),
+                  Text(((chatState.chatRoomStates[widget.video!.id]?.totalLike==null?0:chatState.chatRoomStates[widget.video!.id]!.totalLike)).toString()),
                 ],
               ),
             ),
@@ -152,7 +148,7 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                                   ),
                                 ),
                                 Expanded(
-                                  child: chatWidget(context, widget.video!.url,widget.socketState),
+                                  child: chatWidget(context, widget.video!.id),
                                 ),
                               ],
                             ),
@@ -170,7 +166,7 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                       },
                     ),
                   ),
-                  Text((widget.socketState?.messages!=null?widget.socketState!.messages!.last.totalCount:100).toString()),
+                  Text(((chatState.chatRoomStates[widget.video!.id]?.messages==null?[]:chatState.chatRoomStates[widget.video!.id]!.messages).isNotEmpty?chatState.chatRoomStates[widget.video!.id]!.messages.last.totalCount:0).toString()),
                 ],
               ),
             ),

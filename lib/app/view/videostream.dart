@@ -14,7 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController? _verticalController;
-  SocketState? socketState;
   int _currentIndex = 0;
   BetterPlayerController? controller;
 
@@ -22,7 +21,6 @@ class VideoScreenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<VideoStreamBloc, VideoState>(
       builder: (context, videostate) {
-        final ChatState chatState = BlocProvider.of<ChatBloc>(context).state;
         List<VideoStream>? videos = videostate.video;
         return PageView.builder(
           onPageChanged: (hNextIndex) async {
@@ -49,7 +47,19 @@ class VideoScreenPage extends StatelessWidget {
                       videostate.nextController!.dispose(forceDispose: true);
                     }
                     context.read<VideoStreamBloc>().add(UpdatePrevVideoControllers(currentIndex: _currentIndex));
-                    context.read<ChatBloc>().add(UpdatePrevConnectEvent(videos!,_currentIndex));
+                    String removeId="";
+                    String newId="";
+                   if(videos!=null){
+                      if (_currentIndex == 1) {
+                        removeId = videos[_currentIndex + 1].id;
+                      } else {
+                        removeId = videos[_currentIndex + 1].id;
+                        newId = videos[_currentIndex - 2].id;
+                      }
+                    }
+
+                    context.read<ChatBloc>().add(ChangeRoomEvent(newRoomId: newId, removeRoomId: removeId));
+
                   }
                   // 다음 동영상으로 이동
                   else {
@@ -57,7 +67,18 @@ class VideoScreenPage extends StatelessWidget {
                       videostate.prevController!.dispose(forceDispose: true);
                     }
                     context.read<VideoStreamBloc>().add(UpdateNextVideoControllers(currentIndex: _currentIndex));
-                   context.read<ChatBloc>().add(UpdateNextConnectEvent(videos!,_currentIndex));
+                    String removeId="";
+                    String newId="";
+                    if(videos!=null){
+                      if (_currentIndex == 0) {
+                        newId = videos[_currentIndex + 2].id;
+                      } else {
+                        removeId = videos[_currentIndex - 1].id;
+                        newId = videos[_currentIndex + 2].id;
+                      }
+                    }
+
+                    context.read<ChatBloc>().add(ChangeRoomEvent(newRoomId: newId, removeRoomId: removeId));
                   }
 
                   // 새로운 인덱스로 업데이트하고 다음 동영상 재생
@@ -66,13 +87,13 @@ class VideoScreenPage extends StatelessWidget {
                 itemBuilder: (BuildContext context, int vindex) {
                   if (vindex == _currentIndex) {
                     controller = videostate.currentController;
-                    socketState=chatState.currentInfo;
+
                   } else if (vindex == _currentIndex - 1) {
                     controller = videostate.prevController;
-                    socketState=chatState.prevInfo;
+
                   } else if (vindex == _currentIndex + 1) {
                     controller = videostate.nextController;
-                    socketState=chatState.nextInfo;
+
                   }
                   return WillPopScope(
                     onWillPop: () async {
@@ -97,7 +118,8 @@ class VideoScreenPage extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              ChatStateWidget(video: videos[vindex],socketState: socketState,)
+                              ChatStateWidget(video: videos[vindex]),
+
                             ],
                           )
                   );

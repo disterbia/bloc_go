@@ -7,11 +7,11 @@ import 'package:go_router/go_router.dart';
 
 ScrollController _listViewController = ScrollController();
 
-Widget chatWidget(BuildContext context, String videoId,SocketState? socketState) {
+Widget chatWidget(BuildContext context, String videoId) {
   return BlocBuilder<ChatBloc,ChatState>(
     builder: (context,chatstate) {
       return Scaffold(
-        body: chatstate is ChatLoading
+        body: chatstate.chatRoomStates[videoId]==null
             ? Center(
                 child: CircularProgressIndicator(),
               )
@@ -20,7 +20,7 @@ Widget chatWidget(BuildContext context, String videoId,SocketState? socketState)
                   Expanded(
                     child: ListView.builder(
                       controller: _listViewController,
-                      itemCount: socketState!.messages!.length,
+                      itemCount:  chatstate.chatRoomStates[videoId]!.messages.length,
                       itemBuilder: (context, bindex) {
                         return Padding(
                           padding:
@@ -29,12 +29,12 @@ Widget chatWidget(BuildContext context, String videoId,SocketState? socketState)
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                socketState.messages![bindex].username,
+                                chatstate.chatRoomStates[videoId]!.messages[bindex].username,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              Text(socketState.messages![bindex].text),
+                              Text( chatstate.chatRoomStates[videoId]!.messages[bindex].text),
                               Text(
-                                socketState.messages![bindex].sendTime!,
+                                chatstate.chatRoomStates[videoId]!.messages[bindex].sendTime!,
                                 style: TextStyle(color: Colors.grey, fontSize: 10),
                               ),
                             ],
@@ -49,21 +49,21 @@ Widget chatWidget(BuildContext context, String videoId,SocketState? socketState)
                       children: [
                         Expanded(
                           child: TextField(
-                            controller: chatstate.controller,
+                            controller: chatstate.chatRoomStates[videoId]?.controller,
                             decoration: InputDecoration(
                               hintText: '메시지를 입력하세요.',
                               hintStyle: TextStyle(color: Colors.black),
                             ),
                             onSubmitted: (text) => context.read<ChatBloc>().add(
-                                SendMessageEvent(text: text, userId: UserID.uid!)),
+                                SendMessageEvent(roomId: videoId,text: text, userId: UserID.uid!)),
                           ),
                         ),
                         IconButton(
                           icon: Icon(Icons.send, color: Colors.black),
                           onPressed: () => UserID.uid == null
                               ? context.push(MyRoutes.Login)
-                              : context.read<ChatBloc>().add(SendMessageEvent(
-                                  text: chatstate.controller!.text,
+                              : context.read<ChatBloc>().add(SendMessageEvent(roomId: videoId,
+                                  text: chatstate.chatRoomStates[videoId]!.controller.text,
                                   userId: UserID.uid!)),
                         ),
                       ],
