@@ -1,5 +1,6 @@
 
 import 'package:eatall/app/bloc/chat_bloc.dart';
+import 'package:eatall/app/model/user_video.dart';
 import 'package:eatall/app/model/video_stream.dart';
 import 'package:eatall/app/router/custom_go_router.dart';
 import 'package:eatall/app/widget/chat_widget.dart';
@@ -9,16 +10,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-class ChatStateWidget extends StatefulWidget {
-  final VideoStream? video;
+class UserVideoChatSocket extends StatefulWidget {
+  final UserVideo? video;
 
-  ChatStateWidget({required this.video});
+  UserVideoChatSocket({required this.video});
 
   @override
-  _ChatStateWidgetState createState() => _ChatStateWidgetState();
+  _UserVideoChatSocketState createState() => _UserVideoChatSocketState();
 }
 
-class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderStateMixin{
+class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerProviderStateMixin{
 
   bool _isVisible = false;
   bool preventMultipleTap = false;

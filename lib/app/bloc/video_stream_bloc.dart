@@ -24,7 +24,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       await state.currentController!.seekTo(Duration.zero);
       await state.currentController!.pause();
     }else {
-     // await state.currentController!.play();
+     await state.currentController!.play();
     }
   }
 
@@ -33,33 +33,34 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       emit(VideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video:state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
-    //  await state.currentController!.play();
+     await state.currentController!.play();
     }else{
       BetterPlayerController? prevController = await _initializeVideo(state.video![event.currentIndex!-2]);
       emit(VideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
-     // await state.currentController!.play();
+     await state.currentController!.play();
     }
   }
 
   Future<void> _updateNextControllers(UpdateNextVideoControllers event, Emitter<VideoState> emit) async {
-    if(event.currentIndex!+2 == state.video!.length){ // 마지막 동영상으로 갔을때
+    if(event.currentIndex!+2 >= state.video!.length){ // 마지막 동영상으로 갔을때
       emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
-    //  await state.currentController!.play();
+     await state.currentController!.play();
       await _getMoreVideos(state.video!.length,state.video![0].url,emit);
     }else{
       BetterPlayerController? nextController =  await _initializeVideo(state.video![event.currentIndex!+2]);
       emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
-      //await state.currentController!.play();
+      await state.currentController!.play();
     }
   }
 
   Future<void> _getMoreVideos(int page,String firstUrl,Emitter<VideoState> emit) async{
+
     List<VideoStream> temp = await repository.fetchVideosFromServer(page,firstUrl);
     if (temp.isEmpty) {
       return;
@@ -85,7 +86,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       BetterPlayerController nextController = await _initializeVideo(temp[1]);
       videos!.addAll(temp);
       emit(VideoLoaded(prevController: null, currentController: currentController, nextController: nextController, video: videos));
-      //await state.currentController!.play();
+      await state.currentController!.play();
     }
   }
 

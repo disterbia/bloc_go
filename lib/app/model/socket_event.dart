@@ -3,11 +3,12 @@ import 'package:eatall/app/model/message.dart';
 class SocketEvent {
   final String eventType;
   final Message? message;
+  final List<Message>? firstMessage;
   final int? totalLike;
   final bool? userLike;
   final String? userId;
 
-  SocketEvent({required this.eventType, this.message, this.totalLike,this.userId,this.userLike});
+  SocketEvent({required this.eventType, this.message, this.totalLike,this.userId,this.userLike,this.firstMessage});
 
   factory SocketEvent.fromJson(Map<String, dynamic> json) {
     return SocketEvent(
@@ -17,6 +18,11 @@ class SocketEvent {
       totalLike: json['total_like'],
       userId: json['user_id'],
       userLike: json['user_like'],
+      firstMessage: json['first_message'] != null
+          ? (json['first_message'] as List)
+          .map((messageJson) => Message.fromJson(messageJson))
+          .toList()
+          : null,
     );
   }
 

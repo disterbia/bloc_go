@@ -137,6 +137,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
   }
 
   Future<void> _uploadVideo() async {
+
     try {
       // Metadata
       List<Map<String, dynamic>> metadata = [

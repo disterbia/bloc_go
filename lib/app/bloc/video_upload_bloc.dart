@@ -101,6 +101,11 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
       emit(SnackBarState(message: "동영상을 선택하세요.",titleController: state.titleController));
       return;
     }
+
+    if(state.titleController!.text.trim().isEmpty) {
+      emit(SnackBarState(message: "제목을 입력하세요.",titleController: state.titleController));
+      return;
+    }
     emit(UploadingState(videos: state.videos, videoPlayerController: state.videoPlayerController,titleController: state.titleController));
 
 

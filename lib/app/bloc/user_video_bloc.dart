@@ -42,7 +42,7 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
   }
 
   Future<void> _updateNextControllers(UpdateNextVideoControllers event, Emitter<UserVideoState> emit) async {
-    if(event.currentIndex!+2 == state.video!.length){ // 마지막 동영상으로 갔을때
+    if(event.currentIndex!+2 >= state.video!.length){ // 마지막 동영상으로 갔을때
       emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();

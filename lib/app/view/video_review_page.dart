@@ -45,7 +45,15 @@ class VideoReviewScreen extends StatelessWidget {
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: ()  {
-                context.read<TakeVideoBloc>().add(UploadVideoEvent());
+                if(state.titleController!.text.trim().isEmpty){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("제목을 입력해주세요."),duration:Duration(seconds: 2) ),
+                  );
+                  return ;
+                }else{
+                  context.read<TakeVideoBloc>().add(UploadVideoEvent());
+                }
+
               },
               child: Icon(Icons.file_upload),
             ),

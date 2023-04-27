@@ -27,10 +27,10 @@ class MyPage extends StatelessWidget {
             state.mypage!.id,
             style: TextStyle(color: Colors.black),
           ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          // leading: IconButton(
+          //   icon: Icon(Icons.arrow_back, color: Colors.black),
+          //   onPressed: () =>  context.pop(),
+          // ),
         ),
         body: SingleChildScrollView(
           child: Column(

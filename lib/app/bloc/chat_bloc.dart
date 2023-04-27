@@ -9,7 +9,6 @@ import 'package:eatall/app/model/video_stream.dart';
 import 'package:eatall/app/repository/video_stream_repository.dart';
 import 'package:eatall/main.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
@@ -27,18 +26,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
     on<FirstChangeEvent>((event, emit) {
       emit(FirstChange(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
+      emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
     });
     on<InitialChatEvent>((event, emit) {
       initialLoad();
     });
-    on<ChatChangeEvent>((event, emit) {
+    on<ChatChangeEvent>((event, emit) async {
+      emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
       emit(ChatChange(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
+
     });
     on<LikeChangeEvent>((event, emit) {
+      emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
       emit(LikeChange(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
     });
     on<ChangeRoomEvent>((event, emit) {
       changeRoom(emit, event.removeRoomId, event.newRoomId);
+    });
+
+    on<ResetAnimationEvent>((event, emit) {
+      _resetAnimation(emit,event.roomId);
     });
 
   }
@@ -52,18 +59,26 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     connectWebSocket(temp[1].id);
   }
 
+  void _resetAnimation(Emitter<ChatState> emit ,String roomId) {
+    ChatRoomState chatRoomState = state.chatRoomStates[roomId]!;
+    ChatRoomState updatedChatRoomState = chatRoomState.copyWith(animate: false);
+    emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[roomId] = updatedChatRoomState));
+  }
+
   void connectWebSocket(String roomId)  {
-      //
-      // if (_channels.containsKey(roomId)) {
-      //   _channels[roomId]?.sink.close();
-      //   _channels.remove(roomId);
-      // }
+
+      if (_channels.containsKey(roomId)) {
+        _channels[roomId]?.sink.close();
+        _channels.remove(roomId);
+      }
+
       IOWebSocketChannel channel =
       IOWebSocketChannel.connect('${Address.wsAddr}ws?room_id=$roomId&user_id=${UserID.uid}');
       _channels[roomId] = channel;
 
       if (!state.chatRoomStates.containsKey(roomId)) {
         state.chatRoomStates[roomId] = ChatRoomState.initial();
+        print("-==--=-=-=-=-=-=init ${state.chatRoomStates[roomId]!.totalLike}");
       }
       // await for(final event in _channel!.stream)
       List<Message> messages=[];
@@ -73,9 +88,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ChatRoomState chatRoomState = state.chatRoomStates[roomId]!;
 
         if (socketEvent.eventType == "first_message") {
-          messages.add(socketEvent.message!);
+          print("-==--=-=-=-=-=-=message");
+          messages.addAll(socketEvent.firstMessage!);
           ChatRoomState updatedChatRoomState = chatRoomState.copyWith(messages: messages);
           add(FirstChangeEvent(updatedChatRoomState, roomId));
+          print("-==--=-=-=-=-=-=emitmessage");
         } else if (socketEvent.eventType == "first_like") {
           ChatRoomState updatedChatRoomState;
           if (socketEvent.userId == UserID.uid) {
@@ -94,22 +111,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           List<Message> messages = List<Message>.from(chatRoomState.messages)
             ..add(socketEvent.message!);
 
-          ChatRoomState updatedChatRoomState = chatRoomState.copyWith(messages: messages);
+          ChatRoomState updatedChatRoomState = chatRoomState.copyWith(messages: messages,roomId: roomId,animate: true);
           add(ChatChangeEvent(updatedChatRoomState, roomId));
         } else if (socketEvent.eventType == "total_like") {
-          print("-==--=-=-=-=-=-=");
+          print("-==--=-=-=-=-=-=like");
           ChatRoomState updatedChatRoomState;
           if (socketEvent.userId == UserID.uid) {
-            updatedChatRoomState = chatRoomState.copyWith(
-              totalLike: socketEvent.totalLike,
-              isLike: socketEvent.userLike,
-            );
+            updatedChatRoomState = chatRoomState.copyWith(totalLike: socketEvent.totalLike, isLike: socketEvent.userLike, roomId: roomId, animate: true);
           } else {
-            updatedChatRoomState = chatRoomState.copyWith(
-              totalLike: socketEvent.totalLike,
-            );
+            updatedChatRoomState = chatRoomState.copyWith(totalLike: socketEvent.totalLike, roomId: roomId,animate:true);
           }
           add(LikeChangeEvent(updatedChatRoomState, roomId));
+          print("-==--=-=-=-=-=-=emitlike");
         }
       });
 
@@ -118,8 +131,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   void changeRoom(Emitter<ChatState> emit,String removeRoomId,String newRoomId){
     if(newRoomId=="") {
       disposeWebSocket(removeRoomId);
+      emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[removeRoomId] = ChatRoomState.initial()));
     } else if(removeRoomId=="") {
       connectWebSocket( newRoomId);
+      emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[newRoomId] = ChatRoomState.initial()));
     } else{
       disposeWebSocket(removeRoomId);
       connectWebSocket( newRoomId);
@@ -128,6 +143,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _sendMessage(String roomId, String text, String username) {
+    if(UserID.uid==null) return;
     if (text.isNotEmpty) {
       SocketEvent socketEvent = SocketEvent(
         eventType: "message",
@@ -140,6 +156,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   void _likeOrDislike(String roomId, String userId) {
+    if(UserID.uid==null) return;
     SocketEvent socketEvent = SocketEvent(
       eventType: "like",
       userId: userId,
@@ -245,6 +262,21 @@ class ChangeRoomEvent extends ChatEvent {
   List<Object?> get props => [newRoomId,removeRoomId];
 }
 
+class ChangeBridgeEvent extends ChatEvent {
+  ChangeBridgeEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ResetAnimationEvent extends ChatEvent {
+  final String roomId;
+
+  ResetAnimationEvent(this.roomId);
+
+  @override
+  List<Object?> get props => [roomId];
+}
 
 abstract class ChatState extends Equatable {
   final Map<String, ChatRoomState> chatRoomStates;
@@ -269,6 +301,13 @@ class ChatChange extends ChatState {
 
 class LikeChange extends ChatState {
   LikeChange({required super.chatRoomStates});
+
+  @override
+  List<Object?> get props => [chatRoomStates];
+}
+
+class ChangeBridge extends ChatState {
+  ChangeBridge({required super.chatRoomStates});
 
   @override
   List<Object?> get props => [chatRoomStates];

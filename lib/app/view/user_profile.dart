@@ -26,10 +26,10 @@ class UserProfile extends StatelessWidget {
           video.userInfo.id,
           style: TextStyle(color: Colors.black),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: Colors.black),
+        //   onPressed: () =>context.pop(),
+        // ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -132,8 +132,7 @@ class UserProfile extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
-              height: 400,
+            Container(height: 400,
               child: TabBarView(
                 children: [
                   BlocBuilder<UserProfileBloc, UserProfileState>(
@@ -144,8 +143,7 @@ class UserProfile extends StatelessWidget {
                       );
                     return GridView.builder(
                       itemCount: state.userVideos!.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           mainAxisSpacing: 2, // 이 줄을 추가하세요.

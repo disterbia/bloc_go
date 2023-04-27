@@ -11,12 +11,12 @@ import 'package:eatall/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+
 class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController? _verticalController;
   int _currentIndex = 0;
   BetterPlayerController? controller;
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<VideoStreamBloc, VideoState>(
@@ -39,7 +39,7 @@ class VideoScreenPage extends StatelessWidget {
                 scrollDirection: Axis.vertical,
                 controller: _verticalController,
                 itemCount: videostate.video!.length,
-                onPageChanged: (vNextIndex) async {
+                onPageChanged: (vNextIndex) {
                   // 이전 동영상으로 이동
                   if (vNextIndex < _currentIndex) {
 
@@ -47,12 +47,15 @@ class VideoScreenPage extends StatelessWidget {
                       videostate.nextController!.dispose(forceDispose: true);
                     }
                     context.read<VideoStreamBloc>().add(UpdatePrevVideoControllers(currentIndex: _currentIndex));
+
                     String removeId="";
                     String newId="";
                    if(videos!=null){
                       if (_currentIndex == 1) {
                         removeId = videos[_currentIndex + 1].id;
-                      } else {
+                      } else if(_currentIndex+1 ==  videostate.video!.length){
+                        newId = videos[_currentIndex - 2].id;
+                      }else{
                         removeId = videos[_currentIndex + 1].id;
                         newId = videos[_currentIndex - 2].id;
                       }
@@ -67,12 +70,15 @@ class VideoScreenPage extends StatelessWidget {
                       videostate.prevController!.dispose(forceDispose: true);
                     }
                     context.read<VideoStreamBloc>().add(UpdateNextVideoControllers(currentIndex: _currentIndex));
+
                     String removeId="";
                     String newId="";
                     if(videos!=null){
                       if (_currentIndex == 0) {
                         newId = videos[_currentIndex + 2].id;
-                      } else {
+                      } else if(_currentIndex== videostate.video!.length-2){
+                        removeId = videos[_currentIndex - 1].id;
+                      } else{
                         removeId = videos[_currentIndex - 1].id;
                         newId = videos[_currentIndex + 2].id;
                       }
@@ -83,6 +89,8 @@ class VideoScreenPage extends StatelessWidget {
 
                   // 새로운 인덱스로 업데이트하고 다음 동영상 재생
                   _currentIndex = vNextIndex;
+
+
                 },
                 itemBuilder: (BuildContext context, int vindex) {
                   if (vindex == _currentIndex) {

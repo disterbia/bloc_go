@@ -54,7 +54,7 @@ Widget chatWidget(BuildContext context, String videoId) {
                               hintText: '메시지를 입력하세요.',
                               hintStyle: TextStyle(color: Colors.black),
                             ),
-                            onSubmitted: (text) => context.read<ChatBloc>().add(
+                            onSubmitted: (text) => UserID.uid==null?context.go(MyRoutes.Login):context.read<ChatBloc>().add(
                                 SendMessageEvent(roomId: videoId,text: text, userId: UserID.uid!)),
                           ),
                         ),
