@@ -1,10 +1,10 @@
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
-import 'package:eatall/app/model/video_stream.dart';
-import 'package:eatall/app/view/home_page.dart';
+import 'package:DTalk/app/model/video_stream.dart';
+import 'package:DTalk/app/view/home_page.dart';
 
 import 'package:flutter/material.dart';
-import 'package:eatall/app/repository/video_stream_repository.dart';
+import 'package:DTalk/app/repository/video_stream_repository.dart';
 import 'package:equatable/equatable.dart';
 
 class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
@@ -15,16 +15,20 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
     on<LoadVideoEvent>((event, emit) async => await _loadVideos(emit));
     on<UpdatePrevVideoControllers>((event, emit) async => await _updatePrevControllers(event, emit));
     on<UpdateNextVideoControllers>((event, emit) async => await _updateNextControllers(event, emit));
-    on<PlayAndPauseEvent>((event, emit) async => await _playAndPause(event, emit));
+    on<VideoPlayEvent>((event, emit) async => await _VideoPlay(event, emit));
+    on<VideoPauseEvent>((event, emit) async => await _VideoPause(event, emit));
   }
 
-
-  Future<void> _playAndPause(PlayAndPauseEvent event, Emitter<VideoState> emit) async {
-    if(state.currentController!.isPlaying()!){
+  Future<void> _VideoPause(VideoPauseEvent event, Emitter<VideoState> emit) async {
+    if(state.currentController!.isPlaying()! || state.currentController!.isVideoInitialized()!) {
       await state.currentController!.seekTo(Duration.zero);
       await state.currentController!.pause();
-    }else {
-     await state.currentController!.play();
+    }
+  }
+
+  Future<void> _VideoPlay(VideoPlayEvent event, Emitter<VideoState> emit) async {
+    if(!state.currentController!.isPlaying()!){
+      await state.currentController!.play();
     }
   }
 
@@ -163,12 +167,20 @@ class UpdatePrevVideoControllers extends VideoEvent {
   List<Object?> get props => [currentIndex];
 }
 
-class PlayAndPauseEvent extends VideoEvent {
+class VideoPlayEvent extends VideoEvent {
 
-  PlayAndPauseEvent({super.currentIndex});
+  VideoPlayEvent({super.currentIndex});
 
   @override
   List<Object?> get props => [currentIndex];
+}
+
+class VideoPauseEvent extends VideoEvent {
+
+  VideoPauseEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class UpdateNextVideoControllers extends VideoEvent {

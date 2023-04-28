@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.dmonster.eatall" "\0"
-            VALUE "FileDescription", "eatall" "\0"
+            VALUE "CompanyName", "com.dmonster.DTalk" "\0"
+            VALUE "FileDescription", "DTalk" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "eatall" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.dmonster.eatall. All rights reserved." "\0"
-            VALUE "OriginalFilename", "eatall.exe" "\0"
-            VALUE "ProductName", "eatall" "\0"
+            VALUE "InternalName", "DTalk" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 com.dmonster.DTalk. All rights reserved." "\0"
+            VALUE "OriginalFilename", "DTalk.exe" "\0"
+            VALUE "ProductName", "DTalk" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

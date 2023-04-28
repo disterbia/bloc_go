@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:eatall/app/const/addr.dart';
-import 'package:eatall/app/model/user_video.dart';
-import 'package:eatall/app/model/video_stream.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/model/user_video.dart';
+import 'package:DTalk/app/model/video_stream.dart';
+import 'package:DTalk/main.dart';
 
 class VideoStreamRepository {
   final dio = Dio();

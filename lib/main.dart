@@ -1,20 +1,20 @@
-import 'package:eatall/app/bloc/chat_bloc.dart';
-import 'package:eatall/app/bloc/image_bloc.dart';
-import 'package:eatall/app/bloc/login_bloc.dart';
-import 'package:eatall/app/bloc/mypage_bloc.dart';
-import 'package:eatall/app/bloc/spalsh_bloc.dart';
-import 'package:eatall/app/bloc/take_video_bloc.dart';
-import 'package:eatall/app/bloc/user_profile_bloc.dart';
-import 'package:eatall/app/bloc/user_video_bloc.dart';
-import 'package:eatall/app/bloc/video_stream_bloc.dart';
-import 'package:eatall/app/bloc/video_upload_bloc.dart';
-import 'package:eatall/app/const/addr.dart';
-import 'package:eatall/app/repository/image_repository.dart';
-import 'package:eatall/app/repository/login_repository.dart';
-import 'package:eatall/app/repository/mypage_repository.dart';
-import 'package:eatall/app/repository/video_stream_repository.dart';
-import 'package:eatall/app/repository/video_upload_repository.dart';
-import 'package:eatall/app/router/custom_go_router.dart';
+import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/image_bloc.dart';
+import 'package:DTalk/app/bloc/login_bloc.dart';
+import 'package:DTalk/app/bloc/mypage_bloc.dart';
+import 'package:DTalk/app/bloc/spalsh_bloc.dart';
+import 'package:DTalk/app/bloc/take_video_bloc.dart';
+import 'package:DTalk/app/bloc/user_profile_bloc.dart';
+import 'package:DTalk/app/bloc/user_video_bloc.dart';
+import 'package:DTalk/app/bloc/video_stream_bloc.dart';
+import 'package:DTalk/app/bloc/video_upload_bloc.dart';
+import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/repository/image_repository.dart';
+import 'package:DTalk/app/repository/login_repository.dart';
+import 'package:DTalk/app/repository/mypage_repository.dart';
+import 'package:DTalk/app/repository/video_stream_repository.dart';
+import 'package:DTalk/app/repository/video_upload_repository.dart';
+import 'package:DTalk/app/router/custom_go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,9 +57,11 @@ class MyApp extends StatelessWidget {
     ],
       child: MaterialApp.router(debugShowCheckedModeBanner: false,
         routerConfig: MyPages.router,
+
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          backgroundColor: Colors.black,
+          appBarTheme: AppBarTheme(backgroundColor: Colors.black)
         ),
       ),
     );

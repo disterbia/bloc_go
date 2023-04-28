@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:eatall/app/const/addr.dart';
-import 'package:eatall/app/model/chat_room_state.dart';
-import 'package:eatall/app/model/message.dart';
-import 'package:eatall/app/model/socket_event.dart';
-import 'package:eatall/app/model/video_stream.dart';
-import 'package:eatall/app/repository/video_stream_repository.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/model/chat_room_state.dart';
+import 'package:DTalk/app/model/message.dart';
+import 'package:DTalk/app/model/socket_event.dart';
+import 'package:DTalk/app/model/user_video.dart';
+import 'package:DTalk/app/model/video_stream.dart';
+import 'package:DTalk/app/repository/video_stream_repository.dart';
+import 'package:DTalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -28,8 +29,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(FirstChange(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
       emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
     });
-    on<InitialChatEvent>((event, emit) {
-      initialLoad();
+    on<InitialChatEvent>((event, emit) async {
+      await initialLoad();
+    });
+
+    on<InitialUserChatEvent>((event, emit) {
+      initialUserChatLoad(event.userId,event.currentIndex);
     });
     on<ChatChangeEvent>((event, emit) async {
       emit(ChangeBridge(chatRoomStates: state.chatRoomStates..[event.roomId] = event.chatRoomState));
@@ -57,6 +62,36 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
     connectWebSocket(temp[0].id);
     connectWebSocket(temp[1].id);
+  }
+
+  Future<void> initialUserChatLoad(String userId,int curentIndex) async{
+    List<UserVideo> temp = await repository.fetchUserVideosFromServer(userId);
+    if (temp.isEmpty) {
+      return;
+    }
+    if(temp.length==1 ){ //동영상갯수가 1개일때
+      connectWebSocket(temp[curentIndex].id);
+    }else if(temp.length==2){ //동영상갯수가 2개일때
+      if(curentIndex ==0) {
+        connectWebSocket(temp[curentIndex].id);
+        connectWebSocket(temp[curentIndex+1].id);
+      }else {
+        connectWebSocket(temp[curentIndex-1].id);
+        connectWebSocket(temp[curentIndex].id);
+      }
+    }else{ //동영상갯수가 3개이상 일때
+      if(curentIndex==0){ // 처음 동영상으로 들어왔을때
+        connectWebSocket(temp[curentIndex].id);
+        connectWebSocket(temp[curentIndex+1].id);
+      }else if(curentIndex==temp.length-1){ //마지막 동영상으로 들어왔을때
+        connectWebSocket(temp[curentIndex-1].id);
+        connectWebSocket(temp[curentIndex].id);
+      }else{
+        connectWebSocket(temp[curentIndex-1].id);
+        connectWebSocket(temp[curentIndex].id);
+        connectWebSocket(temp[curentIndex+1].id);
+      }
+    }
   }
 
   void _resetAnimation(Emitter<ChatState> emit ,String roomId) {
@@ -109,7 +144,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         }
         else if (socketEvent.eventType == "message") {
           List<Message> messages = List<Message>.from(chatRoomState.messages)
-            ..add(socketEvent.message!);
+            ..insert(0,socketEvent.message!);
 
           ChatRoomState updatedChatRoomState = chatRoomState.copyWith(messages: messages,roomId: roomId,animate: true);
           add(ChatChangeEvent(updatedChatRoomState, roomId));
@@ -214,6 +249,15 @@ class InitialChatEvent extends ChatEvent {
 
   @override
   List<Object?> get props => [];
+}
+
+class InitialUserChatEvent extends ChatEvent {
+  final String userId;
+  final int currentIndex;
+  InitialUserChatEvent(this.userId,this.currentIndex);
+
+  @override
+  List<Object?> get props => [userId,currentIndex];
 }
 
 

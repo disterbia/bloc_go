@@ -5,9 +5,9 @@ import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
-import 'package:eatall/app/repository/video_upload_repository.dart';
-import 'package:eatall/app/view/home_page.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/repository/video_upload_repository.dart';
+import 'package:DTalk/app/view/home_page.dart';
+import 'package:DTalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,7 +26,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
     on<StartVideoRecording>(
         (event, emit) async => await _startVideoRecording());
     on<StopVideoRecording>((event, emit) async => await _stopVideoRecording());
-    on<UploadVideoEvent>((event, emit) async => await _uploadVideo());
+    on<UploadVideoEvent>((event, emit) async => await _uploadVideo(emit));
   }
 
   @override
@@ -46,7 +46,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
     }
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
-      _controller = CameraController(_cameras![0], ResolutionPreset.high);
+      _controller = CameraController(_cameras![1], ResolutionPreset.high);
       await _controller!.initialize();
       emit(InitialState(
           isRecording: false, controller: _controller, cameras: _cameras));
@@ -84,6 +84,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
           cameras: state.cameras,
           controller: state.controller,
           isRecording: false));
+
       _createVideoThumbnail();
     }
   }
@@ -136,7 +137,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
     controller: state.controller));
   }
 
-  Future<void> _uploadVideo() async {
+  Future<void> _uploadVideo(Emitter<TakeVideoState> emit) async {
 
     try {
       // Metadata
@@ -160,17 +161,53 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
         ),
       });
       // Send request
+      emit(VideoLoadingState(   titleController: state.titleController,
+          videoThumbnailPath: state.videoThumbnailPath,
+          betterPlayerController: state.betterPlayerController,
+          isRecording: false,
+          videoPath: state.videoPath,
+          cameras: state.cameras,
+          controller: state.controller));
+
       Response response = await repository.upload(formData);
+
+
 
       // Handle response
       if (response.statusCode == 200) {
+
+        emit(VideoUpladCompleteState(   titleController: state.titleController,
+            videoThumbnailPath: state.videoThumbnailPath,
+            betterPlayerController: state.betterPlayerController,
+            isRecording: false,
+            videoPath: state.videoPath,
+            cameras: state.cameras,
+            controller: state.controller,
+            message: "업로드 완료!"));
+
         List<dynamic> responseData = response.data;
         print(
             'Video uploaded successfully. Download URL: ${responseData[0]['url']}');
       } else {
+        emit(VideoUpladCompleteState(   titleController: state.titleController,
+            videoThumbnailPath: state.videoThumbnailPath,
+            betterPlayerController: state.betterPlayerController,
+            isRecording: false,
+            videoPath: state.videoPath,
+            cameras: state.cameras,
+            controller: state.controller,
+            message: "서버 문제로 업로드 실패"));
         print('Error uploading video. Status code: ${response.statusCode}');
       }
     } catch (e) {
+      emit(VideoUpladCompleteState(   titleController: state.titleController,
+          videoThumbnailPath: state.videoThumbnailPath,
+          betterPlayerController: state.betterPlayerController,
+          isRecording: false,
+          videoPath: state.videoPath,
+          cameras: state.cameras,
+          controller: state.controller,
+      message: "네트워크 문제로 업로드 실패"));
       print('Error: $e');
     }
   }
@@ -207,6 +244,7 @@ abstract class TakeVideoState extends Equatable {
   final String? videoThumbnailPath;
   final TextEditingController? titleController;
   final BetterPlayerController? betterPlayerController;
+  final String? message;
 
   TakeVideoState(
       {this.cameras,
@@ -215,7 +253,8 @@ abstract class TakeVideoState extends Equatable {
       this.videoPath,
       this.titleController,
       this.betterPlayerController,
-      this.videoThumbnailPath});
+      this.videoThumbnailPath,
+      this. message});
 }
 
 class InitialState extends TakeVideoState {
@@ -234,6 +273,34 @@ class VideoState extends TakeVideoState {
   List<Object?> get props => [controller, videoPath, isRecording, cameras];
 }
 
+class VideoLoadingState extends TakeVideoState {
+  VideoLoadingState(      {super.titleController,
+    super.betterPlayerController,
+    super.videoThumbnailPath,
+    super.isRecording,
+    super.videoPath,
+    super.cameras,
+    super.controller,
+  super.message});
+
+  @override
+  List<Object?> get props => [titleController, betterPlayerController, videoThumbnailPath, isRecording, videoPath, cameras, controller,message];
+}
+
+class VideoUpladCompleteState extends TakeVideoState {
+  VideoUpladCompleteState(      {super.titleController,
+    super.betterPlayerController,
+    super.videoThumbnailPath,
+    super.isRecording,
+    super.videoPath,
+    super.cameras,
+    super.controller,
+  super.message});
+
+  @override
+  List<Object?> get props => [titleController, betterPlayerController, videoThumbnailPath, isRecording, videoPath, cameras, controller,message];
+}
+
 class VideoReviewState extends TakeVideoState {
   VideoReviewState(
       {super.titleController,
@@ -242,16 +309,10 @@ class VideoReviewState extends TakeVideoState {
       super.isRecording,
       super.videoPath,
       super.cameras,
-      super.controller});
+      super.controller,});
 
   @override
-  List<Object?> get props => [
-        titleController,
-        betterPlayerController,
-        videoThumbnailPath,
-        isRecording,
-        videoPath,
-    cameras,
-    controller
-      ];
+  List<Object?> get props => [titleController, betterPlayerController, videoThumbnailPath, isRecording, videoPath, cameras, controller];
 }
+
+

@@ -1,9 +1,9 @@
 
-import 'package:eatall/app/bloc/chat_bloc.dart';
-import 'package:eatall/app/model/video_stream.dart';
-import 'package:eatall/app/router/custom_go_router.dart';
-import 'package:eatall/app/widget/chat_widget.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/model/video_stream.dart';
+import 'package:DTalk/app/router/custom_go_router.dart';
+import 'package:DTalk/app/widget/chat_widget.dart';
+import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

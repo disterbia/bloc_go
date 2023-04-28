@@ -1,9 +1,9 @@
 
-import 'package:eatall/app/model/my_page.dart';
-import 'package:eatall/app/model/user_info.dart';
-import 'package:eatall/app/model/user_video.dart';
-import 'package:eatall/app/repository/mypage_repository.dart';
-import 'package:eatall/app/repository/video_stream_repository.dart';
+import 'package:DTalk/app/model/my_page.dart';
+import 'package:DTalk/app/model/user_info.dart';
+import 'package:DTalk/app/model/user_video.dart';
+import 'package:DTalk/app/repository/mypage_repository.dart';
+import 'package:DTalk/app/repository/video_stream_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

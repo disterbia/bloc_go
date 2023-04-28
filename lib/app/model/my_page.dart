@@ -1,5 +1,5 @@
 
-import 'package:eatall/app/model/user_video.dart';
+import 'package:DTalk/app/model/user_video.dart';
 
 class MyPage {
   final String id;

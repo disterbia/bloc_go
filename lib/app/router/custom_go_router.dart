@@ -1,12 +1,12 @@
 
-import 'package:eatall/app/view/home_page.dart';
-import 'package:eatall/app/view/login_page.dart';
-import 'package:eatall/app/view/take_video_page.dart';
-import 'package:eatall/app/view/upload_page.dart';
-import 'package:eatall/app/view/user_video_page.dart';
-import 'package:eatall/app/view/video_review_page.dart';
-import 'package:eatall/app/view/video_upload.dart';
-import 'package:eatall/app/view/videostream.dart';
+import 'package:DTalk/app/view/home_page.dart';
+import 'package:DTalk/app/view/login_page.dart';
+import 'package:DTalk/app/view/take_video_page.dart';
+import 'package:DTalk/app/view/upload_page.dart';
+import 'package:DTalk/app/view/user_video_page.dart';
+import 'package:DTalk/app/view/video_review_page.dart';
+import 'package:DTalk/app/view/video_upload.dart';
+import 'package:DTalk/app/view/videostream.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:go_router/go_router.dart';

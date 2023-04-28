@@ -1,6 +1,6 @@
-# eatall
+# DTalk
 
-eatall
+DTalk
 
 ## Getting Started
 

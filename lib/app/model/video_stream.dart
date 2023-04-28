@@ -1,4 +1,4 @@
-import 'package:eatall/app/model/user_info.dart';
+import 'package:DTalk/app/model/user_info.dart';
 
 class VideoStream {
   final String id;

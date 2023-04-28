@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dmonster.eatall.eatall">
+    package="com.dmonster.DTalk.DTalk">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="eatall"
+        android:label="DTalk"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"

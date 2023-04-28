@@ -1,12 +1,12 @@
 // import 'package:better_player/better_player.dart';
-// import 'package:eatall/app/bloc/chat_bloc.dart';
-// import 'package:eatall/app/bloc/user_profile_bloc.dart';
-// import 'package:eatall/app/bloc/video_stream_bloc.dart';
-// import 'package:eatall/app/model/video_stream.dart';
-// import 'package:eatall/app/view/four_page.dart';
-// import 'package:eatall/app/view/user_profile.dart';
-// import 'package:eatall/app/widget/chat_widget.dart';
-// import 'package:eatall/main.dart';
+// import 'package:DTalk/app/bloc/chat_bloc.dart';
+// import 'package:DTalk/app/bloc/user_profile_bloc.dart';
+// import 'package:DTalk/app/bloc/video_stream_bloc.dart';
+// import 'package:DTalk/app/model/video_stream.dart';
+// import 'package:DTalk/app/view/four_page.dart';
+// import 'package:DTalk/app/view/user_profile.dart';
+// import 'package:DTalk/app/widget/chat_widget.dart';
+// import 'package:DTalk/main.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 //

@@ -1,13 +1,13 @@
 import 'package:better_player/better_player.dart';
-import 'package:eatall/app/bloc/chat_bloc.dart';
-import 'package:eatall/app/bloc/user_profile_bloc.dart';
-import 'package:eatall/app/bloc/video_stream_bloc.dart';
-import 'package:eatall/app/model/video_stream.dart';
-import 'package:eatall/app/view/chat_socket.dart';
-import 'package:eatall/app/view/four_page.dart';
-import 'package:eatall/app/view/user_profile.dart';
-import 'package:eatall/app/widget/chat_widget.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/user_profile_bloc.dart';
+import 'package:DTalk/app/bloc/video_stream_bloc.dart';
+import 'package:DTalk/app/model/video_stream.dart';
+import 'package:DTalk/app/view/chat_socket.dart';
+import 'package:DTalk/app/view/four_page.dart';
+import 'package:DTalk/app/view/user_profile.dart';
+import 'package:DTalk/app/widget/chat_widget.dart';
+import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +24,9 @@ class VideoScreenPage extends StatelessWidget {
         List<VideoStream>? videos = videostate.video;
         return PageView.builder(
           onPageChanged: (hNextIndex) async {
-            context.read<VideoStreamBloc>().add(PlayAndPauseEvent());
+            if(hNextIndex==1)
+            context.read<VideoStreamBloc>().add(VideoPlayEvent());
+            else  context.read<VideoStreamBloc>().add(VideoPauseEvent());
           },
           controller: _horizontalController,
           scrollDirection: Axis.horizontal,
@@ -143,10 +145,24 @@ class VideoScreenPage extends StatelessWidget {
                   creators: [
                     Creator(
                       name: 'Creator 1',
-                      imageUrl: 'https://example.com/image1.jpg',
-                      videoUrl: 'https://example.com/video1.jpg',
+                      imageUrl: 'https://storage.googleapis.com/oauthtest-8d82e.appspot.com/thumbnails/1d331e32-e3c6-4b34-88be-593221b8aa6d-thumbnail.webp',
+                      videoUrl: 'https://storage.googleapis.com/oauthtest-8d82e.appspot.com/thumbnails/3b5c4116-941e-4a31-8398-b358f34effab-thumbnail.webp',
                       followers: 1000,
-                      following: 50,
+                      following: 22,
+                    ),
+                    Creator(
+                      name: 'Creator 2',
+                      imageUrl: 'https://storage.googleapis.com/oauthtest-8d82e.appspot.com/thumbnails/473c10d3-a5ee-4f10-b268-b3740b45332b-thumbnail.webp',
+                      videoUrl: 'https://storage.googleapis.com/oauthtest-8d82e.appspot.com/thumbnails/5e14a13f-91f7-4563-9749-29edafeb3ad1-thumbnail.webp',
+                      followers: 200,
+                      following: 13,
+                    ),
+                    Creator(
+                      name: 'Creator 3',
+                      imageUrl: 'https://storage.googleapis.com/oauthtest-8d82e.appspot.com/thumbnails/7c9169c4-7ae7-427b-ae84-9976e0f20dcf-thumbnail.webp',
+                      videoUrl: 'https://storage.googleapis.com/oauthtest-8d82e.appspot.com/thumbnails/82c6819c-8906-4a43-b244-a47fbcc98282-thumbnail.webp',
+                      followers: 400,
+                      following: 66,
                     ),
                     // Add more creators if needed.
                   ],

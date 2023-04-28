@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:eatall/app/model/object_data.dart';
-import 'package:eatall/app/repository/image_repository.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/model/object_data.dart';
+import 'package:DTalk/app/repository/image_repository.dart';
+import 'package:DTalk/main.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageBloc extends Bloc<ImageUploadEvent, String> {
@@ -15,8 +15,10 @@ class ImageBloc extends Bloc<ImageUploadEvent, String> {
     on<ImageUploadEvent>((event, emit) async{
       final picker = ImagePicker();
       List<ObjectData> objects = [];
+
         final pickedFiles = await picker.pickMultiImage();
         if (pickedFiles.isNotEmpty) {
+          emit("a");
           final objectData = ObjectData(
               userId: UserID.uid!,
               imageFiles: [],

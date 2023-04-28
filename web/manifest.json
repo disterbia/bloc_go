@@ -1,11 +1,11 @@
 {
-    "name": "eatall",
-    "short_name": "eatall",
+    "name": "DTalk",
+    "short_name": "DTalk",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "eatall",
+    "description": "DTalk",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,11 +1,11 @@
-import 'package:eatall/app/bloc/chat_bloc.dart';
-import 'package:eatall/app/bloc/mypage_bloc.dart';
-import 'package:eatall/app/bloc/take_video_bloc.dart';
-import 'package:eatall/app/bloc/video_stream_bloc.dart';
-import 'package:eatall/app/router/custom_go_router.dart';
-import 'package:eatall/app/view/mypage.dart';
-import 'package:eatall/app/view/videostream.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/mypage_bloc.dart';
+import 'package:DTalk/app/bloc/take_video_bloc.dart';
+import 'package:DTalk/app/bloc/video_stream_bloc.dart';
+import 'package:DTalk/app/router/custom_go_router.dart';
+import 'package:DTalk/app/view/mypage.dart';
+import 'package:DTalk/app/view/videostream.dart';
+import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   initialization();
   }
 
-  void initialization() async {
+  void initialization()  {
     context.read<VideoStreamBloc>().add(LoadVideoEvent());
     context.read<ChatBloc>().add(InitialChatEvent());
     Future.delayed(Duration(seconds: 2),()=>FlutterNativeSplash.remove());
@@ -55,17 +55,19 @@ class _HomePageState extends State<HomePage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: SafeArea(
-        child: Scaffold(
+        child: Scaffold(backgroundColor: Colors.black,
           body: _widgetOptions.elementAt(_selectedIndex),
-          bottomNavigationBar: BottomNavigationBar(
+          bottomNavigationBar: BottomNavigationBar(backgroundColor: Colors.black,
             currentIndex: _selectedIndex,
             onTap: (int index) {
               if(index==0){
+                context.read<VideoStreamBloc>().add(VideoPlayEvent());
                 setState(() {
                   _selectedIndex = index;
                 });
               }
               else if(index==1){
+                context.read<VideoStreamBloc>().add(VideoPauseEvent());
                 if(UserID.uid==null){
                   context.push(MyRoutes.Login);
                 }else{
@@ -75,6 +77,7 @@ class _HomePageState extends State<HomePage> {
 
               }
               else if(index==2){
+                context.read<VideoStreamBloc>().add(VideoPauseEvent());
                 if(UserID.uid==null){
                   context.push(MyRoutes.Login);
                 }else{
@@ -100,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                 label: 'Profile',
               ),
             ],
-            selectedItemColor: Colors.black,
+            selectedItemColor: Colors.white,
             unselectedItemColor: Colors.grey,
           ),
         ),

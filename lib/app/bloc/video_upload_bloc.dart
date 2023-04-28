@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
-import 'package:eatall/app/model/video_object.dart';
-import 'package:eatall/app/repository/video_upload_repository.dart';
-import 'package:eatall/app/view/home_page.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/model/video_object.dart';
+import 'package:DTalk/app/repository/video_upload_repository.dart';
+import 'package:DTalk/app/view/home_page.dart';
+import 'package:DTalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,8 +37,16 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
     on<ResetSnackBarEvent>((event, emit) {
       if (state is SnackBarState) {
-        emit(VideoState(videoPlayerController: state.videoPlayerController,titleController: state.titleController));
+        emit(VideoState(videoPlayerController: state.videoPlayerController,titleController: state.titleController,videos: state.videos));
       }
+    });
+
+    on<DisposeController>((event, emit) {
+
+        state.videoPlayerController!.dispose(forceDispose: true);
+        state.titleController!.dispose();
+        emit(VideoState(videoPlayerController:null,titleController: null,videos: state.videos));
+
     });
   }
 
@@ -76,7 +84,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
           ));
        controller = BetterPlayerController(betterPlayerConfiguration,betterPlayerDataSource: betterPlayerDataSource,);
 
-      emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: state.titleController));
+      emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: TextEditingController()));
   }
 
   }
@@ -99,11 +107,17 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
   Future<void> _uploadVideos(UploadVideoEvent event,emit) async {
     if (state.videos == null || state.videos!.isEmpty) {
       emit(SnackBarState(message: "동영상을 선택하세요.",titleController: state.titleController));
+      Future.delayed(Duration(seconds: 2), () {
+        add(ResetSnackBarEvent());
+      });
       return;
     }
 
     if(state.titleController!.text.trim().isEmpty) {
-      emit(SnackBarState(message: "제목을 입력하세요.",titleController: state.titleController));
+      emit(SnackBarState(message: "제목을 입력하세요.",titleController: state.titleController,videoPlayerController: state.videoPlayerController,videos: state.videos));
+      Future.delayed(Duration(seconds: 2), () {
+        add(ResetSnackBarEvent());
+      });
       return;
     }
     emit(UploadingState(videos: state.videos, videoPlayerController: state.videoPlayerController,titleController: state.titleController));
@@ -180,6 +194,11 @@ class DisposePlayerControllerEvent extends UploadEvent {
 }
 
 class ResetSnackBarEvent extends UploadEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class DisposeController extends UploadEvent {
   @override
   List<Object?> get props => [];
 }

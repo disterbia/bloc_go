@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:eatall/app/const/addr.dart';
-import 'package:eatall/app/repository/login_repository.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/repository/login_repository.dart';
+import 'package:DTalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -78,7 +78,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             AppleIDAuthorizationScopes.fullName,
           ],
           webAuthenticationOptions: WebAuthenticationOptions(
-            clientId: "eatall.eatall.dmonster.com",
+            clientId: "DTalk.DTalk.dmonster.com",
             redirectUri: Uri.parse(
               "https://flawless-gem-chestnut.glitch.me/callbacks/sign_in_with_apple",
             ),

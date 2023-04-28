@@ -1,6 +1,6 @@
-import 'package:eatall/app/bloc/chat_bloc.dart';
-import 'package:eatall/app/router/custom_go_router.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/router/custom_go_router.dart';
+import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +10,7 @@ ScrollController _listViewController = ScrollController();
 Widget chatWidget(BuildContext context, String videoId) {
   return BlocBuilder<ChatBloc,ChatState>(
     builder: (context,chatstate) {
-      return Scaffold(
+      return Scaffold(resizeToAvoidBottomInset: true,
         body: chatstate.chatRoomStates[videoId]==null
             ? Center(
                 child: CircularProgressIndicator(),
@@ -54,7 +54,7 @@ Widget chatWidget(BuildContext context, String videoId) {
                               hintText: '메시지를 입력하세요.',
                               hintStyle: TextStyle(color: Colors.black),
                             ),
-                            onSubmitted: (text) => UserID.uid==null?context.go(MyRoutes.Login):context.read<ChatBloc>().add(
+                            onSubmitted: (text) => UserID.uid==null?context.push(MyRoutes.Login):context.read<ChatBloc>().add(
                                 SendMessageEvent(roomId: videoId,text: text, userId: UserID.uid!)),
                           ),
                         ),

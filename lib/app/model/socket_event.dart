@@ -1,4 +1,4 @@
-import 'package:eatall/app/model/message.dart';
+import 'package:DTalk/app/model/message.dart';
 
 class SocketEvent {
   final String eventType;

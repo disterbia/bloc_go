@@ -1,18 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:eatall/app/bloc/user_profile_bloc.dart';
-import 'package:eatall/app/bloc/user_video_bloc.dart';
-import 'package:eatall/app/bloc/video_upload_bloc.dart';
-import 'package:eatall/app/model/video_stream.dart';
-import 'package:eatall/app/router/custom_go_router.dart';
-import 'package:eatall/app/view/home_page.dart';
-import 'package:eatall/main.dart';
+import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/user_profile_bloc.dart';
+import 'package:DTalk/app/bloc/user_video_bloc.dart';
+import 'package:DTalk/app/bloc/video_upload_bloc.dart';
+import 'package:DTalk/app/model/video_stream.dart';
+import 'package:DTalk/app/router/custom_go_router.dart';
+import 'package:DTalk/app/view/home_page.dart';
+import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class UserProfile extends StatelessWidget {
   VideoStream video;
-
   UserProfile(this.video);
 
   @override
@@ -23,8 +23,8 @@ class UserProfile extends StatelessWidget {
         elevation: 1,
         centerTitle: true,
         title: Text(
-          video.userInfo.id,
-          style: TextStyle(color: Colors.black),
+          video.userInfo.id,overflow: TextOverflow.fade,
+          style: TextStyle(color: Colors.black,),
         ),
         // leading: IconButton(
         //   icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -39,9 +39,9 @@ class UserProfile extends StatelessWidget {
             SizedBox(height: 16),
             _buildProfileStats(),
             SizedBox(height: 16),
-            _buildProfileBio(),
+            _buildProfileBio(context),
             SizedBox(height: 16),
-            _buildProfileTabs(),
+            _buildProfileTabs(context),
           ],
         ),
       ),
@@ -51,7 +51,13 @@ class UserProfile extends StatelessWidget {
   Widget _buildProfileHeader() {
     return Column(
       children: [
+        video.userInfo.image==""?CircleAvatar(
+          backgroundImage: AssetImage("assets/logo.png"),
+          backgroundColor: Colors.black,
+          radius: 50,
+        ):
         CircleAvatar(
+          backgroundImage: NetworkImage(video.userInfo.image),
           radius: 50,
         ),
         SizedBox(height: 8),
@@ -88,89 +94,56 @@ class UserProfile extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileBio() {
+  Widget _buildProfileBio(BuildContext context) {
     return video.userInfo.id == UserID.uid
-        ? BlocConsumer<VideoUploadBloc, UploadState>(
-            listener: (context, state) {
-            if (state.videos != null && state.videoPlayerController != null)
-              context.push(MyRoutes.VIDEOUPLOAD);
-          }, builder: (context, state) {
-            return ElevatedButton(
+        ? ElevatedButton(
                 onPressed: () async {
+                  context.push(MyRoutes.VIDEOUPLOAD);
                   context.read<VideoUploadBloc>().add(PickVideoEvent());
                   print("-=-=-=-=-=-=");
                 },
-                child: Text("동영상 업로드"));
-          })
+                child: Text("동영상 업로드"))
         : Container(
           child: ElevatedButton(
-              onPressed: () async {
-                print("-=-=-=-=-=-=");
-              },
-              child: Text("팔로우")),
+              onPressed: null,
+              child: Text("팔로우(아직)")),
         );
     ;
   }
 
-  Widget _buildProfileTabs() {
-    return DefaultTabController(
-        length: 2,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                    top: BorderSide(color: Colors.grey.shade300, width: 1)),
-              ),
-              child: TabBar(
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                tabs: [
-                  Tab(icon: Icon(Icons.grid_on_outlined)),
-                  Tab(icon: Icon(Icons.favorite_border_outlined)),
-                ],
-              ),
-            ),
-            Container(height: 400,
-              child: TabBarView(
-                children: [
-                  BlocBuilder<UserProfileBloc, UserProfileState>(
-                      builder: (context, state) {
-                    if (state is UserProfileLoadingState)
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    return GridView.builder(
-                      itemCount: state.userVideos!.length,
-
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 2, // 이 줄을 추가하세요.
-                          crossAxisSpacing: 2, // 이 줄을 추가하세요.
-                          childAspectRatio:
-                              VideoAspectRatio.aspectRatio! * 1.5),
-                      itemBuilder: (BuildContext context, int index) {
-                        return InkWell(
-                          onTap: () {
-                            context.read<UserVideoBloc>().add(LoadVideoEvent(
-                                currentIndex: index,
-                                userVideo: state.userVideos));
-                            context.push(MyRoutes.USERVIDEO, extra: index);
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl: state.userVideos![index].thumbnail,
-                            fit: BoxFit.fill,
-                          ),
-                        );
-                      },
-                    );
-                  }),
-                  Center(child: Text('Your liked videos')),
-                ],
-              ),
-            ),
-          ],
-        ));
+  Widget _buildProfileTabs(BuildContext context) {
+    return    BlocBuilder<UserProfileBloc, UserProfileState>(
+        builder: (context, state) {
+          if (state is UserProfileLoadingState)
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          return GridView.builder(
+            itemCount: state.userVideos!.length,
+             physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 2, // 이 줄을 추가하세요.
+                crossAxisSpacing: 2, // 이 줄을 추가하세요.
+                childAspectRatio:
+                VideoAspectRatio.aspectRatio! * 1.5),
+            itemBuilder: (BuildContext context, int index) {
+              return InkWell(
+                onTap: () {
+                  context.read<UserVideoBloc>().add(LoadVideoEvent(
+                      currentIndex: index,
+                      userVideo: state.userVideos));
+                  context.read<ChatBloc>().add(InitialUserChatEvent(video.userInfo.id,index));
+                  context.push(MyRoutes.USERVIDEO, extra: index);
+                },
+                child: CachedNetworkImage(
+                  imageUrl: state.userVideos![index].thumbnail,
+                  fit: BoxFit.fill,
+                ),
+              );
+            },
+          );
+        });
   }
 }

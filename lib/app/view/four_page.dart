@@ -1,3 +1,4 @@
+import 'package:DTalk/app/view/home_page.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -24,9 +25,9 @@ class FollowingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Following'),
+        title: const Text('Following'),backgroundColor: Colors.black,
       ),
       body: Center(
         child: CarouselSlider.builder(
@@ -76,7 +77,7 @@ class FollowingPage extends StatelessWidget {
                         style: TextStyle(color: Colors.white),
                       ),
                       Text(
-                        'Following: ${creator.following}',
+                        'good: ${creator.following}',
                         style: TextStyle(color: Colors.white),
                       ),
                     ],
@@ -89,7 +90,7 @@ class FollowingPage extends StatelessWidget {
             autoPlay: false,
             enlargeCenterPage: true,
             aspectRatio: 1,
-            viewportFraction: 0.9,
+            viewportFraction: 0.8,
           ),
         ),
       ),

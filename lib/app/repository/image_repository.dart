@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:eatall/app/const/addr.dart';
-import 'package:eatall/app/model/object_data.dart';
+import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/model/object_data.dart';
 
 class ImageRepository {
   final dio = Dio();

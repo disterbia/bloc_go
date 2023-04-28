@@ -1,10 +1,8 @@
-import 'dart:typed_data';
 
-import 'package:eatall/app/model/user_video.dart';
-import 'package:eatall/app/repository/video_stream_repository.dart';
+import 'package:DTalk/app/model/user_video.dart';
+import 'package:DTalk/app/repository/video_stream_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 
 class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {

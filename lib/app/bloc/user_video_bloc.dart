@@ -1,7 +1,7 @@
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
-import 'package:eatall/app/model/user_video.dart';
-import 'package:eatall/app/view/home_page.dart';
+import 'package:DTalk/app/model/user_video.dart';
+import 'package:DTalk/app/view/home_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';

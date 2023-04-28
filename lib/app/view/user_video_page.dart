@@ -1,9 +1,9 @@
 import 'package:better_player/better_player.dart';
-import 'package:eatall/app/bloc/chat_bloc.dart';
-import 'package:eatall/app/bloc/user_video_bloc.dart';
-import 'package:eatall/app/model/user_video.dart';
-import 'package:eatall/app/view/chat_socket.dart';
-import 'package:eatall/app/view/user_video_chat_socket.dart';
+import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/user_video_bloc.dart';
+import 'package:DTalk/app/model/user_video.dart';
+import 'package:DTalk/app/view/chat_socket.dart';
+import 'package:DTalk/app/view/user_video_chat_socket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -70,7 +70,7 @@ class UserVideoPage extends StatelessWidget {
                     if (videostate.prevController != null) {
                       videostate.prevController!.dispose(forceDispose: true);
                     }
-                    context.read<UserVideoBloc>().add(UpdateNextVideoControllers(currentIndex: _currentIndex));
+                   context.read<UserVideoBloc>().add(UpdateNextVideoControllers(currentIndex: _currentIndex));
                     String removeId="";
                     String newId="";
                     if(videos!=null){
@@ -98,8 +98,6 @@ class UserVideoPage extends StatelessWidget {
                   } else if (vindex == _currentIndex + 1) {
                     controller = videostate.nextController;
                   }
-                  return BlocBuilder<ChatBloc,ChatState>(
-                    builder: (context,chatstate) {
                       return Stack(
                         children: [
                           videostate.currentController != null
@@ -111,7 +109,8 @@ class UserVideoPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(videos![vindex].title),
+                                Text(videos![vindex].id),
+                                Text(videos[vindex].title),
                                 Text(videos[vindex].uploader),
                               ],
                             ),
@@ -119,8 +118,8 @@ class UserVideoPage extends StatelessWidget {
                           UserVideoChatSocket(video: videos[vindex])
                         ],
                       );
-                    }
-                  );
+
+
                 },
               ),
             );
