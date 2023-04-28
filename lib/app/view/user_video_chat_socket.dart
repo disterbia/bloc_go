@@ -214,7 +214,7 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
                       ),
                     ),
                     SizedBox(height: 5,),
-                    Text(((chatState.chatRoomStates[widget.video!.id]?.messages==null?[]:chatState.chatRoomStates[widget.video!.id]!.messages).isNotEmpty?chatState.chatRoomStates[widget.video!.id]!.messages.last.totalCount:0).toString()),
+                    Text(((chatState.chatRoomStates[widget.video!.id]?.messages==null?[]:chatState.chatRoomStates[widget.video!.id]!.messages).isNotEmpty?chatState.chatRoomStates[widget.video!.id]!.messages.first.totalCount:0).toString()),
                   ],
                 ),
               ),
