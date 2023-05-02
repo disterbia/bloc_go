@@ -138,7 +138,8 @@ class VideoScreenPage extends StatelessWidget {
             } else {
               if (hIndex == 2) {
                 context.read<UserProfileBloc>().add(GetUserProfileVideosEvent(
-                    userId: videos![_currentIndex].userInfo.id));
+                    userId: UserID.uid??"",
+                    creator: videos![_currentIndex].userInfo.id));
                 return UserProfile(videos[_currentIndex]);
               } else
                 return FollowingPage(

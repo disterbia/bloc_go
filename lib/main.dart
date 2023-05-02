@@ -1,4 +1,5 @@
 import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/follow_bloc.dart';
 import 'package:DTalk/app/bloc/image_bloc.dart';
 import 'package:DTalk/app/bloc/login_bloc.dart';
 import 'package:DTalk/app/bloc/mypage_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:DTalk/app/bloc/user_video_bloc.dart';
 import 'package:DTalk/app/bloc/video_stream_bloc.dart';
 import 'package:DTalk/app/bloc/video_upload_bloc.dart';
 import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/repository/follow_repository.dart';
 import 'package:DTalk/app/repository/image_repository.dart';
 import 'package:DTalk/app/repository/login_repository.dart';
 import 'package:DTalk/app/repository/mypage_repository.dart';
@@ -54,11 +56,12 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => UserProfileBloc(videoRepository: VideoStreamRepository())),
       BlocProvider(create: (context) => MyPageBloc(myPageRepository: MyPageRepository())),
       BlocProvider(create: (context) => UserVideoBloc()),
+      BlocProvider(create: (context) => FollowBloc(FollowRepository())),
     ],
       child: MaterialApp.router(debugShowCheckedModeBanner: false,
         routerConfig: MyPages.router,
 
-        title: 'Flutter Demo',
+        title: 'DTalk',
         theme: ThemeData(
           backgroundColor: Colors.black,
           appBarTheme: AppBarTheme(backgroundColor: Colors.black)

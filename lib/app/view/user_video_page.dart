@@ -53,17 +53,21 @@ class UserVideoPage extends StatelessWidget {
                     String removeId="";
                     String newId="";
                     if(videos!=null){
-                      if (_currentIndex == 1) {
-                        removeId = videos[_currentIndex + 1].id;
-                      } else if(_currentIndex+1 ==  videostate.video!.length){
-                        newId = videos[_currentIndex - 2].id;
-                      }else{
-                        removeId = videos[_currentIndex + 1].id;
-                        newId = videos[_currentIndex - 2].id;
+                      if(videos.length>2){
+                        if (_currentIndex == 1) {
+                          removeId = videos[_currentIndex + 1].id;
+                        } else if(_currentIndex+1 ==  videostate.video!.length){
+                          newId = videos[_currentIndex - 2].id;
+                        }else{
+                          removeId = videos[_currentIndex + 1].id;
+                          newId = videos[_currentIndex - 2].id;
+                        }
+                        context.read<ChatBloc>().add(ChangeRoomEvent(newRoomId: newId, removeRoomId: removeId));
                       }
+
                     }
 
-                    context.read<ChatBloc>().add(ChangeRoomEvent(newRoomId: newId, removeRoomId: removeId));
+
                   }
                   // 다음 동영상으로 이동
                   else {
@@ -74,17 +78,21 @@ class UserVideoPage extends StatelessWidget {
                     String removeId="";
                     String newId="";
                     if(videos!=null){
-                      if (_currentIndex == 0) {
-                        newId = videos[_currentIndex + 2].id;
-                      } else if(_currentIndex== videostate.video!.length-2){
-                        removeId = videos[_currentIndex - 1].id;
-                      } else{
-                        removeId = videos[_currentIndex - 1].id;
-                        newId = videos[_currentIndex + 2].id;
+                      if(videos.length>2){
+                        if (_currentIndex == 0) {
+                          newId = videos[_currentIndex + 2].id;
+                        } else if(_currentIndex== videostate.video!.length-2){
+                          removeId = videos[_currentIndex - 1].id;
+                        } else{
+                          removeId = videos[_currentIndex - 1].id;
+                          newId = videos[_currentIndex + 2].id;
+                        }
+                        context.read<ChatBloc>().add(ChangeRoomEvent(newRoomId: newId, removeRoomId: removeId));
                       }
+
                     }
 
-                    context.read<ChatBloc>().add(ChangeRoomEvent(newRoomId: newId, removeRoomId: removeId));
+
                   }
 
                   // 새로운 인덱스로 업데이트하고 다음 동영상 재생

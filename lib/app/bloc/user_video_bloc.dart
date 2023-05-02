@@ -82,6 +82,7 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
         nextController=null;
       }
 
+
       videos=temp;
       emit(VideoLoaded(prevController: prevController, currentController: currentController, nextController: nextController, video: videos));
       await state.currentController!.play();

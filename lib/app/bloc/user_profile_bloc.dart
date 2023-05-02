@@ -18,7 +18,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     emit(UserProfileLoadingState( []));
     try {
       List<UserVideo> userVideos =
-      await videoRepository.fetchUserVideosFromServer(event.userId);
+      await videoRepository.fetchUserVideosFromServer(event.creator);
       emit(UserProfileLoadedState( userVideos));
     } catch (error) {
       print(error);
@@ -58,9 +58,10 @@ abstract class UserProfileEvent extends Equatable {}
 
 class GetUserProfileVideosEvent extends UserProfileEvent {
   final String userId;
+  final String creator;
 
-  GetUserProfileVideosEvent({required this.userId});
+  GetUserProfileVideosEvent({required this.userId,required this.creator});
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [userId,creator];
 }

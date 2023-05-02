@@ -15,6 +15,7 @@ class UserVideo {
     required this.url,
     required this.uploadTime,
     required this.thumbnail,
+
   });
 
   factory UserVideo.fromJson(Map<String, dynamic> json) {

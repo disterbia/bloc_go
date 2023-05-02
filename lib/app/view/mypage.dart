@@ -1,3 +1,4 @@
+import 'package:DTalk/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:DTalk/app/bloc/chat_bloc.dart';
 import 'package:DTalk/app/bloc/image_bloc.dart';
@@ -6,11 +7,20 @@ import 'package:DTalk/app/bloc/user_video_bloc.dart';
 import 'package:DTalk/app/bloc/video_upload_bloc.dart';
 import 'package:DTalk/app/router/custom_go_router.dart';
 import 'package:DTalk/app/view/home_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class MyPage extends StatelessWidget {
+class MyPage extends StatefulWidget {
+  _MyPageState createState() => _MyPageState();
+}
+class _MyPageState extends State<MyPage> {
+  bool isFirst=true;
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MyPageBloc, MyPageState>(
@@ -90,11 +100,43 @@ class MyPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildStatItem('Following', 123),
-        _buildStatItem('Followers', 456),
-        _buildStatItem('Likes', 789),
+        // 팔로잉 수
+        StreamBuilder<int>(
+          stream: followingCountStream(UserID.uid!),
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+
+            if (snapshot.hasData) {
+              return _buildStatItem('Following',snapshot.data!);
+            } else {
+              return _buildStatItem('Following', 0);
+            }
+          },
+        ),
+
+// 팔로워 수
+        StreamBuilder<int>(
+          stream: followersCountStream(UserID.uid!),
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+            if (snapshot.hasData) {
+              return _buildStatItem('Followers', snapshot.data!);
+            } else {
+              return _buildStatItem('Followers', 0);
+            }
+          },
+        ),
+        StreamBuilder<int>(
+          stream: likesCountStream(UserID.uid!),
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+            if (snapshot.hasData) {
+              return _buildStatItem('Likes',snapshot.data!);
+            } else {
+              return _buildStatItem('Likes', 0);
+            }
+          },
+        ),
       ],
     );
+
   }
 
   Widget _buildStatItem(String label, int value) {
@@ -142,4 +184,40 @@ class MyPage extends StatelessWidget {
       },
     );
   }
+}
+
+Stream<int> followingCountStream(String userId) {
+  return FirebaseFirestore.instance
+      .collection('followings')
+      .doc(userId)
+      .snapshots()
+      .map((snapshot) => (snapshot.data()?['followingIds'] as List<dynamic> ?? []).length);
+}
+
+Stream<int> followersCountStream(String userId) {
+  return FirebaseFirestore.instance
+      .collection('followers')
+      .doc(userId)
+      .snapshots()
+      .map((snapshot) => (snapshot.data()?['followerIds'] as List<dynamic> ?? []).length);
+}
+
+Stream<int> likesCountStream(String userId) {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  // 쿼리를 작성하여 userId가 업로드한 동영상을 찾습니다.
+  final Query<Map<String, dynamic>> query =
+  firestore.collection('videos').where('uploader', isEqualTo: userId);
+
+  // 쿼리 스냅샷을 스트림으로 가져와 각각의 스냅샷에 대해 좋아요 수를 계산하고 반환합니다.
+  return query.snapshots().map((querySnapshot) {
+    int totalLikes = 0;
+
+    for (final doc in querySnapshot.docs) {
+      int likeCount = doc.data()?['like_count'] ?? 0;
+      totalLikes += likeCount;
+    }
+
+    return totalLikes;
+  });
 }
