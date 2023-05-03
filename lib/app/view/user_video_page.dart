@@ -108,7 +108,7 @@ class UserVideoPage extends StatelessWidget {
                   }
                       return Stack(
                         children: [
-                          videostate.currentController != null
+                          controller != null
                               ? BetterPlayer(controller: controller!)
                               : Center(child: CircularProgressIndicator()),
                           Positioned(
@@ -123,7 +123,7 @@ class UserVideoPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          UserVideoChatSocket(video: videos[vindex])
+                          UserVideoChatSocket(video: videos[vindex],videoState:videostate)
                         ],
                       );
 

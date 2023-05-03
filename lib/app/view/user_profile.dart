@@ -65,6 +65,7 @@ class _UserProfileState extends State<UserProfile> {
 
   }
   void _checkFollowing() async {
+    if(UserID.uid==null) return;
     bool isFollowingResult = await isFollowing(UserID.uid!, widget.video.uploader); // 'creatorId'를 실제 생성자 ID로 바꾸세요.
     setState(() {
       _isFollowing = isFollowingResult;
@@ -185,7 +186,7 @@ class _UserProfileState extends State<UserProfile> {
           child: AbsorbPointer(
             absorbing: _preventMultipleTap,
             child: ElevatedButton(
-              onPressed: () => _toggleFollow(),
+              onPressed: () => UserID.uid==null?context.push(MyRoutes.Login):_toggleFollow(),
               child: Text(_isFollowing ? 'Unfollow' : 'Follow'),
             ),
           ),
@@ -300,3 +301,5 @@ Future<void> unfollow(String userId, String creatorId) async {
     'followerIds': FieldValue.arrayRemove([userId]),
   }, SetOptions(merge: true));
 }
+
+

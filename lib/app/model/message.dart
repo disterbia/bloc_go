@@ -14,6 +14,7 @@ class Message {
     return {
       'username': username,
       'text': text ,
+      'sendTime': sendTime
     };
   }
 }

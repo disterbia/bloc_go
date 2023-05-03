@@ -1,5 +1,6 @@
 
 import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/user_video_bloc.dart';
 import 'package:DTalk/app/model/user_video.dart';
 import 'package:DTalk/app/model/video_stream.dart';
 import 'package:DTalk/app/router/custom_go_router.dart';
@@ -12,8 +13,8 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 class UserVideoChatSocket extends StatefulWidget {
   final UserVideo? video;
-
-  UserVideoChatSocket({required this.video});
+  final UserVideoState videoState;
+  UserVideoChatSocket({required this.video,required this.videoState});
 
   @override
   _UserVideoChatSocketState createState() => _UserVideoChatSocketState();
@@ -135,7 +136,10 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
                           preventMultipleTap=true;
                         });
                         if(UserID.uid==null){
-                          context.push(MyRoutes.Login);
+                          widget.videoState.currentController!.dispose(forceDispose: true);
+                          widget.videoState.nextController?.dispose(forceDispose: true);
+                          widget.videoState.prevController?.dispose(forceDispose: true);
+                          context.pushReplacement(MyRoutes.Login);
                         }
                         else {
                           context.read<ChatBloc>().add(LikeOrDisLikeEvent(roomId: widget.video!.id,userId: UserID.uid!));

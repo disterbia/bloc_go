@@ -27,6 +27,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
         (event, emit) async => await _startVideoRecording());
     on<StopVideoRecording>((event, emit) async => await _stopVideoRecording());
     on<UploadVideoEvent>((event, emit) async => await _uploadVideo(emit));
+    on<DisposeCameraEvent>((event, emit) async => await _disposeCamera());
   }
 
   @override
@@ -36,6 +37,15 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
     state.betterPlayerController?.dispose();
     _controller?.dispose();
     return super.close();
+  }
+
+  Future<void> _disposeCamera() async {
+    if(_controller!=null) {
+      emit(InitialState(
+          isRecording: false, controller: null, cameras: _cameras));
+      await state.controller?.dispose();
+      await _controller!.dispose();
+    }
   }
 
   Future<void> _initializeCameras() async {
@@ -234,6 +244,11 @@ class UploadVideoEvent extends TakeVideoEvent {
   @override
   List<Object?> get props => [];
 }
+class DisposeCameraEvent extends TakeVideoEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 
 abstract class TakeVideoState extends Equatable {
   final CameraController? controller;

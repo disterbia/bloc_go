@@ -1,7 +1,9 @@
 
 import 'package:DTalk/app/bloc/chat_bloc.dart';
+import 'package:DTalk/app/bloc/video_stream_bloc.dart';
 import 'package:DTalk/app/model/video_stream.dart';
 import 'package:DTalk/app/router/custom_go_router.dart';
+import 'package:DTalk/app/widget/floating_heart.dart';
 import 'package:DTalk/app/widget/chat_widget.dart';
 import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +13,9 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 class ChatStateWidget extends StatefulWidget {
   final VideoStream? video;
+  final PageController controller;
 
-  ChatStateWidget({required this.video});
+  ChatStateWidget({required this.video,required this.controller});
 
   @override
   _ChatStateWidgetState createState() => _ChatStateWidgetState();
@@ -29,6 +32,9 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
   late Animation<double> _chatAnimation;
   double iconSize = 36.0;
   double animaiteSize = 24.0;
+
+  List<Widget> _hearts = [];
+
   @override
   void initState() {
 
@@ -80,11 +86,12 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
       _likeAnimationController.forward().then((_) {
         _likeAnimationController.reverse();
         setState(() {
-          preventMultipleTap=false;
+          preventMultipleTap = false;
         });
       });
     }
   }
+
 
   void _startChatAnimation(String roomId) {
     if (_isVisible) {
@@ -122,6 +129,7 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                     right: 25,child: CircularProgressIndicator(color: Colors.white,)),
               ],
             ):Stack(children: [
+              ..._hearts,
               Positioned(
                 bottom: 170,
                 right: 25,
@@ -134,7 +142,7 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                           preventMultipleTap=true;
                         });
                         if(UserID.uid==null){
-                          context.push(MyRoutes.Login);
+                          widget.controller.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
                         }
                         else {
                           context.read<ChatBloc>().add(LikeOrDisLikeEvent(roomId: widget.video!.id,userId: UserID.uid!));
@@ -164,10 +172,11 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                     InkWell(
                       onTap: () {
                         showModalBottomSheet(
+                          isScrollControlled: true,
                           context: context,
                           backgroundColor: Colors.transparent,
                           builder: (BuildContext context) {
-                            return Container(
+                            return Container(height:MediaQuery.of(context).size.height*0.7,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(15),

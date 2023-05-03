@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-ScrollController _listViewController = ScrollController();
 
 Widget chatWidget(BuildContext context, String videoId) {
   return BlocBuilder<ChatBloc,ChatState>(
@@ -18,8 +17,7 @@ Widget chatWidget(BuildContext context, String videoId) {
             : Column(
                 children: [
                   Expanded(
-                    child: ListView.builder(
-                      controller: _listViewController,
+                    child: chatstate.chatRoomStates[videoId]!.messages.length==0?Center(child: Text("채팅 내역이 없습니다."),):ListView.builder(
                       itemCount:  chatstate.chatRoomStates[videoId]!.messages.length,
                       itemBuilder: (context, bindex) {
                         return Padding(
@@ -69,6 +67,7 @@ Widget chatWidget(BuildContext context, String videoId) {
                       ],
                     ),
                   ),
+
                 ],
               ),
       );

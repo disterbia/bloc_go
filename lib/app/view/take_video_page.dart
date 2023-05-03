@@ -28,46 +28,52 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
               context.push(MyRoutes.VIDEOREVIEW);
             }
           }, builder: (context, state) {
-        return Scaffold(
-          body:
-          state.controller != null && state.controller!.value.isInitialized
-              ? Stack(
-            children: [
-              CameraPreview(state.controller!),
-            ],
-          )
-              : Center(child: CircularProgressIndicator()),
-          floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: state.isRecording!
-              ? AbsorbPointer(
-            absorbing: !enabled,
-                child: FloatingActionButton(
-            onPressed: () {
-              context.read<TakeVideoBloc>().add(StopVideoRecording());
-              setState(() {
-                enabled = false;
-              });
-            },
-            child: Icon(Icons.stop),
-            backgroundColor: Colors.red,
-          ),
-              )
-              : AbsorbPointer(
-            absorbing: !enabled2,
-                child: FloatingActionButton(
-            onPressed: () {
-                context
-                    .read<TakeVideoBloc>()
-                    .add(StartVideoRecording());
+        return WillPopScope(
+          onWillPop: () async{
+            context.read<TakeVideoBloc>().add(DisposeCameraEvent());
+            return true;
+          },
+          child: Scaffold(
+            body:
+            state.controller != null && state.controller!.value.isInitialized
+                ? Stack(
+              children: [
+                CameraPreview(state.controller!),
+              ],
+            )
+                : Center(child: CircularProgressIndicator()),
+            floatingActionButtonLocation:
+            FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: state.isRecording!
+                ? AbsorbPointer(
+              absorbing: !enabled,
+                  child: FloatingActionButton(
+              onPressed: () {
+                context.read<TakeVideoBloc>().add(StopVideoRecording());
                 setState(() {
-                  enabled2 = false;
+                  enabled = false;
                 });
-            },
-            child: Icon(Icons.circle_outlined, color: Colors.black),
-            backgroundColor: Colors.white,
+              },
+              child: Icon(Icons.stop),
+              backgroundColor: Colors.red,
+            ),
+                )
+                : AbsorbPointer(
+              absorbing: !enabled2,
+                  child: FloatingActionButton(
+              onPressed: () {
+                  context
+                      .read<TakeVideoBloc>()
+                      .add(StartVideoRecording());
+                  setState(() {
+                    enabled2 = false;
+                  });
+              },
+              child: Icon(Icons.circle_outlined, color: Colors.black),
+              backgroundColor: Colors.white,
+            ),
+                ),
           ),
-              ),
         );
       }),
     );

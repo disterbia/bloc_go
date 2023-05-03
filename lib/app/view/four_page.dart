@@ -1,27 +1,10 @@
-import 'package:DTalk/app/view/home_page.dart';
+import 'package:DTalk/app/bloc/follow_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Creator {
-  final String name;
-  final String imageUrl;
-  final String videoUrl;
-  final int followers;
-  final int following;
-
-  Creator({
-    required this.name,
-    required this.imageUrl,
-    required this.videoUrl,
-    required this.followers,
-    required this.following,
-  });
-}
 
 class FollowingPage extends StatelessWidget {
-  final List<Creator> creators;
-
-  FollowingPage({required this.creators});
 
   @override
   Widget build(BuildContext context) {
@@ -29,70 +12,80 @@ class FollowingPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Following'),backgroundColor: Colors.black,
       ),
-      body: Center(
-        child: CarouselSlider.builder(
-          itemCount: creators.length,
-          itemBuilder: (BuildContext context, int index, int realIndex) {
-            Creator creator = creators[index];
-            return Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.network(
-                    creator.videoUrl,
-                    fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: MediaQuery.of(context).size.height * 0.6,
-                  ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.8),
-                        Colors.transparent,
-                      ],
+      body: BlocBuilder<FollowBloc,FollowState>(
+        builder: (context, state)  {
+          if(state is! FollowInfoState) return Center(child: CircularProgressIndicator(),);
+          if(state.followInfo!.length==0)return Center(child: Text("팔로잉이 없습니다.",style: TextStyle(color: Colors.white),));
+          return Center(
+            child: CarouselSlider.builder(
+              itemCount: state.followInfo!.length,
+              itemBuilder: (BuildContext context, int index, int realIndex) {
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Image.network(
+                        state.followInfo![index].userInfo.thumbnail,
+                        fit: BoxFit.cover,
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: MediaQuery.of(context).size.height * 0.6,
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        creator.name,
-                        style: TextStyle(fontSize: 24, color: Colors.white),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.8),
+                            Colors.transparent,
+                          ],
+                        ),
                       ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Followers: ${creator.followers}',
-                        style: TextStyle(color: Colors.white),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            state.followInfo![index].userInfo.id,
+                            style: TextStyle(fontSize: 24, color: Colors.white),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'Followers: ${state.followInfo![index].followerCount}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            'Folloings: ${state.followInfo![index].followingCount}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            'good: ${state.followInfo![index].totalLike}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'good: ${creator.following}',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-          options: CarouselOptions(
-            autoPlay: false,
-            enlargeCenterPage: true,
-            aspectRatio: 1,
-            viewportFraction: 0.8,
-          ),
-        ),
+                    ),
+                  ],
+                );
+              },
+              options: CarouselOptions(
+                enableInfiniteScroll: false,
+                autoPlay: false,
+                enlargeCenterPage: true,
+                aspectRatio: 1,
+                viewportFraction: 0.8,
+              ),
+            ),
+          );
+        }
       ),
     );
   }
