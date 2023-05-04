@@ -41,8 +41,12 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
 
   Future<void> _disposeCamera() async {
     if(_controller!=null) {
+      if(state.controller!.value.isRecordingVideo){
+        await state.controller?.stopVideoRecording();
+      }
       emit(InitialState(
           isRecording: false, controller: null, cameras: _cameras));
+
       await state.controller?.dispose();
       await _controller!.dispose();
     }

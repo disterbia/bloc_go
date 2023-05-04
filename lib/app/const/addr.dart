@@ -2,11 +2,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Address{
-  static final String addr= "http://192.168.0.161:8080/";
-  static final String wsAddr= "ws://192.168.0.161:8080/";
+  // static final String addr= "http://192.168.0.161:8080/";
+  // static final String wsAddr= "ws://192.168.0.161:8080/";
 
-  // static final String addr= "http://ec2-13-125-130-142.ap-northeast-2.compute.amazonaws.com:8080/";
-  // static final String wsAddr= "ws://ec2-13-125-130-142.ap-northeast-2.compute.amazonaws.com:8080/";
+  static final String addr= "http://ec2-3-39-226-206.ap-northeast-2.compute.amazonaws.com:8080/";
+  static final String wsAddr= "ws://ec2-3-39-226-206.ap-northeast-2.compute.amazonaws.com:8080/";
  }
 
 

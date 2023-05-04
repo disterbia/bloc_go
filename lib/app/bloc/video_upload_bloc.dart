@@ -52,6 +52,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
 
   Future<void> _pickVideos(PickVideoEvent event,emit) async {
+    emit(VideoState(titleController: TextEditingController()));
     final pickedFiles = await _picker.pickVideo(source: ImageSource.gallery);
     if (pickedFiles != null) {
       if(controller!=null) controller!.dispose();
@@ -83,9 +84,18 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
             enableRetry: false,
           ));
        controller = BetterPlayerController(betterPlayerConfiguration,betterPlayerDataSource: betterPlayerDataSource,);
+      await controller!.setupDataSource(betterPlayerDataSource);
+      int videoDuration = controller!.videoPlayerController!.value.duration!.inSeconds;
+      if(videoDuration>10){
+        emit(FailedState());
+        emit(SnackBarState(message: "동영상 길이는 10초를 초과 할 수 없습니다."));
+      }else{
+        emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: TextEditingController()));
+      }
 
-      emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: TextEditingController()));
-  }
+  }else{
+      emit(FailedState(videos: null,videoPlayerController: null,titleController: null));
+    }
 
   }
 
@@ -233,4 +243,13 @@ class SnackBarState extends UploadState {
 
   @override
   List<Object?> get props => [message, videos, videoPlayerController,titleController];
+}
+
+
+class FailedState extends UploadState {
+
+  FailedState({super.videos, super.videoPlayerController,super.titleController});
+
+  @override
+  List<Object?> get props => [ videos, videoPlayerController,titleController];
 }

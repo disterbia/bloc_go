@@ -129,7 +129,7 @@ class VideoScreenPage extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              ChatStateWidget(video: videos[vindex],controller:_horizontalController),
+                              ChatStateWidget(video: videos[vindex]),
 
                             ],
                           )
@@ -145,7 +145,7 @@ class VideoScreenPage extends StatelessWidget {
               } else {
                 if(UserID.uid!=null){
                   context.read<FollowBloc>().add(FollowEvent(UserID.uid!));
-                  return FollowingPage();
+                  return FollowingPage(_horizontalController);
                 }
                 return LoginPage();
               }

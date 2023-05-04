@@ -3,6 +3,7 @@ import 'package:better_player/better_player.dart';
 import 'package:DTalk/app/bloc/video_upload_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 
 
@@ -17,6 +18,9 @@ class VideoUploadScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.message),duration:Duration(seconds: 2) ),
                 );
+              }
+              if(state is FailedState){
+                return context.pop();
               }
             },
             builder: (context, state) =>

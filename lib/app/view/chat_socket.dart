@@ -13,9 +13,8 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 class ChatStateWidget extends StatefulWidget {
   final VideoStream? video;
-  final PageController controller;
 
-  ChatStateWidget({required this.video,required this.controller});
+  ChatStateWidget({required this.video});
 
   @override
   _ChatStateWidgetState createState() => _ChatStateWidgetState();
@@ -142,7 +141,12 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                           preventMultipleTap=true;
                         });
                         if(UserID.uid==null){
-                          widget.controller.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
+                          setState(() {
+                            preventMultipleTap=false;
+                          });
+                          context.push(MyRoutes.Login);
+
+                         // widget.controller.animateToPage(0, duration: Duration(milliseconds: 500), curve: Curves.ease);
                         }
                         else {
                           context.read<ChatBloc>().add(LikeOrDisLikeEvent(roomId: widget.video!.id,userId: UserID.uid!));

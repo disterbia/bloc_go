@@ -11,7 +11,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
         listener: (context, state) =>
-            context.replace("/"),
+            context.pushReplacement("/bridge"),
         listenWhen: (previous, current) => current.isLogin!,
         child:  Column(mainAxisAlignment: MainAxisAlignment.center,
             children: [

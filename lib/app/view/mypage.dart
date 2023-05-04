@@ -154,6 +154,7 @@ class _MyPageState extends State<MyPage> {
   Widget _buildProfileBio(BuildContext context) {
         return ElevatedButton(onPressed: () async{
           context.push(MyRoutes.VIDEOUPLOAD);
+          //context.push(MyRoutes.VIDEOTRIM);
           context.read<VideoUploadBloc>().add(PickVideoEvent());
           print("-=-=-=-=-=-=");
         }, child: Text("동영상 업로드"));

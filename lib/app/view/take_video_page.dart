@@ -1,3 +1,4 @@
+import 'package:DTalk/app/widget/recording_timer.dart';
 import 'package:camera/camera.dart';
 import 'package:DTalk/app/bloc/take_video_bloc.dart';
 import 'package:DTalk/app/router/custom_go_router.dart';
@@ -13,6 +14,7 @@ class TakeVideoScreen extends StatefulWidget {
 class _TakeVideoScreenState extends State<TakeVideoScreen> {
   bool enabled = true;
   bool enabled2 = true;
+  final maximumDuration = Duration(seconds: 10);
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,13 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
                 ? Stack(
               children: [
                 CameraPreview(state.controller!),
+                state.controller!.value.isRecordingVideo?
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: RecordingTimer(maximumDuration: Duration(seconds: 10)),
+                ):Container(),
               ],
             )
                 : Center(child: CircularProgressIndicator()),
@@ -67,6 +76,11 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
                       .add(StartVideoRecording());
                   setState(() {
                     enabled2 = false;
+                  });
+                  Future.delayed(maximumDuration, () async {
+                    if (state.controller!.value.isRecordingVideo) {
+                      context.read<TakeVideoBloc>().add(StopVideoRecording());
+                    }
                   });
               },
               child: Icon(Icons.circle_outlined, color: Colors.black),

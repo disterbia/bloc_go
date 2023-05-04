@@ -1,10 +1,14 @@
 
+import 'package:DTalk/app/model/video_stream.dart';
+import 'package:DTalk/app/view/bridge_page.dart';
 import 'package:DTalk/app/view/home_page.dart';
 import 'package:DTalk/app/view/login_page.dart';
 import 'package:DTalk/app/view/take_video_page.dart';
 import 'package:DTalk/app/view/upload_page.dart';
+import 'package:DTalk/app/view/user_profile.dart';
 import 'package:DTalk/app/view/user_video_page.dart';
 import 'package:DTalk/app/view/video_review_page.dart';
+import 'package:DTalk/app/view/video_trim_page.dart';
 import 'package:DTalk/app/view/video_upload.dart';
 import 'package:DTalk/app/view/videostream.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,7 +26,9 @@ class MyRoutes {
   static const TAKEVIDEO = '/take_video';
   static const VIDEOREVIEW = '/video_review';
   static const USERVIDEO = '/user_video';
-
+  static const USERPROFILE ='/user_profile';
+  static const BRIDGE ='/bridge';
+  static const VIDEOTRIM = "/trim";
 }
 
 class MyPages {
@@ -44,12 +50,20 @@ class MyPages {
           builder: (context, state) => TakeVideoScreen()
       ),
       GoRoute(
+          path: MyRoutes.BRIDGE,
+          builder: (context, state) => BridgePage()
+      ),
+      GoRoute(
           path: MyRoutes.VIDEOUPLOAD,
           builder: (context, state) => VideoUploadScreen()
       ),
       GoRoute(
           path: MyRoutes.USERVIDEO,
           builder: (context, state) => UserVideoPage(int.parse(state.extra.toString()))
+      ),
+      GoRoute(
+          path: MyRoutes.USERPROFILE,
+          builder: (context, state) => UserProfile(state.extra as VideoStream)
       ),
       GoRoute(
           path: MyRoutes.VIDEOREVIEW,
@@ -67,6 +81,10 @@ class MyPages {
           path: MyRoutes.UPLOAD,
           builder: (context, state) => UploadPage(title: 'upload')
       ),
+      // GoRoute(
+      //     path: MyRoutes.VIDEOTRIM,
+      //     builder: (context, state) => VideoTrimmerScreen()
+      // ),
     ],
   );
 }
