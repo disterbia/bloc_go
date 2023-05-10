@@ -135,7 +135,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
           enableSubtitles: false,
           enableQualities: false,
           enablePip: false,
-          enableRetry: false,
+          enableRetry: false,enableProgressBar: false
         ),
       ),
       betterPlayerDataSource: BetterPlayerDataSource.file(state.videoPath!),

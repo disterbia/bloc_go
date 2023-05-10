@@ -1,3 +1,4 @@
+import 'package:DTalk/app/const/addr.dart';
 import 'package:DTalk/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:DTalk/app/bloc/chat_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:DTalk/app/view/home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 class MyPage extends StatefulWidget {
@@ -97,44 +99,53 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildProfileStats() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // 팔로잉 수
-        StreamBuilder<int>(
-          stream: followingCountStream(UserID.uid!),
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 0),
+      child: Container(height: 80.h,decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Colors.grey.shade200,),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // 팔로잉 수
+                StreamBuilder<int>(
+                  stream: followingCountStream(UserID.uid!),
+                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
 
-            if (snapshot.hasData) {
-              return _buildStatItem('Following',snapshot.data!);
-            } else {
-              return _buildStatItem('Following', 0);
-            }
-          },
-        ),
+                    if (snapshot.hasData) {
+                      return _buildStatItem('Following',snapshot.data!);
+                    } else {
+                      return _buildStatItem('Following', 0);
+                    }
+                  },
+                ),
 
 // 팔로워 수
-        StreamBuilder<int>(
-          stream: followersCountStream(UserID.uid!),
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-            if (snapshot.hasData) {
-              return _buildStatItem('Followers', snapshot.data!);
-            } else {
-              return _buildStatItem('Followers', 0);
-            }
-          },
+                StreamBuilder<int>(
+                  stream: followersCountStream(UserID.uid!),
+                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                    if (snapshot.hasData) {
+                      return _buildStatItem('Followers', snapshot.data!);
+                    } else {
+                      return _buildStatItem('Followers', 0);
+                    }
+                  },
+                ),
+                StreamBuilder<int>(
+                  stream: likesCountStream(UserID.uid!),
+                  builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                    if (snapshot.hasData) {
+                      return _buildStatItem('Likes',snapshot.data!);
+                    } else {
+                      return _buildStatItem('Likes', 0);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
-        StreamBuilder<int>(
-          stream: likesCountStream(UserID.uid!),
-          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-            if (snapshot.hasData) {
-              return _buildStatItem('Likes',snapshot.data!);
-            } else {
-              return _buildStatItem('Likes', 0);
-            }
-          },
-        ),
-      ],
+      ),
     );
 
   }
@@ -152,12 +163,22 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildProfileBio(BuildContext context) {
-        return ElevatedButton(onPressed: () async{
-          context.push(MyRoutes.VIDEOUPLOAD);
-          //context.push(MyRoutes.VIDEOTRIM);
-          context.read<VideoUploadBloc>().add(PickVideoEvent());
-          print("-=-=-=-=-=-=");
-        }, child: Text("동영상 업로드"));
+        return ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 60.h),
+          child: ElevatedButton(
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      )
+                  )),
+
+                  onPressed: () async{
+            context.push(MyRoutes.VIDEOUPLOAD);
+            //context.push(MyRoutes.VIDEOTRIM);
+            context.read<VideoUploadBloc>().add(PickVideoEvent());
+            print("-=-=-=-=-=-=");
+          }, child: Text("동영상 업로드")),
+        );
 
   }
 

@@ -68,23 +68,35 @@ class FollowingPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(
-                              state.followInfo![index].userInfo.id,
-                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            Row(
+                              children: [
+                                state.followInfo![index].userInfo.image==""?CircleAvatar(): CircleAvatar(backgroundImage: NetworkImage(state.followInfo![index].userInfo.image),),
+                                SizedBox(width: 10,),
+                                Expanded(
+                                  child: Text(
+                                    state.followInfo![index].userInfo.id,
+                                    style: TextStyle(fontSize: 24, color: Colors.white,overflow: TextOverflow.ellipsis),
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(height: 10),
-                            Text(
-                              'Followers: ${state.followInfo![index].followerCount}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              'Folloings: ${state.followInfo![index].followingCount}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              'good: ${state.followInfo![index].totalLike}',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            Row(children: [
+                              Text(
+                                '팔로워 ${state.followInfo![index].followerCount}  ',
+                                style: TextStyle(color: Colors.white),
+                              ),
+
+                              Text(
+                                '팔로잉 ${state.followInfo![index].followingCount}  ',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              Text(
+                                '좋아요 ${state.followInfo![index].totalLike}',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],),
+
                           ],
                         ),
                       ),

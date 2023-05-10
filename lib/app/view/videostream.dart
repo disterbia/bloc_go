@@ -123,9 +123,23 @@ class VideoScreenPage extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(videos![vindex].id),
-                                    Text(videos[vindex].title),
-                                    Text(videos[vindex].uploader),
+                                    Row(
+                                      children: [
+                                        CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image),),
+                                        SizedBox(width: 10,),
+                                        Text(videos![vindex].uploader),
+                                      ],
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                    ),
+                                    SizedBox(height: 10,),
+                                    Container(width: 250,
+                                      child: Row(
+                                        children: [
+                                          SizedBox(width: 5,),
+                                          Expanded(child: Text(videos[vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,)),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -147,7 +161,7 @@ class VideoScreenPage extends StatelessWidget {
                   context.read<FollowBloc>().add(FollowEvent(UserID.uid!));
                   return FollowingPage(_horizontalController);
                 }
-                return LoginPage();
+                return LoginPage(true,controller: _horizontalController,);
               }
             }
           },

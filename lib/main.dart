@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 void main() async{
@@ -58,14 +59,22 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => UserVideoBloc()),
       BlocProvider(create: (context) => FollowBloc(FollowRepository())),
     ],
-      child: MaterialApp.router(debugShowCheckedModeBanner: false,
-        routerConfig: MyPages.router,
+      child: ScreenUtilInit(
+        designSize: const Size(360, 690),
+        minTextAdapt: true,
+        splitScreenMode: true,
+          builder: (context , child) {
+            return MaterialApp.router(debugShowCheckedModeBanner: false,
+              routerConfig: MyPages.router,
 
-        title: 'DTalk',
-        theme: ThemeData(
-          backgroundColor: Colors.black,
-          appBarTheme: AppBarTheme(backgroundColor: Colors.black)
-        ),
+              title: 'DTalk',
+              theme: ThemeData(
+                backgroundColor: Colors.black,
+                appBarTheme: AppBarTheme(backgroundColor: Colors.black)
+              ),
+            );
+          }
+
       ),
     );
   }

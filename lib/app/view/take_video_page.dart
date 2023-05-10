@@ -1,3 +1,4 @@
+import 'package:DTalk/app/const/addr.dart';
 import 'package:DTalk/app/widget/recording_timer.dart';
 import 'package:camera/camera.dart';
 import 'package:DTalk/app/bloc/take_video_bloc.dart';
@@ -40,7 +41,7 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
             state.controller != null && state.controller!.value.isInitialized
                 ? Stack(
               children: [
-                CameraPreview(state.controller!),
+                Container(height: double.infinity,child: CameraPreview(state.controller!)),
                 state.controller!.value.isRecordingVideo?
                 Positioned(
                   bottom: 0,
@@ -63,13 +64,23 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
                   enabled = false;
                 });
               },
-              child: Icon(Icons.stop),
-              backgroundColor: Colors.red,
+                    child:Ink(
+                        decoration: ShapeDecoration(
+                          shape: CircleBorder(
+                            side: BorderSide(color: Colors.red, width: 5), // 테두리 색상 설정
+                          ),
+                        ),
+                        child: Container() // 원하는 아이콘 설정
+                    ),
+                    backgroundColor: Colors.grey.withOpacity(0.3), // 반투명한 배경색 설정
+                    elevation: 0, // 기본 그림자 효과 제거
+                    clipBehavior: Clip.antiAlias,
             ),
                 )
                 : AbsorbPointer(
               absorbing: !enabled2,
                   child: FloatingActionButton(
+
               onPressed: () {
                   context
                       .read<TakeVideoBloc>()
@@ -83,8 +94,18 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
                     }
                   });
               },
-              child: Icon(Icons.circle_outlined, color: Colors.black),
-              backgroundColor: Colors.white,
+              child:Ink(
+                decoration: ShapeDecoration(
+                  shape: CircleBorder(
+                    side: BorderSide(color:Address.color
+                        , width: 5), // 테두리 색상 설정
+                  ),
+                ),
+                child: Container() // 원하는 아이콘 설정
+              ),
+                    backgroundColor: Colors.grey.withOpacity(0.3), // 반투명한 배경색 설정
+                    elevation: 0, // 기본 그림자 효과 제거
+                    clipBehavior: Clip.antiAlias, // 경계를 넘어가지 않게 함
             ),
                 ),
           ),

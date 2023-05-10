@@ -1,3 +1,4 @@
+import 'package:DTalk/app/const/addr.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:DTalk/app/bloc/chat_bloc.dart';
 import 'package:DTalk/app/bloc/user_profile_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:DTalk/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -111,8 +113,12 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Widget _buildProfileStats() {
-
-        return Row(
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 0),
+    child: Container(height: 80.h,decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.grey.shade200,),
+    child: Column(mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             // 팔로잉 수
@@ -157,7 +163,10 @@ class _UserProfileState extends State<UserProfile> {
               },
             ),
           ],
-        );
+        ),          ],
+    ),
+    ),
+    );
 
   }
 
@@ -185,9 +194,18 @@ class _UserProfileState extends State<UserProfile> {
         : Container(
           child: AbsorbPointer(
             absorbing: _preventMultipleTap,
-            child: ElevatedButton(
-              onPressed: () => UserID.uid==null?context.push(MyRoutes.Login):_toggleFollow(),
-              child: Text(_isFollowing ? 'Unfollow' : 'Follow'),
+            child: ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 60.h),
+              child: ElevatedButton(style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(_isFollowing?Colors.grey:Address.color),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                      )
+                  )
+              ),
+                onPressed: () => UserID.uid==null?context.push(MyRoutes.Login):_toggleFollow(),
+                child: Text(_isFollowing ? 'Unfollow' : 'Follow'),
+              ),
             ),
           ),
         );

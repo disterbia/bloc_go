@@ -75,7 +75,7 @@ class MyPages {
           builder: (context, state) => VideoScreenPage()),
       GoRoute(
           path: MyRoutes.Login,
-          builder: (context, state) =>  LoginPage(),
+          builder: (context, state) =>  LoginPage(false),
       ),
       GoRoute(
           path: MyRoutes.UPLOAD,

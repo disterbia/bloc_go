@@ -116,6 +116,7 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
 
     BetterPlayerDataSource betterPlayerDataSource =
     BetterPlayerDataSource(BetterPlayerDataSourceType.network, video.url,
+        videoFormat: BetterPlayerVideoFormat.hls,
         cacheConfiguration: const BetterPlayerCacheConfiguration(
           useCache: true,
           maxCacheSize: 10 * 1024 * 1024,
