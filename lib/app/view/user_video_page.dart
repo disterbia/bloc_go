@@ -6,14 +6,16 @@ import 'package:DTalk/app/view/chat_socket.dart';
 import 'package:DTalk/app/view/user_video_chat_socket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserVideoPage extends StatelessWidget {
   int index;
+  String image;
   bool isFirst = true;
   int _currentIndex = 0;
   BetterPlayerController? controller;
   PageController? _verticalController;
-  UserVideoPage(this.index);
+  UserVideoPage(this.index,this.image);
 
   @override
   Widget build(BuildContext context) {
@@ -117,9 +119,24 @@ class UserVideoPage extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(videos![vindex].id),
-                                Text(videos[vindex].title),
-                                Text(videos[vindex].uploader),
+                                Row(
+                                  children: [
+                                    image==null?CircleAvatar(backgroundImage: AssetImage("aseets/img/"),):
+                                    CircleAvatar(backgroundImage: NetworkImage(image,),),
+                                    SizedBox(width: 10,),
+                                    Text(videos![vindex].uploader,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
+                                  ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                                SizedBox(height: 10,),
+                                Container(width: 250,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 5,),
+                                      Expanded(child: Text(videos[vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,style: TextStyle(color: Colors.white,fontSize: 18.sp,fontWeight: FontWeight.w100))),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),

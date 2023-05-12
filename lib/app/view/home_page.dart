@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
       child: SafeArea(
         child: Scaffold(backgroundColor: Colors.black,
           body: _widgetOptions.elementAt(_selectedIndex),
-          bottomNavigationBar: BottomNavigationBar(backgroundColor: Colors.black,
+          bottomNavigationBar: BottomNavigationBar(backgroundColor:_selectedIndex==2?Colors.white: Color(0xFF272727),
             currentIndex: _selectedIndex,
             onTap: (int index) {
               if(index==0){
@@ -89,22 +89,23 @@ class _HomePageState extends State<HomePage> {
               }
             },
             type: BottomNavigationBarType.fixed,
-            items: const [
+            items:  [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
+                icon: _selectedIndex==0?Image.asset("assets/img/menu_home_on.png",):Image.asset("assets/img/menu_home_b.png",),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.add),
-                label: 'Add',
+                icon: _selectedIndex==2?Image.asset("assets/img/menu_plus_b.png"):Image.asset("assets/img/menu_plus_w.png"),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
+                icon: _selectedIndex==2?Image.asset("assets/img/menu_my_on.png",):Image.asset("assets/img/menu_my_w.png"),
+                label: '',
               ),
             ],
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.grey,
+            selectedFontSize: 0,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
           ),
         ),
       ),

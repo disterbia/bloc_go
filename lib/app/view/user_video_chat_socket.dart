@@ -8,6 +8,7 @@ import 'package:DTalk/app/widget/chat_widget.dart';
 import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -29,8 +30,8 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
 
   late AnimationController _chatAnimationController;
   late Animation<double> _chatAnimation;
-  double iconSize = 36.0;
-  double animaiteSize = 24.0;
+  double iconSize = 30.0.h;
+  double animaiteSize = 15.0.h;
   @override
   void initState() {
 
@@ -148,16 +149,15 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
                       child: AnimatedBuilder(
                           animation: _likeAnimation,
                           builder: (context, child) {
-                            return Icon(
-                              Icons.favorite,
-                              color: (chatState.chatRoomStates[widget.video!.id]?.isLike==null?false:chatState.chatRoomStates[widget.video!.id]!.isLike)?Colors.red:Colors.grey,
-                              size: iconSize+ (animaiteSize* _likeAnimationController.value),
+                            return Image.asset(
+                              (chatState.chatRoomStates[widget.video!.id]?.isLike==null?false:chatState.chatRoomStates[widget.video!.id]!.isLike)?"assets/img/ic_like_on.png":"assets/img/ic_like.png",
+                              height: iconSize+ (animaiteSize* _likeAnimationController.value),
                             );
                           }
                       ),
                     ),
                     SizedBox(height: 5,),
-                    Text(((chatState.chatRoomStates[widget.video!.id]?.totalLike==null?0:chatState.chatRoomStates[widget.video!.id]!.totalLike)).toString()),
+                    Text(((chatState.chatRoomStates[widget.video!.id]?.totalLike==null?0:chatState.chatRoomStates[widget.video!.id]!.totalLike)).toString(),style: TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
@@ -210,15 +210,16 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
                       child: AnimatedBuilder(
                         animation: _chatAnimation,
                         builder: (context, child) {
-                          return Icon(
-                              Icons.comment,
-                              size: iconSize+ (animaiteSize * _chatAnimationController.value)
+                          return Image.asset(
+                              "assets/img/ic_chat.png",
+                              height: iconSize+ (animaiteSize * _chatAnimationController.value)
                           );
                         },
                       ),
                     ),
                     SizedBox(height: 5,),
-                    Text(((chatState.chatRoomStates[widget.video!.id]?.messages==null?[]:chatState.chatRoomStates[widget.video!.id]!.messages).isNotEmpty?chatState.chatRoomStates[widget.video!.id]!.messages.first.totalCount:0).toString()),
+                    Text(((chatState.chatRoomStates[widget.video!.id]?.messages==null?[]:chatState.chatRoomStates[widget.video!.id]!.messages).isNotEmpty?chatState.chatRoomStates[widget.video!.id]!.messages.first.totalCount:0).toString()
+                    ,style: TextStyle(color: Colors.white)),
                   ],
                 ),
               ),

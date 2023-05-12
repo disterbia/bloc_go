@@ -198,7 +198,7 @@ class _MyPageState extends State<MyPage> {
           onTap: (){
             context.read<UserVideoBloc>().add(LoadVideoEvent(currentIndex: index,userVideo: state.mypage!.videos));
             context.read<ChatBloc>().add(InitialUserChatEvent(state.mypage!.id,index));
-            context.push(MyRoutes.USERVIDEO,extra: index);
+            context.push(MyRoutes.USERVIDEO,extra: {"index":index, "image":state.mypage!.image});
           },
           child: CachedNetworkImage(
             imageUrl: state.mypage!.videos[index].thumbnail,fit: BoxFit.fill,),

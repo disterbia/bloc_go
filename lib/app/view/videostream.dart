@@ -11,6 +11,7 @@ import 'package:DTalk/app/view/user_profile.dart';
 import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class VideoScreenPage extends StatelessWidget {
@@ -125,9 +126,10 @@ class VideoScreenPage extends StatelessWidget {
                                   children: [
                                     Row(
                                       children: [
-                                        CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image),),
+                                        videos![vindex].userInfo.image==null?CircleAvatar(backgroundImage: AssetImage("aseets/img/"),):
+                                        CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image,),),
                                         SizedBox(width: 10,),
-                                        Text(videos![vindex].uploader),
+                                        Text(videos![vindex].uploader,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
                                       ],
                                       mainAxisAlignment: MainAxisAlignment.center,
                                     ),
@@ -136,7 +138,7 @@ class VideoScreenPage extends StatelessWidget {
                                       child: Row(
                                         children: [
                                           SizedBox(width: 5,),
-                                          Expanded(child: Text(videos[vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,)),
+                                          Expanded(child: Text(videos[vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,style: TextStyle(color: Colors.white,fontSize: 18.sp,fontWeight: FontWeight.w100))),
                                         ],
                                       ),
                                     ),

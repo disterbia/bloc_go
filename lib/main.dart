@@ -3,7 +3,6 @@ import 'package:DTalk/app/bloc/follow_bloc.dart';
 import 'package:DTalk/app/bloc/image_bloc.dart';
 import 'package:DTalk/app/bloc/login_bloc.dart';
 import 'package:DTalk/app/bloc/mypage_bloc.dart';
-import 'package:DTalk/app/bloc/spalsh_bloc.dart';
 import 'package:DTalk/app/bloc/take_video_bloc.dart';
 import 'package:DTalk/app/bloc/user_profile_bloc.dart';
 import 'package:DTalk/app/bloc/user_video_bloc.dart';
@@ -29,7 +28,7 @@ void main() async{
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp();
-  //await SharedPreferencesHelper.removeUserUid();
+  await SharedPreferencesHelper.removeUserUid();
   UserID.uid = await SharedPreferencesHelper.getUserUid();
   KakaoSdk.init(nativeAppKey: '165742d2ef90b67385060e3bbc9231d9');
   runApp(const MyApp());

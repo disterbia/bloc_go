@@ -37,12 +37,12 @@ class _UserProfileState extends State<UserProfile> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF272727),
         elevation: 1,
         centerTitle: true,
         title: Text(
           widget.video.userInfo.id,overflow: TextOverflow.fade,
-          style: TextStyle(color: Colors.black,),
+          style: TextStyle(color: Colors.white,),
         ),
         // leading: IconButton(
         //   icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -52,13 +52,13 @@ class _UserProfileState extends State<UserProfile> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 16),
+            SizedBox(height: 20),
             _buildProfileHeader(),
-            SizedBox(height: 16),
+            SizedBox(height: 20),
             _buildProfileStats(),
-            SizedBox(height: 16),
+            SizedBox(height: 20),
             _buildProfileBio(context),
-            SizedBox(height: 16),
+            SizedBox(height: 20),
             _buildProfileTabs(context),
           ],
         ),
@@ -236,7 +236,7 @@ class _UserProfileState extends State<UserProfile> {
                       currentIndex: index,
                       userVideo: state.userVideos));
                   context.read<ChatBloc>().add(InitialUserChatEvent(widget.video.userInfo.id,index));
-                  context.push(MyRoutes.USERVIDEO, extra: index);
+                  context.push(MyRoutes.USERVIDEO, extra: {"index":index,"image":widget.video.userInfo.image});
                 },
                 child: CachedNetworkImage(
                   imageUrl: state.userVideos![index].thumbnail,

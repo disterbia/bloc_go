@@ -59,7 +59,10 @@ class MyPages {
       ),
       GoRoute(
           path: MyRoutes.USERVIDEO,
-          builder: (context, state) => UserVideoPage(int.parse(state.extra.toString()))
+          builder: (context, state) {
+            Map<String,dynamic> result = state.extra as Map<String,dynamic>;
+            return UserVideoPage(result["index"],result["image"]);
+          }
       ),
       GoRoute(
           path: MyRoutes.USERPROFILE,
