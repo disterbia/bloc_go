@@ -70,11 +70,11 @@ class FollowingPage extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                state.followInfo![index].userInfo.image==""?CircleAvatar(): CircleAvatar(backgroundImage: NetworkImage(state.followInfo![index].userInfo.image),),
+                                state.followInfo![index].userInfo.image==""?CircleAvatar(backgroundImage:AssetImage("assets/img/profile3_s.png")): CircleAvatar(backgroundImage: NetworkImage(state.followInfo![index].userInfo.image),),
                                 SizedBox(width: 10,),
                                 Expanded(
                                   child: Text(
-                                    state.followInfo![index].userInfo.id,
+                                    state.followInfo![index].userInfo.nickname,
                                     style: TextStyle(fontSize: 24, color: Colors.white,overflow: TextOverflow.ellipsis),
                                   ),
                                 ),

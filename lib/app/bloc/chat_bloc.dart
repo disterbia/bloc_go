@@ -20,7 +20,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   ChatBloc(this.repository) : super(ChatInitial(chatRoomStates: {})) {
     on<SendMessageEvent>((event, emit) {
-      _sendMessage(event.roomId,event.text, event.userId);
+      _sendMessage(event.roomId,event.text, event.userId,event.nickname,event.userImage);
     });
     on<LikeOrDisLikeEvent>((event, emit) {
       _likeOrDislike(event.roomId,event.userId);
@@ -177,12 +177,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   }
 
-  void _sendMessage(String roomId, String text, String username) {
+  void _sendMessage(String roomId, String text, String username,String nickname,String image) {
     if(UserID.uid==null) return;
     if (text.isNotEmpty) {
       SocketEvent socketEvent = SocketEvent(
         eventType: "message",
-        message: Message(username: username, text: text),
+        message: Message(username: username, text: text,nickname:nickname,userImage: image ),
       );
 
       _channels[roomId]?.sink.add(jsonEncode(socketEvent.toJson()));
@@ -226,11 +226,13 @@ class SendMessageEvent extends ChatEvent {
   final String roomId;
   final String text;
   final String userId;
+  final String userImage;
+  final String nickname;
 
-  SendMessageEvent({required this.roomId,required this.text,required this.userId});
+  SendMessageEvent({required this.roomId,required this.text,required this.userId,required this.userImage,required this.nickname});
 
   @override
-  List<Object?> get props => [roomId,text,userId];
+  List<Object?> get props => [roomId,text,userId,userImage,nickname];
 }
 
 class LikeOrDisLikeEvent extends ChatEvent {

@@ -53,7 +53,7 @@ class VideoReviewScreen extends StatelessWidget {
                         ),
                         Text(
                           "문구입력",
-                          style: TextStyle(color: Colors.grey.shade200),
+                          style: TextStyle(color: Colors.grey.shade400),
                         ),
                       ],
                     ),
@@ -71,6 +71,7 @@ class VideoReviewScreen extends StatelessWidget {
                           SizedBox(width: 20),
                           Expanded(
                             child: TextField(
+                              autofocus: true,
                               controller: state.titleController,
                               decoration: InputDecoration(
                                 enabledBorder: UnderlineInputBorder(

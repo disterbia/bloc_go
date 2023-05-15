@@ -1,4 +1,5 @@
 import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/view/splash_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:DTalk/app/bloc/chat_bloc.dart';
 import 'package:DTalk/app/bloc/user_profile_bloc.dart';
@@ -25,6 +26,7 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   bool _isFollowing = false;
   bool _preventMultipleTap=false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _UserProfileState extends State<UserProfile> {
         elevation: 1,
         centerTitle: true,
         title: Text(
-          widget.video.userInfo.id,overflow: TextOverflow.fade,
+          widget.video.userInfo.nickname,overflow: TextOverflow.fade,
           style: TextStyle(color: Colors.white,),
         ),
         // leading: IconButton(
@@ -66,10 +68,13 @@ class _UserProfileState extends State<UserProfile> {
     );
 
   }
+
   void _checkFollowing() async {
+    isLoading=false;
     if(UserID.uid==null) return;
     bool isFollowingResult = await isFollowing(UserID.uid!, widget.video.uploader); // 'creatorId'를 실제 생성자 ID로 바꾸세요.
     setState(() {
+      isLoading=false;
       _isFollowing = isFollowingResult;
     });
   }
@@ -93,7 +98,7 @@ class _UserProfileState extends State<UserProfile> {
     return Column(
       children: [
         widget.video.userInfo.image==""?CircleAvatar(
-          backgroundImage: AssetImage("assets/logo.png"),
+          backgroundImage: AssetImage("assets/img/profile3_lg.png"),
           backgroundColor: Colors.black,
           radius: 50,
         ):
@@ -102,12 +107,21 @@ class _UserProfileState extends State<UserProfile> {
           radius: 50,
         ),
         SizedBox(height: 8),
-        Text(
-          'Your Name',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        Row(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("@",style: TextStyle(color: Address.color,fontWeight: FontWeight.bold, fontSize: 18.sp),),
+            SizedBox(width: 5,),
+            Text(
+              widget.video.userInfo.nickname,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+            ),
+          ],
         ),
         SizedBox(height: 4),
-        Text(widget.video.userInfo.id),
+        Padding(
+          padding:  EdgeInsets.symmetric(horizontal: 40.0),
+          child: Text(widget.video.userInfo.intro),
+        ),
       ],
     );
   }
@@ -132,9 +146,9 @@ class _UserProfileState extends State<UserProfile> {
                 //   return CircularProgressIndicator();
                 // }
                 if (snapshot.hasData) {
-                  return _buildStatItem('Following',snapshot.data!);
+                  return _buildStatItem('팔로잉',snapshot.data!);
                 } else {
-                  return _buildStatItem('Following', 0);
+                  return _buildStatItem('팔로잉', 0);
                 }
               },
             ),
@@ -145,9 +159,9 @@ class _UserProfileState extends State<UserProfile> {
               builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
 
                 if (snapshot.hasData) {
-                  return _buildStatItem('Followers', snapshot.data!);
+                  return _buildStatItem('팔로워', snapshot.data!);
                 } else {
-                  return _buildStatItem('Followers', 0);
+                  return _buildStatItem('팔로워', 0);
                 }
               },
             ),
@@ -156,9 +170,9 @@ class _UserProfileState extends State<UserProfile> {
               builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
 
                 if (snapshot.hasData) {
-                  return _buildStatItem('Likes',snapshot.data!);
+                  return _buildStatItem('좋아요',snapshot.data!);
                 } else {
-                  return _buildStatItem('Likes', 0);
+                  return _buildStatItem('좋아요', 0);
                 }
               },
             ),
@@ -183,18 +197,28 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Widget _buildProfileBio(BuildContext context) {
-    return widget.video.userInfo.id == UserID.uid
-        ? ElevatedButton(
-                onPressed: () async {
-                  context.push(MyRoutes.VIDEOUPLOAD);
-                  context.read<VideoUploadBloc>().add(PickVideoEvent());
-                  print("-=-=-=-=-=-=");
-                },
-                child: Text("동영상 업로드"))
+    return this.isLoading?CircularProgressIndicator():widget.video.userInfo.id == UserID.uid
+        ? ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 50.h),
+          child: ElevatedButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(_isFollowing?Colors.grey:Address.color),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  )
+              )
+          ),
+                  onPressed: () async {
+                    context.push(MyRoutes.VIDEOUPLOAD);
+                    context.read<VideoUploadBloc>().add(PickVideoEvent());
+                    print("-=-=-=-=-=-=");
+                  },
+                  child: Text("동영상 업로드")),
+        )
         : Container(
           child: AbsorbPointer(
             absorbing: _preventMultipleTap,
-            child: ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 60.h),
+            child: ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 50.h),
               child: ElevatedButton(style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(_isFollowing?Colors.grey:Address.color),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -204,7 +228,7 @@ class _UserProfileState extends State<UserProfile> {
                   )
               ),
                 onPressed: () => UserID.uid==null?context.push(MyRoutes.Login):_toggleFollow(),
-                child: Text(_isFollowing ? 'Unfollow' : 'Follow'),
+                child: Text(_isFollowing ? '팔로우 취소' : '팔로우'),
               ),
             ),
           ),
@@ -236,7 +260,7 @@ class _UserProfileState extends State<UserProfile> {
                       currentIndex: index,
                       userVideo: state.userVideos));
                   context.read<ChatBloc>().add(InitialUserChatEvent(widget.video.userInfo.id,index));
-                  context.push(MyRoutes.USERVIDEO, extra: {"index":index,"image":widget.video.userInfo.image});
+                  context.push(MyRoutes.USERVIDEO, extra: {"index":index,"image":widget.video.userInfo.image,"nickname":widget.video.userInfo.nickname});
                 },
                 child: CachedNetworkImage(
                   imageUrl: state.userVideos![index].thumbnail,

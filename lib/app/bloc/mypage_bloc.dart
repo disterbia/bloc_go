@@ -4,6 +4,7 @@ import 'package:DTalk/app/model/user_info.dart';
 import 'package:DTalk/app/model/user_video.dart';
 import 'package:DTalk/app/repository/mypage_repository.dart';
 import 'package:DTalk/app/repository/video_stream_repository.dart';
+import 'package:DTalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,6 +24,8 @@ class MyPageBloc extends Bloc<MyPageEvent, MyPageState> {
     try {
       MyPage? mypage =
       await myPageRepository.getMyPage(event.userId);
+      UserID.nickname=mypage!.nickname;
+      UserID.userImage=mypage!.nickname;
       emit(MyPageLoadedState( mypage: mypage));
     } catch (error) {
       print(error);

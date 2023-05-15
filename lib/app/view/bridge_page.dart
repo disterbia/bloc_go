@@ -6,15 +6,7 @@ class BridgePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-              Center(child: Text("로그인 완료! 못했던것들을 해보세요!")),
-              Text("이러이러한 앱이에요!"),
-              ElevatedButton(onPressed: (){
-                context.pop();
-              }, child: Text("권한받기"))
-    ]),);
+    Future.delayed(Duration.zero,()=>context.pop());
+    return Center(child: CircularProgressIndicator(),);
   }
 }

@@ -1,6 +1,7 @@
 
 import 'package:DTalk/app/bloc/chat_bloc.dart';
 import 'package:DTalk/app/bloc/user_video_bloc.dart';
+import 'package:DTalk/app/bloc/video_stream_bloc.dart';
 import 'package:DTalk/app/model/user_video.dart';
 import 'package:DTalk/app/model/video_stream.dart';
 import 'package:DTalk/app/router/custom_go_router.dart';
@@ -168,7 +169,9 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
                   children: [
                     InkWell(
                       onTap: () {
+                        context.read<VideoStreamBloc>().add(VideoPauseEvent());
                         showModalBottomSheet(
+                          isScrollControlled: true,
                           context: context,
                           backgroundColor: Colors.transparent,
                           builder: (BuildContext context) {
@@ -179,30 +182,8 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
                                   topRight: Radius.circular(15),
                                 ),
                               ),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          icon: Icon(Icons.close,
-                                              color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: chatWidget(context, widget.video!.id),
-                                  ),
-                                ],
-                              ),
+                              child: chatWidget(context, widget.video!.id),
+
                             );
                           },
                         );

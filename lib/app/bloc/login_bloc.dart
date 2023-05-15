@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:DTalk/app/model/user_info.dart' as myUser;
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginRepository loginRepository;
@@ -20,12 +21,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           kakao.OAuthToken token = await kakao.UserApi.instance.loginWithKakaoTalk();
           print('카카오톡으로 로그인 성공');
           String result = await loginRepository.kakaoLogin(token);
-          bool temp = await loginRepository.login(result);
+          myUser.UserInfo? userInfo = await loginRepository.login(result);
 
-          if (temp) {
+          if (userInfo!=null) {
             await SharedPreferencesHelper.saveUserUid(result); // Save uid
+            await SharedPreferencesHelper.saveUserImage(userInfo.image);
+            await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
             UserID.uid=result;
-            emit(LoginState(uid: result, isLogin: temp));
+            UserID.userImage=userInfo.image;
+            UserID.nickname=userInfo.nickname;
+            emit(LoginState(uid: result, isLogin: true));
           } else {
             print("fuck you");
           }
@@ -37,11 +42,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
                 await kakao.UserApi.instance.loginWithKakaoAccount();
             print('카카오계정으로 로그인 성공');
             String result = await loginRepository.kakaoLogin(token);
-            bool temp = await loginRepository.login(result);
-            if (temp) {
+            myUser.UserInfo? userInfo = await loginRepository.login(result);
+
+            if (userInfo!=null) {
               await SharedPreferencesHelper.saveUserUid(result); // Save uid
+              await SharedPreferencesHelper.saveUserImage(userInfo.image);
+              await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
               UserID.uid=result;
-              emit(LoginState(uid: result, isLogin: temp));
+              UserID.userImage=userInfo.image;
+              UserID.nickname=userInfo.nickname;
+              emit(LoginState(uid: result, isLogin: true));
             } else {
               print("fuck you");
             }
@@ -55,11 +65,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               await kakao.UserApi.instance.loginWithKakaoAccount();
           print('카카오계정으로 로그인 성공');
           String result = await loginRepository.kakaoLogin(token);
-          bool temp = await loginRepository.login(result);
-          if (temp) {
+          myUser.UserInfo? userInfo = await loginRepository.login(result);
+
+          if (userInfo!=null) {
             await SharedPreferencesHelper.saveUserUid(result); // Save uid
+            await SharedPreferencesHelper.saveUserImage(userInfo.image);
+            await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
             UserID.uid=result;
-            emit(LoginState(uid: result, isLogin: temp));
+            UserID.userImage=userInfo.image;
+            UserID.nickname=userInfo.nickname;
+            emit(LoginState(uid: result, isLogin: true));
           } else {
             print("fuck you");
           }
@@ -84,9 +99,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             ),
           ),
         );
-        await SharedPreferencesHelper.saveUserUid(credential.userIdentifier!); // Save uid
-        UserID.uid=credential.userIdentifier!;
-        emit(LoginState(isLogin: true,uid: credential.userIdentifier));
+        myUser.UserInfo? userInfo = await loginRepository.login(credential.userIdentifier!);
+        if (userInfo!=null) {
+          await SharedPreferencesHelper.saveUserUid(credential.userIdentifier!); // Save uid
+          await SharedPreferencesHelper.saveUserImage(userInfo.image);
+          await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
+          UserID.uid=credential.userIdentifier!;
+          UserID.userImage=userInfo.image;
+          UserID.nickname=userInfo.nickname;
+          emit(LoginState(uid: credential.userIdentifier!, isLogin: true));
+        }
       } catch (error) {
         print('error = $error');
       }
@@ -105,12 +127,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       // Once signed in, return the UserCredential
       UserCredential result= await FirebaseAuth.instance.signInWithCredential(credential);
-      bool temp = await loginRepository.login(result.user!.uid);
+      myUser.UserInfo? userInfo = await loginRepository.login(result.user!.uid);
 
-      if (temp) {
+      if (userInfo!=null) {
         await SharedPreferencesHelper.saveUserUid(result.user!.uid); // Save uid
+        await SharedPreferencesHelper.saveUserImage(userInfo.image);
+        await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
         UserID.uid=result.user!.uid;
-        emit(LoginState(isLogin: true,uid: result.user!.uid));
+        UserID.userImage=userInfo.image;
+        UserID.nickname=userInfo.nickname;
+        emit(LoginState(uid: result.user!.uid, isLogin: true));
       } else {
         print("fuck you");
       }
@@ -118,15 +144,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     on<NaverLoginEvent>((event, emit) async {
       try {
-        FlutterNaverLogin.logOut();
+        await FlutterNaverLogin.logOut();
         final NaverLoginResult result =
         await FlutterNaverLogin.logIn();
         if (result.status == NaverLoginStatus.loggedIn) {
-          bool temp = await loginRepository.login(result.account.id);
-          if (temp) {
+          myUser.UserInfo? userInfo = await loginRepository.login(result.account.id);
+
+          if (userInfo!=null) {
             await SharedPreferencesHelper.saveUserUid(result.account.id); // Save uid
+            await SharedPreferencesHelper.saveUserImage(userInfo.image);
+            await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
             UserID.uid=result.account.id;
-            emit(LoginState(uid: result.account.id,isLogin: true));
+            UserID.userImage=userInfo.image;
+            UserID.nickname=userInfo.nickname;
+            emit(LoginState(uid: result.account.id, isLogin: true));
           } else {
             print("fuck you");
           }

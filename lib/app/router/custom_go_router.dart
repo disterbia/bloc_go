@@ -3,7 +3,9 @@ import 'package:DTalk/app/model/video_stream.dart';
 import 'package:DTalk/app/view/bridge_page.dart';
 import 'package:DTalk/app/view/home_page.dart';
 import 'package:DTalk/app/view/login_page.dart';
+import 'package:DTalk/app/view/splash_page.dart';
 import 'package:DTalk/app/view/take_video_page.dart';
+import 'package:DTalk/app/view/update_profile.dart';
 import 'package:DTalk/app/view/upload_page.dart';
 import 'package:DTalk/app/view/user_profile.dart';
 import 'package:DTalk/app/view/user_video_page.dart';
@@ -16,8 +18,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 class MyRoutes {
-  // static const SPLASH = '/';
-  static const HOME = '/';
+  static const SPLASH = '/';
+  static const HOME = '/home';
   static const Login = '/login';
   static const UPLOAD = '/upload';
   static const VIDEO = '/video';
@@ -29,6 +31,7 @@ class MyRoutes {
   static const USERPROFILE ='/user_profile';
   static const BRIDGE ='/bridge';
   static const VIDEOTRIM = "/trim";
+  static const UPDATEPROFILE = "/update_profile";
 }
 
 class MyPages {
@@ -37,14 +40,21 @@ class MyPages {
     initialLocation: "/",
     errorBuilder: (context, state) => Container(child: Text("dd"),),
     routes: [
-      // GoRoute(
-      //     path: MyRoutes.SPLASH,
-      //     builder: (context, state) => SplashScreen()
-      // ),
+      GoRoute(
+          path: MyRoutes.SPLASH,
+          builder: (context, state) => SplashScreen()
+      ),
       GoRoute(
           path: MyRoutes.HOME,
           builder: (context, state) => HomePage()
       ),
+      GoRoute(
+          path: MyRoutes.UPDATEPROFILE,
+          builder: (context, state) {
+            Map<String,dynamic> result = state.extra as Map<String,dynamic>;
+            return UpdateProfileScreen(result["nickname"],result["intro"]);
+          }
+          ),
       GoRoute(
           path: MyRoutes.TAKEVIDEO,
           builder: (context, state) => TakeVideoScreen()
@@ -61,7 +71,7 @@ class MyPages {
           path: MyRoutes.USERVIDEO,
           builder: (context, state) {
             Map<String,dynamic> result = state.extra as Map<String,dynamic>;
-            return UserVideoPage(result["index"],result["image"]);
+            return UserVideoPage(result["index"],result["image"],result["nickname"]);
           }
       ),
       GoRoute(

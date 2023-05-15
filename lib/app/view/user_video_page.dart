@@ -11,11 +11,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class UserVideoPage extends StatelessWidget {
   int index;
   String image;
+  String nickname;
   bool isFirst = true;
   int _currentIndex = 0;
   BetterPlayerController? controller;
   PageController? _verticalController;
-  UserVideoPage(this.index,this.image);
+  UserVideoPage(this.index,this.image,this.nickname);
 
   @override
   Widget build(BuildContext context) {
@@ -121,10 +122,10 @@ class UserVideoPage extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    image==null?CircleAvatar(backgroundImage: AssetImage("aseets/img/"),):
+                                    image==""?CircleAvatar(backgroundImage: AssetImage("assets/img/profile3_s.png"),):
                                     CircleAvatar(backgroundImage: NetworkImage(image,),),
                                     SizedBox(width: 10,),
-                                    Text(videos![vindex].uploader,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
+                                    Text(nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
                                   ],
                                   mainAxisAlignment: MainAxisAlignment.center,
                                 ),
@@ -133,7 +134,7 @@ class UserVideoPage extends StatelessWidget {
                                   child: Row(
                                     children: [
                                       SizedBox(width: 5,),
-                                      Expanded(child: Text(videos[vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,style: TextStyle(color: Colors.white,fontSize: 18.sp,fontWeight: FontWeight.w100))),
+                                      Expanded(child: Text(videos![vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,style: TextStyle(color: Colors.white,fontSize: 18.sp,fontWeight: FontWeight.w100))),
                                     ],
                                   ),
                                 ),

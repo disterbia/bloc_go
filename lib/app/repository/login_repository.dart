@@ -1,3 +1,4 @@
+import 'package:DTalk/app/model/user_info.dart';
 import 'package:dio/dio.dart';
 import 'package:DTalk/app/const/addr.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
@@ -29,7 +30,7 @@ class LoginRepository{
 
   }
 
-  Future<bool> login(String userID) async {
+  Future<UserInfo?> login(String userID) async {
     try {
       final response = await dio.post(
         '${Address.addr}login',
@@ -39,15 +40,16 @@ class LoginRepository{
       );
 
       if (response.statusCode == 200) {
+
         print('Login or registration successful');
-        return true;
+        return UserInfo.fromJson(response.data);
       } else {
         print('Login or registration failed');
-        return false;
+        return null;
       }
     } catch (e) {
       print('Error occurred during login or registration: $e');
-      return false;
+      return null;
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:DTalk/app/bloc/follow_bloc.dart';
 import 'package:DTalk/app/bloc/image_bloc.dart';
 import 'package:DTalk/app/bloc/login_bloc.dart';
 import 'package:DTalk/app/bloc/mypage_bloc.dart';
+import 'package:DTalk/app/bloc/spalsh_bloc.dart';
 import 'package:DTalk/app/bloc/take_video_bloc.dart';
 import 'package:DTalk/app/bloc/user_profile_bloc.dart';
 import 'package:DTalk/app/bloc/user_video_bloc.dart';
@@ -25,17 +26,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 void main() async{
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
+ // WidgetsBinding widgetsBinding=WidgetsFlutterBinding.ensureInitialized();
+  //FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  //FlutterNativeSplash.remove();
   await Firebase.initializeApp();
-  await SharedPreferencesHelper.removeUserUid();
+ // await SharedPreferencesHelper.removeUserUid();
   UserID.uid = await SharedPreferencesHelper.getUserUid();
+  UserID.nickname = await SharedPreferencesHelper.getUserNickname();
+  UserID.userImage = await SharedPreferencesHelper.getUserImage();
   KakaoSdk.init(nativeAppKey: '165742d2ef90b67385060e3bbc9231d9');
   runApp(const MyApp());
 }
 
 class UserID {
   static String? uid;
+  static String? nickname;
+  static String? userImage;
 }
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -47,6 +54,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return MultiBlocProvider(providers: [
+      BlocProvider(create: (context) => SplashBloc()),
       BlocProvider(create: (context) => LoginBloc(LoginRepository())),
       BlocProvider(create: (context) => VideoUploadBloc(VideoUploadRepository())),
       BlocProvider(create: (context) => ImageBloc(ImageRepository())),
@@ -64,8 +72,10 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
           builder: (context , child) {
             return MaterialApp.router(debugShowCheckedModeBanner: false,
-              routerConfig: MyPages.router,
-
+              // routerConfig: MyPages.router,
+              routeInformationParser: MyPages.router.routeInformationParser,
+              routerDelegate: MyPages.router.routerDelegate,
+              routeInformationProvider: MyPages.router.routeInformationProvider,
               title: 'DTalk',
               theme: ThemeData(
                 backgroundColor: Colors.black,

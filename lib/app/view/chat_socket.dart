@@ -175,42 +175,20 @@ class _ChatStateWidgetState extends State<ChatStateWidget> with TickerProviderSt
                   children: [
                     InkWell(
                       onTap: () {
+                        context.read<VideoStreamBloc>().add(VideoPauseEvent());
                         showModalBottomSheet(
-                          isScrollControlled: true,
+                           isScrollControlled: true,
                           context: context,
                           backgroundColor: Colors.transparent,
                           builder: (BuildContext context) {
-                            return Container(height:MediaQuery.of(context).size.height*0.7,
+                            return Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(15),
                                   topRight: Radius.circular(15),
                                 ),
                               ),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          icon: Icon(Icons.close,
-                                              color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: chatWidget(context, widget.video!.id),
-                                  ),
-                                ],
-                              ),
+                              child: chatWidget(context, widget.video!.id),
                             );
                           },
                         );

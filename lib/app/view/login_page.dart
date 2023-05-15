@@ -16,13 +16,13 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(backgroundColor: Colors.white,
       body: BlocListener<LoginBloc, LoginState>(
-          listener: (context, state)
+          listener: (context, state) async
           {
             if(canPop){
-              context.push("/bridge");
+              await context.push("/bridge");
               controller!.jumpToPage(1);
             }else{
-              context.pushReplacement("/bridge");
+               context.pushReplacement("/bridge");
             }
         },
           listenWhen: (previous, current) => current.isLogin!,

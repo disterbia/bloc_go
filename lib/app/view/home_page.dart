@@ -8,14 +8,8 @@ import 'package:DTalk/app/view/videostream.dart';
 import 'package:DTalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 
-
-class VideoAspectRatio{
-  static double? aspectRatio;
-  static double? aspectRatio2;
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -35,23 +29,22 @@ class _HomePageState extends State<HomePage> {
     MyPage()
   ];
 
-@override
-  void initState() {
-  super.initState();
-  initialization();
-  }
-
-  void initialization()  {
-    context.read<VideoStreamBloc>().add(LoadVideoEvent());
-    context.read<ChatBloc>().add(InitialChatEvent());
-    Future.delayed(Duration(seconds: 2),()=>FlutterNativeSplash.remove());
-
-  }
+// @override
+//   void initState() {
+//   super.initState();
+//   initialization();
+//   }
+//
+//   void initialization()  {
+//     context.read<VideoStreamBloc>().add(LoadVideoEvent());
+//     context.read<ChatBloc>().add(InitialChatEvent());
+//     Future.delayed(Duration(seconds: 2),()=>FlutterNativeSplash.remove());
+//
+//   }
 
   @override
   Widget build(BuildContext context) {
-    VideoAspectRatio.aspectRatio = MediaQuery.of(context).size.width/( MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top-kBottomNavigationBarHeight );
-    VideoAspectRatio.aspectRatio2 = MediaQuery.of(context).size.width/( MediaQuery.of(context).size.height-MediaQuery.of(context).padding.top);
+
     return WillPopScope(
       onWillPop: () async => false,
       child: SafeArea(

@@ -126,10 +126,10 @@ class VideoScreenPage extends StatelessWidget {
                                   children: [
                                     Row(
                                       children: [
-                                        videos![vindex].userInfo.image==null?CircleAvatar(backgroundImage: AssetImage("aseets/img/"),):
+                                        videos![vindex].userInfo.image==""?CircleAvatar(backgroundImage: AssetImage("assets/img/profile3_s.png"),):
                                         CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image,),),
                                         SizedBox(width: 10,),
-                                        Text(videos![vindex].uploader,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
+                                        Text(videos![vindex].userInfo.nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
                                       ],
                                       mainAxisAlignment: MainAxisAlignment.center,
                                     ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:DTalk/app/view/splash_page.dart';
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';

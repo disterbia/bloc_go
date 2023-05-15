@@ -1,4 +1,5 @@
 import 'package:DTalk/app/const/addr.dart';
+import 'package:DTalk/app/view/splash_page.dart';
 import 'package:DTalk/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:DTalk/app/bloc/chat_bloc.dart';
@@ -37,7 +38,7 @@ class _MyPageState extends State<MyPage> {
           elevation: 1,
           centerTitle: true,
           title: Text(
-            state.mypage!.id,
+            state.mypage!.nickname,
             style: TextStyle(color: Colors.black),
           ),
           // leading: IconButton(
@@ -74,7 +75,7 @@ class _MyPageState extends State<MyPage> {
               return astate=="a"?CircularProgressIndicator():
               astate==""?state.mypage!.image==""?CircleAvatar(
                 backgroundColor: Colors.black,
-                backgroundImage:AssetImage("assets/logo.png"),
+                backgroundImage:AssetImage("assets/img/profile3_lg.png"),
                 radius: 50, // Replace with your own image
               ):CircleAvatar(
                 backgroundImage:NetworkImage(state.mypage!.image),
@@ -88,12 +89,25 @@ class _MyPageState extends State<MyPage> {
           ),
         ),
         SizedBox(height: 8),
-        Text(
-          'Your Name',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        SizedBox(height: 4),
-        Text('@your_username'),
+        InkWell(
+          onTap: ()=>context.push(MyRoutes.UPDATEPROFILE,extra: {"nickname":state.mypage!.nickname,"intro":state.mypage!.intro}),
+          child: Column(children: [
+            Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("@",style: TextStyle(color: Address.color,fontWeight: FontWeight.bold, fontSize: 18.sp),),
+                Text(
+                  state.mypage!.nickname,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+                ),
+              ],
+            ),
+            SizedBox(height: 4),
+            Padding(
+              padding:  EdgeInsets.symmetric(horizontal: 40.0),
+              child: Text(state.mypage!.intro),
+            ),
+          ],),
+        )
       ],
     );
   }
@@ -113,9 +127,9 @@ class _MyPageState extends State<MyPage> {
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
 
                     if (snapshot.hasData) {
-                      return _buildStatItem('Following',snapshot.data!);
+                      return _buildStatItem('팔로잉',snapshot.data!);
                     } else {
-                      return _buildStatItem('Following', 0);
+                      return _buildStatItem('팔로잉', 0);
                     }
                   },
                 ),
@@ -125,9 +139,9 @@ class _MyPageState extends State<MyPage> {
                   stream: followersCountStream(UserID.uid!),
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData) {
-                      return _buildStatItem('Followers', snapshot.data!);
+                      return _buildStatItem('팔로워', snapshot.data!);
                     } else {
-                      return _buildStatItem('Followers', 0);
+                      return _buildStatItem('팔로워', 0);
                     }
                   },
                 ),
@@ -135,9 +149,9 @@ class _MyPageState extends State<MyPage> {
                   stream: likesCountStream(UserID.uid!),
                   builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                     if (snapshot.hasData) {
-                      return _buildStatItem('Likes',snapshot.data!);
+                      return _buildStatItem('좋아요',snapshot.data!);
                     } else {
-                      return _buildStatItem('Likes', 0);
+                      return _buildStatItem('좋아요', 0);
                     }
                   },
                 ),
@@ -163,12 +177,13 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget _buildProfileBio(BuildContext context) {
-        return ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 60.h),
+        return ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 50.h),
           child: ElevatedButton(
               style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Address.color),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
+                        borderRadius: BorderRadius.circular(20.0),
                       )
                   )),
 
@@ -198,7 +213,7 @@ class _MyPageState extends State<MyPage> {
           onTap: (){
             context.read<UserVideoBloc>().add(LoadVideoEvent(currentIndex: index,userVideo: state.mypage!.videos));
             context.read<ChatBloc>().add(InitialUserChatEvent(state.mypage!.id,index));
-            context.push(MyRoutes.USERVIDEO,extra: {"index":index, "image":state.mypage!.image});
+            context.push(MyRoutes.USERVIDEO,extra: {"index":index, "image":state.mypage!.image,"nickname":state.mypage!.nickname});
           },
           child: CachedNetworkImage(
             imageUrl: state.mypage!.videos[index].thumbnail,fit: BoxFit.fill,),
