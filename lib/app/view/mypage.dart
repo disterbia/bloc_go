@@ -1,16 +1,17 @@
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/view/splash_page.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/view/splash_page.dart';
+import 'package:Dtalk/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:DTalk/app/bloc/chat_bloc.dart';
-import 'package:DTalk/app/bloc/image_bloc.dart';
-import 'package:DTalk/app/bloc/mypage_bloc.dart';
-import 'package:DTalk/app/bloc/user_video_bloc.dart';
-import 'package:DTalk/app/bloc/video_upload_bloc.dart';
-import 'package:DTalk/app/router/custom_go_router.dart';
-import 'package:DTalk/app/view/home_page.dart';
+import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/image_bloc.dart';
+import 'package:Dtalk/app/bloc/mypage_bloc.dart';
+import 'package:Dtalk/app/bloc/user_video_bloc.dart';
+import 'package:Dtalk/app/bloc/video_upload_bloc.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/view/home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -26,38 +27,53 @@ class _MyPageState extends State<MyPage> {
   }
   @override
   Widget build(BuildContext context) {
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   statusBarColor: Colors.black, // Set status bar color
+    //   statusBarIconBrightness: Brightness.light, // Status bar icons' color
+    // ));
     return BlocBuilder<MyPageBloc, MyPageState>(
         builder: (context, state) {
       if (state is! MyPageLoadedState)
         return Center(
           child: CircularProgressIndicator(),
         );
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 1,
-          centerTitle: true,
-          title: Text(
-            state.mypage!.nickname,
-            style: TextStyle(color: Colors.black),
+      return SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            systemOverlayStyle: SystemUiOverlayStyle(
+              // Status bar color
+              statusBarColor: Colors.black,
+
+              // Status bar brightness (optional)
+              statusBarIconBrightness: Brightness.light, // For Android (dark icons)
+              statusBarBrightness: Brightness.light, // For iOS (dark icons)
+            ),
+            backgroundColor: Colors.white,
+            elevation: 1,
+            centerTitle: true,
+            title: Text(
+              state.mypage!.nickname,
+              style: TextStyle(color: Colors.black),
+            ),
+            // leading: IconButton(
+            //   icon: Icon(Icons.arrow_back, color: Colors.black),
+            //   onPressed: () =>  context.pop(),
+            // ),
           ),
-          // leading: IconButton(
-          //   icon: Icon(Icons.arrow_back, color: Colors.black),
-          //   onPressed: () =>  context.pop(),
-          // ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 16),
-              _buildProfileHeader(context,state),
-              SizedBox(height: 16),
-              _buildProfileStats(),
-              SizedBox(height: 16),
-              _buildProfileBio(context),
-              SizedBox(height: 16),
-              _buildProfileTabs(state,context),
-            ],
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                _buildProfileHeader(context,state),
+                SizedBox(height: 20),
+                _buildProfileStats(),
+                SizedBox(height: 20),
+                _buildProfileBio(context),
+                SizedBox(height: 20),
+                _buildProfileTabs(state,context),
+                SizedBox(height: 5),
+              ],
+            ),
           ),
         ),
       );
@@ -200,6 +216,7 @@ class _MyPageState extends State<MyPage> {
   Widget _buildProfileTabs(MyPageState state,BuildContext context) {
     return  GridView.builder(
       physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(4),
       shrinkWrap: true,
       itemCount: state.mypage!.videos.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

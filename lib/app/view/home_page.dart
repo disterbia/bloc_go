@@ -1,12 +1,13 @@
-import 'package:DTalk/app/bloc/chat_bloc.dart';
-import 'package:DTalk/app/bloc/mypage_bloc.dart';
-import 'package:DTalk/app/bloc/take_video_bloc.dart';
-import 'package:DTalk/app/bloc/video_stream_bloc.dart';
-import 'package:DTalk/app/router/custom_go_router.dart';
-import 'package:DTalk/app/view/mypage.dart';
-import 'package:DTalk/app/view/videostream.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/mypage_bloc.dart';
+import 'package:Dtalk/app/bloc/take_video_bloc.dart';
+import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/view/mypage.dart';
+import 'package:Dtalk/app/view/videostream.dart';
+import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,7 +45,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () async => false,
       child: SafeArea(
@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                 if(UserID.uid==null){
                   context.push(MyRoutes.Login);
                 }else{
-                  context.read<TakeVideoBloc>().add(InitialEvent());
+                  context.read<TakeVideoBloc>().add(InitialEvent(1));
                   context.push(MyRoutes.TAKEVIDEO);
                 }
 

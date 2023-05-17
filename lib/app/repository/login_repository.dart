@@ -1,6 +1,6 @@
-import 'package:DTalk/app/model/user_info.dart';
+import 'package:Dtalk/app/model/user_info.dart';
 import 'package:dio/dio.dart';
-import 'package:DTalk/app/const/addr.dart';
+import 'package:Dtalk/app/const/addr.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 
 class LoginRepository{

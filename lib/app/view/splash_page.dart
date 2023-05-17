@@ -1,6 +1,6 @@
-import 'package:DTalk/app/bloc/chat_bloc.dart';
-import 'package:DTalk/app/bloc/spalsh_bloc.dart';
-import 'package:DTalk/app/bloc/video_stream_bloc.dart';
+import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/spalsh_bloc.dart';
+import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';

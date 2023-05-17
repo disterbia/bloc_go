@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Address{
-  static final String addr= "http://192.168.0.90:8080/";
-  static final String wsAddr= "ws://192.168.0.90:8080/";
+  // static final String addr= "http://192.168.0.90:8080/";
+  // static final String wsAddr= "ws://192.168.0.90:8080/";
   //
-  // static final String addr= "http://ec2-3-39-226-206.ap-northeast-2.compute.amazonaws.com:8080/";
-  // static final String wsAddr= "ws://ec2-3-39-226-206.ap-northeast-2.compute.amazonaws.com:8080/";
+  static final String addr= "http://ec2-3-39-226-206.ap-northeast-2.compute.amazonaws.com:8080/";
+  static final String wsAddr= "ws://ec2-3-39-226-206.ap-northeast-2.compute.amazonaws.com:8080/";
   static final Color color =  Color(0xFF00D9E9);
  }
 

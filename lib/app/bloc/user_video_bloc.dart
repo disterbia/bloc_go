@@ -1,8 +1,8 @@
-import 'package:DTalk/app/view/splash_page.dart';
+import 'package:Dtalk/app/view/splash_page.dart';
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
-import 'package:DTalk/app/model/user_video.dart';
-import 'package:DTalk/app/view/home_page.dart';
+import 'package:Dtalk/app/model/user_video.dart';
+import 'package:Dtalk/app/view/home_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
@@ -14,18 +14,34 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
     on<LoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
     on<UpdatePrevVideoControllers>((event, emit) async => await _updatePrevControllers(event, emit));
     on<UpdateNextVideoControllers>((event, emit) async => await _updateNextControllers(event, emit));
-    on<PlayAndPauseEvent>((event, emit) async => await _playAndPause(event, emit));
+   // on<PlayAndPauseEvent>((event, emit) async => await _playAndPause(event, emit));
+    on<UserVideoPlayEvent>((event, emit) async => await _VideoPlay(event, emit));
+    on<UserVideoPauseEvent>((event, emit) async => await _VideoPause(event, emit));
   }
 
 
-  Future<void> _playAndPause(PlayAndPauseEvent event, Emitter<UserVideoState> emit) async {
-    if(state.currentController!.isPlaying()!){
+  // Future<void> _playAndPause(PlayAndPauseEvent event, Emitter<UserVideoState> emit) async {
+  //   if(state.currentController!.isPlaying()!){
+  //     await state.currentController!.seekTo(Duration.zero);
+  //     await state.currentController!.pause();
+  //   }else {
+  //     await state.currentController!.play();
+  //   }
+  // }
+
+  Future<void> _VideoPause(UserVideoPauseEvent event, Emitter<UserVideoState> emit) async {
+    if(state.currentController!.isPlaying()! || state.currentController!.isVideoInitialized()!) {
       await state.currentController!.seekTo(Duration.zero);
       await state.currentController!.pause();
-    }else {
+    }
+  }
+
+  Future<void> _VideoPlay(UserVideoPlayEvent event, Emitter<UserVideoState> emit) async {
+    if(!state.currentController!.isPlaying()!){
       await state.currentController!.play();
     }
   }
+
 
   Future<void> _updatePrevControllers(UpdatePrevVideoControllers event, Emitter<UserVideoState> emit) async {
     if(event.currentIndex! == 1){ // 첫동영상으로 갔을때
@@ -120,9 +136,9 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
         videoFormat: BetterPlayerVideoFormat.hls,
         cacheConfiguration: const BetterPlayerCacheConfiguration(
           useCache: true,
-          maxCacheSize: 10 * 1024 * 1024,
-          maxCacheFileSize: 10 * 1024 * 1024,
-          preCacheSize: 10 * 1024 * 1024,
+          maxCacheSize: 5 * 1024 * 1024,
+          maxCacheFileSize: 5 * 1024 * 1024,
+          preCacheSize: 3 * 1024 * 1024,
         ));
 
     BetterPlayerController betterPlayerController = BetterPlayerController(
@@ -137,7 +153,6 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
     state.nextController?.dispose(forceDispose: true);
     state.currentController?.dispose(forceDispose: true);
     state.prevController?.dispose(forceDispose: true);
-
     return super.close();
   }
 }
@@ -164,14 +179,29 @@ class UpdatePrevVideoControllers extends UserVideoEvent {
   @override
   List<Object?> get props => [userVideo,currentIndex];
 }
+class UserVideoPlayEvent extends UserVideoEvent {
 
-class PlayAndPauseEvent extends UserVideoEvent {
-
-  PlayAndPauseEvent({super.userVideo,super.currentIndex});
+  UserVideoPlayEvent({super.currentIndex,super.userVideo});
 
   @override
-  List<Object?> get props => [userVideo,currentIndex];
+  List<Object?> get props => [currentIndex,userVideo];
 }
+
+class UserVideoPauseEvent extends UserVideoEvent {
+
+  UserVideoPauseEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+// class PlayAndPauseEvent extends UserVideoEvent {
+//
+//   PlayAndPauseEvent({super.userVideo,super.currentIndex});
+//
+//   @override
+//   List<Object?> get props => [userVideo,currentIndex];
+// }
 
 class UpdateNextVideoControllers extends UserVideoEvent {
 

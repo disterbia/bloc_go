@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:DTalk/app/view/splash_page.dart';
+import 'package:Dtalk/app/view/splash_page.dart';
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
-import 'package:DTalk/app/repository/video_upload_repository.dart';
-import 'package:DTalk/app/view/home_page.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/repository/video_upload_repository.dart';
+import 'package:Dtalk/app/view/home_page.dart';
+import 'package:Dtalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,7 +23,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
   BetterPlayerController? _betterPlayerController;
 
   TakeVideoBloc(this.repository) : super(InitialState(isRecording: false,)) {
-    on<InitialEvent>((event, emit) async => await _initializeCameras());
+    on<InitialEvent>((event, emit) async => await _initializeCameras(event.index));
     on<StartVideoRecording>(
         (event, emit) async => await _startVideoRecording());
     on<StopVideoRecording>((event, emit) async => await _stopVideoRecording());
@@ -35,7 +35,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
   Future<void> close() {
     print("=====-------==");
     state.controller?.dispose();
-    state.betterPlayerController?.dispose();
+    state.betterPlayerController?.dispose(forceDispose: true);
     _controller?.dispose();
     return super.close();
   }
@@ -53,7 +53,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
     }
   }
 
-  Future<void> _initializeCameras() async {
+  Future<void> _initializeCameras(int index) async {
     if(_controller!=null) {
       emit(InitialState(
           isRecording: false, controller: null, cameras: _cameras));
@@ -61,7 +61,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
     }
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
-      _controller = CameraController(_cameras![1], ResolutionPreset.high);
+      _controller = CameraController(_cameras![index], ResolutionPreset.veryHigh,);
       await _controller!.initialize();
       emit(InitialState(
           isRecording: false, controller: _controller, cameras: _cameras));
@@ -188,7 +188,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
       Response response = await repository.upload(formData);
 
 
-
+      print("-=-=-=-=${response.data}");
       // Handle response
       if (response.statusCode == 200) {
 
@@ -232,8 +232,10 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
 abstract class TakeVideoEvent extends Equatable {}
 
 class InitialEvent extends TakeVideoEvent {
+  int index=1;
+  InitialEvent(this.index);
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [index];
 }
 
 class StartVideoRecording extends TakeVideoEvent {

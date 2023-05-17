@@ -1,11 +1,11 @@
 {
-    "name": "DTalk",
-    "short_name": "DTalk",
+    "name": "Dtalk",
+    "short_name": "Dtalk",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "DTalk",
+    "description": "Dtalk",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

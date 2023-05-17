@@ -1,5 +1,5 @@
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/model/follow_info.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/model/follow_info.dart';
 import 'package:dio/dio.dart';
 
 class FollowRepository {

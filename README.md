@@ -1,6 +1,6 @@
-# DTalk
+# Dtalk
 
-DTalk
+Dtalk
 
 ## Getting Started
 

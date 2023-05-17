@@ -1,7 +1,7 @@
-import 'package:DTalk/app/bloc/mypage_bloc.dart';
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/repository/user_profile_repository.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/bloc/mypage_bloc.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/repository/user_profile_repository.dart';
+import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -38,6 +38,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       _introductionController.text,
     );
     if(result){
+      await SharedPreferencesHelper.saveUserNickname(_nicknameController.text);
+      UserID.nickname=_nicknameController.text;
       context.read<MyPageBloc>().add(GetMyPageEvent(userId: UserID.uid!));
       context.pop();
     }else {
@@ -50,7 +52,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('프로필 수정'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        titleSpacing: 0,
+        leading: Container(child: InkWell(onTap:()=> context.pop(),child: Image.asset("assets/img/ic_back.png")),padding: EdgeInsets.all(15)),
+        title: Text('프로필 수정',style: TextStyle(color: Colors.black),),
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
@@ -58,6 +64,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           children: [
             TextField(
               controller: _nicknameController,
+              maxLength: 15,
               decoration: InputDecoration(
                 labelText: '닉네임',
                 focusedBorder:OutlineInputBorder(

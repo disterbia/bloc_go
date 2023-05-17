@@ -1,11 +1,11 @@
 
-import 'package:DTalk/app/bloc/chat_bloc.dart';
-import 'package:DTalk/app/bloc/video_stream_bloc.dart';
-import 'package:DTalk/app/model/video_stream.dart';
-import 'package:DTalk/app/router/custom_go_router.dart';
-import 'package:DTalk/app/widget/floating_heart.dart';
-import 'package:DTalk/app/widget/chat_widget.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
+import 'package:Dtalk/app/model/video_stream.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/widget/floating_heart.dart';
+import 'package:Dtalk/app/widget/chat_widget.dart';
+import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

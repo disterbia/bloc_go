@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/model/chat_room_state.dart';
-import 'package:DTalk/app/model/message.dart';
-import 'package:DTalk/app/model/socket_event.dart';
-import 'package:DTalk/app/model/user_video.dart';
-import 'package:DTalk/app/model/video_stream.dart';
-import 'package:DTalk/app/repository/video_stream_repository.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/model/chat_room_state.dart';
+import 'package:Dtalk/app/model/message.dart';
+import 'package:Dtalk/app/model/socket_event.dart';
+import 'package:Dtalk/app/model/user_video.dart';
+import 'package:Dtalk/app/model/video_stream.dart';
+import 'package:Dtalk/app/repository/video_stream_repository.dart';
+import 'package:Dtalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:web_socket_channel/io.dart';
 

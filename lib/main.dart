@@ -1,22 +1,22 @@
-import 'package:DTalk/app/bloc/chat_bloc.dart';
-import 'package:DTalk/app/bloc/follow_bloc.dart';
-import 'package:DTalk/app/bloc/image_bloc.dart';
-import 'package:DTalk/app/bloc/login_bloc.dart';
-import 'package:DTalk/app/bloc/mypage_bloc.dart';
-import 'package:DTalk/app/bloc/spalsh_bloc.dart';
-import 'package:DTalk/app/bloc/take_video_bloc.dart';
-import 'package:DTalk/app/bloc/user_profile_bloc.dart';
-import 'package:DTalk/app/bloc/user_video_bloc.dart';
-import 'package:DTalk/app/bloc/video_stream_bloc.dart';
-import 'package:DTalk/app/bloc/video_upload_bloc.dart';
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/repository/follow_repository.dart';
-import 'package:DTalk/app/repository/image_repository.dart';
-import 'package:DTalk/app/repository/login_repository.dart';
-import 'package:DTalk/app/repository/mypage_repository.dart';
-import 'package:DTalk/app/repository/video_stream_repository.dart';
-import 'package:DTalk/app/repository/video_upload_repository.dart';
-import 'package:DTalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/follow_bloc.dart';
+import 'package:Dtalk/app/bloc/image_bloc.dart';
+import 'package:Dtalk/app/bloc/login_bloc.dart';
+import 'package:Dtalk/app/bloc/mypage_bloc.dart';
+import 'package:Dtalk/app/bloc/spalsh_bloc.dart';
+import 'package:Dtalk/app/bloc/take_video_bloc.dart';
+import 'package:Dtalk/app/bloc/user_profile_bloc.dart';
+import 'package:Dtalk/app/bloc/user_video_bloc.dart';
+import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
+import 'package:Dtalk/app/bloc/video_upload_bloc.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/repository/follow_repository.dart';
+import 'package:Dtalk/app/repository/image_repository.dart';
+import 'package:Dtalk/app/repository/login_repository.dart';
+import 'package:Dtalk/app/repository/mypage_repository.dart';
+import 'package:Dtalk/app/repository/video_stream_repository.dart';
+import 'package:Dtalk/app/repository/video_upload_repository.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
               routeInformationParser: MyPages.router.routeInformationParser,
               routerDelegate: MyPages.router.routerDelegate,
               routeInformationProvider: MyPages.router.routeInformationProvider,
-              title: 'DTalk',
+              title: 'Dtalk',
               theme: ThemeData(
                 backgroundColor: Colors.black,
                 appBarTheme: AppBarTheme(backgroundColor: Colors.black)

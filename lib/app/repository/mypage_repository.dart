@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/model/my_page.dart';
-import 'package:DTalk/app/model/user_info.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/model/my_page.dart';
+import 'package:Dtalk/app/model/user_info.dart';
 
 class MyPageRepository{
   final dio = Dio();

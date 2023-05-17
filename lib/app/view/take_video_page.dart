@@ -1,10 +1,11 @@
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/widget/recording_timer.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/widget/recording_timer.dart';
 import 'package:camera/camera.dart';
-import 'package:DTalk/app/bloc/take_video_bloc.dart';
-import 'package:DTalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/bloc/take_video_bloc.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 class TakeVideoScreen extends StatefulWidget {
@@ -15,7 +16,8 @@ class TakeVideoScreen extends StatefulWidget {
 class _TakeVideoScreenState extends State<TakeVideoScreen> {
   bool enabled = true;
   bool enabled2 = true;
-  final maximumDuration = Duration(seconds: 10);
+  bool isfront=true;
+  final maximumDuration = Duration(seconds: 30);
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +49,18 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: RecordingTimer(maximumDuration: Duration(seconds: 10)),
+                  child: RecordingTimer(maximumDuration: Duration(seconds: 30)),
                 ):Container(),
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Align(alignment: Alignment.bottomRight,child: InkWell(onTap: (){
+                    if(!state.controller!.value.isRecordingVideo){
+                      context.read<TakeVideoBloc>().add(DisposeCameraEvent());
+                      context.read<TakeVideoBloc>().add(InitialEvent(isfront?0:1));
+                      isfront=!isfront;
+                    }
+                  },child:state.controller!.value.isRecordingVideo?Container(): Icon(Icons.flip_camera_android,color: Colors.white,size: 30.sp,))),
+                )
               ],
             )
                 : Center(child: CircularProgressIndicator()),

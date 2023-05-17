@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/repository/login_repository.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/repository/login_repository.dart';
+import 'package:Dtalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -9,7 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:DTalk/app/model/user_info.dart' as myUser;
+import 'package:Dtalk/app/model/user_info.dart' as myUser;
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginRepository loginRepository;
@@ -93,7 +93,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             AppleIDAuthorizationScopes.fullName,
           ],
           webAuthenticationOptions: WebAuthenticationOptions(
-            clientId: "DTalk.DTalk.dmonster.com",
+            clientId: "Dtalk.Dtalk.dmonster.com",
             redirectUri: Uri.parse(
               "https://flawless-gem-chestnut.glitch.me/callbacks/sign_in_with_apple",
             ),

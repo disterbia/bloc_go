@@ -1,16 +1,17 @@
-import 'package:DTalk/app/view/splash_page.dart';
+import 'package:Dtalk/app/view/splash_page.dart';
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
-import 'package:DTalk/app/model/video_stream.dart';
-import 'package:DTalk/app/view/home_page.dart';
+import 'package:Dtalk/app/model/video_stream.dart';
+import 'package:Dtalk/app/view/home_page.dart';
 
 import 'package:flutter/material.dart';
-import 'package:DTalk/app/repository/video_stream_repository.dart';
+import 'package:Dtalk/app/repository/video_stream_repository.dart';
 import 'package:equatable/equatable.dart';
 
 class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   final VideoStreamRepository repository;
   List<VideoStream>? videos=[];
+  String firstUrl="";
 
   VideoStreamBloc(this.repository) : super(VideoInitial()) {
     on<LoadVideoEvent>((event, emit) async => await _loadVideos(emit));
@@ -54,7 +55,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
      await state.currentController!.play();
-      await _getMoreVideos(state.video!.length,state.video![0].url,emit);
+      await _getMoreVideos(state.video!.length,firstUrl,emit);
     }else{
       BetterPlayerController? nextController =  await _initializeVideo(state.video![event.currentIndex!+2]);
       emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: state.video));
@@ -72,11 +73,10 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
     }
     BetterPlayerController newController= await _initializeVideo(temp.first);
     if(temp.first.isNew){
-      videos!.insert(0, temp.first);
-    }else{
-      videos!.addAll(temp);
+      this.firstUrl=temp[0].url;
+      // videos!.insert(0, temp.first);
     }
-
+    videos!.addAll(temp);
     emit(VideoLoaded(prevController: state.prevController, currentController: state.currentController, nextController: newController, video: videos));
   }
 
@@ -85,6 +85,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
     if (temp.isEmpty) {
       return;
     }
+    firstUrl=temp[0].url;
     // 최초 로드 시 0번째, 1번째 동영상 컨트롤러 로드
     if (state.currentController == null) {
       BetterPlayerController currentController = await _initializeVideo(temp[0]);
@@ -125,9 +126,9 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
           videoFormat: BetterPlayerVideoFormat.hls,
             cacheConfiguration: const BetterPlayerCacheConfiguration(
               useCache: true,
-              maxCacheSize: 10 * 1024 * 1024,
-              maxCacheFileSize: 10 * 1024 * 1024,
-              preCacheSize: 10 * 1024 * 1024,
+              maxCacheSize: 5 * 1024 * 1024,
+              maxCacheFileSize: 5 * 1024 * 1024,
+              preCacheSize: 3 * 1024 * 1024,
             ));
 
     BetterPlayerController betterPlayerController = BetterPlayerController(

@@ -1,18 +1,19 @@
 
-import 'package:DTalk/app/model/video_stream.dart';
-import 'package:DTalk/app/view/bridge_page.dart';
-import 'package:DTalk/app/view/home_page.dart';
-import 'package:DTalk/app/view/login_page.dart';
-import 'package:DTalk/app/view/splash_page.dart';
-import 'package:DTalk/app/view/take_video_page.dart';
-import 'package:DTalk/app/view/update_profile.dart';
-import 'package:DTalk/app/view/upload_page.dart';
-import 'package:DTalk/app/view/user_profile.dart';
-import 'package:DTalk/app/view/user_video_page.dart';
-import 'package:DTalk/app/view/video_review_page.dart';
-import 'package:DTalk/app/view/video_trim_page.dart';
-import 'package:DTalk/app/view/video_upload.dart';
-import 'package:DTalk/app/view/videostream.dart';
+import 'package:Dtalk/app/model/video_stream.dart';
+import 'package:Dtalk/app/view/admin_page.dart';
+import 'package:Dtalk/app/view/bridge_page.dart';
+import 'package:Dtalk/app/view/home_page.dart';
+import 'package:Dtalk/app/view/login_page.dart';
+import 'package:Dtalk/app/view/splash_page.dart';
+import 'package:Dtalk/app/view/take_video_page.dart';
+import 'package:Dtalk/app/view/update_profile.dart';
+import 'package:Dtalk/app/view/upload_page.dart';
+import 'package:Dtalk/app/view/user_profile.dart';
+import 'package:Dtalk/app/view/user_video_page.dart';
+import 'package:Dtalk/app/view/video_review_page.dart';
+import 'package:Dtalk/app/view/video_trim_page.dart';
+import 'package:Dtalk/app/view/video_upload.dart';
+import 'package:Dtalk/app/view/videostream.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:go_router/go_router.dart';
@@ -31,6 +32,7 @@ class MyRoutes {
   static const USERPROFILE ='/user_profile';
   static const BRIDGE ='/bridge';
   static const VIDEOTRIM = "/trim";
+  static const ADMIN = "/admin";
   static const UPDATEPROFILE = "/update_profile";
 }
 
@@ -40,9 +42,14 @@ class MyPages {
     initialLocation: "/",
     errorBuilder: (context, state) => Container(child: Text("dd"),),
     routes: [
+
       GoRoute(
           path: MyRoutes.SPLASH,
           builder: (context, state) => SplashScreen()
+      ),
+      GoRoute(
+          path: MyRoutes.ADMIN,
+          builder: (context, state) => AdminPage()
       ),
       GoRoute(
           path: MyRoutes.HOME,
@@ -76,7 +83,7 @@ class MyPages {
       ),
       GoRoute(
           path: MyRoutes.USERPROFILE,
-          builder: (context, state) => UserProfile(state.extra as VideoStream)
+          builder: (context, state) => UserProfile(state.extra as VideoStream,true)
       ),
       GoRoute(
           path: MyRoutes.VIDEOREVIEW,

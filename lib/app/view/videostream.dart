@@ -1,14 +1,14 @@
-import 'package:DTalk/app/bloc/follow_bloc.dart';
-import 'package:DTalk/app/view/login_page.dart';
+import 'package:Dtalk/app/bloc/follow_bloc.dart';
+import 'package:Dtalk/app/view/login_page.dart';
 import 'package:better_player/better_player.dart';
-import 'package:DTalk/app/bloc/chat_bloc.dart';
-import 'package:DTalk/app/bloc/user_profile_bloc.dart';
-import 'package:DTalk/app/bloc/video_stream_bloc.dart';
-import 'package:DTalk/app/model/video_stream.dart';
-import 'package:DTalk/app/view/chat_socket.dart';
-import 'package:DTalk/app/view/four_page.dart';
-import 'package:DTalk/app/view/user_profile.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/user_profile_bloc.dart';
+import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
+import 'package:Dtalk/app/model/video_stream.dart';
+import 'package:Dtalk/app/view/chat_socket.dart';
+import 'package:Dtalk/app/view/four_page.dart';
+import 'package:Dtalk/app/view/user_profile.dart';
+import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -157,7 +157,7 @@ class VideoScreenPage extends StatelessWidget {
                 context.read<UserProfileBloc>().add(GetUserProfileVideosEvent(
                     userId: UserID.uid??"",
                     creator: videos![_currentIndex].userInfo.id));
-                return UserProfile(videos[_currentIndex]);
+                return UserProfile(videos[_currentIndex],false);
               } else {
                 if(UserID.uid!=null){
                   context.read<FollowBloc>().add(FollowEvent(UserID.uid!));

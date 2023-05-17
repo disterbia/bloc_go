@@ -1,11 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dmonster.DTalk.DTalk">
+    package="com.dmonster.Dtalk.Dtalk">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="DTalk"
+        android:label="Dtalk"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
+        android:largeHeap="true"
+
        >
        <meta-data
            android:name="com.naver.sdk.clientId"

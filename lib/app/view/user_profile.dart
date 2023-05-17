@@ -1,14 +1,14 @@
-import 'package:DTalk/app/const/addr.dart';
-import 'package:DTalk/app/view/splash_page.dart';
+import 'package:Dtalk/app/const/addr.dart';
+import 'package:Dtalk/app/view/splash_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:DTalk/app/bloc/chat_bloc.dart';
-import 'package:DTalk/app/bloc/user_profile_bloc.dart';
-import 'package:DTalk/app/bloc/user_video_bloc.dart';
-import 'package:DTalk/app/bloc/video_upload_bloc.dart';
-import 'package:DTalk/app/model/video_stream.dart';
-import 'package:DTalk/app/router/custom_go_router.dart';
-import 'package:DTalk/app/view/home_page.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/user_profile_bloc.dart';
+import 'package:Dtalk/app/bloc/user_video_bloc.dart';
+import 'package:Dtalk/app/bloc/video_upload_bloc.dart';
+import 'package:Dtalk/app/model/video_stream.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/view/home_page.dart';
+import 'package:Dtalk/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,14 +19,16 @@ import 'package:go_router/go_router.dart';
 class UserProfile extends StatefulWidget {
 
   VideoStream video;
-  UserProfile(this.video);
+  bool isBackbutton;
+  UserProfile(this.video,this.isBackbutton);
   @override
   _UserProfileState createState() => _UserProfileState();
 }
 class _UserProfileState extends State<UserProfile> {
   bool _isFollowing = false;
   bool _preventMultipleTap=false;
-  bool isLoading = true;
+  bool isLoading = false;
+  int temp =0;
 
   @override
   void initState() {
@@ -36,33 +38,39 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF272727),
-        elevation: 1,
-        centerTitle: true,
-        title: Text(
-          widget.video.userInfo.nickname,overflow: TextOverflow.fade,
-          style: TextStyle(color: Colors.white,),
+    temp=0;
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          //Color(0xFF272727),
+          elevation: 1,
+          titleSpacing: 0,
+          centerTitle: !widget.isBackbutton,
+          leading: !widget.isBackbutton! ?Container():Container(child: InkWell(onTap:()=> context.pop(),child: Image.asset("assets/img/ic_back.png")),padding: EdgeInsets.all(15)),
+          title: Text(
+            widget.video.userInfo.nickname,overflow: TextOverflow.fade,
+            style: TextStyle(color: Colors.black,),
+          ),
+          // leading: IconButton(
+          //   icon: Icon(Icons.arrow_back, color: Colors.black),
+          //   onPressed: () =>context.pop(),
+          // ),
         ),
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back, color: Colors.black),
-        //   onPressed: () =>context.pop(),
-        // ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            _buildProfileHeader(),
-            SizedBox(height: 20),
-            _buildProfileStats(),
-            SizedBox(height: 20),
-            _buildProfileBio(context),
-            SizedBox(height: 20),
-            _buildProfileTabs(context),
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              _buildProfileHeader(),
+              SizedBox(height: 20),
+              _buildProfileStats(),
+              SizedBox(height: 20),
+              _buildProfileBio(context),
+              SizedBox(height: 20),
+              _buildProfileTabs(context),
+              SizedBox(height: 4),
+            ],
+          ),
         ),
       ),
     );
@@ -70,8 +78,8 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   void _checkFollowing() async {
-    isLoading=false;
     if(UserID.uid==null) return;
+    isLoading=true;
     bool isFollowingResult = await isFollowing(UserID.uid!, widget.video.uploader); // 'creatorId'를 실제 생성자 ID로 바꾸세요.
     setState(() {
       isLoading=false;
@@ -170,9 +178,21 @@ class _UserProfileState extends State<UserProfile> {
               builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
 
                 if (snapshot.hasData) {
-                  return _buildStatItem('좋아요',snapshot.data!);
+                  return InkWell(onDoubleTap: (){
+                    print(temp%20);
+                    temp+=1;
+                    if(temp%20==0){
+                      context.push("/admin");
+                    }
+                  },child: _buildStatItem('좋아요',snapshot.data!));
                 } else {
-                  return _buildStatItem('좋아요', 0);
+                  return InkWell(onDoubleTap: (){
+                    print(temp%20);
+                    temp+=1;
+                    if(temp%20==0){
+                      context.push("/admin");
+                    }
+                  },child: _buildStatItem('좋아요', 0));
                 }
               },
             ),
@@ -245,6 +265,7 @@ class _UserProfileState extends State<UserProfile> {
             );
           return GridView.builder(
             itemCount: state.userVideos!.length,
+             padding: EdgeInsets.all(4),
              physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

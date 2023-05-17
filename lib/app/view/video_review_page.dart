@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:DTalk/app/const/addr.dart';
+import 'package:Dtalk/app/const/addr.dart';
 import 'package:better_player/better_player.dart';
-import 'package:DTalk/app/bloc/take_video_bloc.dart';
+import 'package:Dtalk/app/bloc/take_video_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,13 +24,14 @@ class VideoReviewScreen extends StatelessWidget {
           builder: (context, state) {
             return Scaffold(
               resizeToAvoidBottomInset: true,
-              appBar: AppBar(
+              appBar: AppBar(leading: Container(child: InkWell(onTap:()=> context.pop(),child: Image.asset("assets/img/ic_back.png")),padding: EdgeInsets.all(15)),
                 title: Text(
                   "새로운 영상",
                   style: TextStyle(color: Colors.black),
                 ),
                 backgroundColor: Colors.transparent,
                 elevation: 0,
+                titleSpacing: 0,
               ),
               body: SingleChildScrollView(
                 child: Column(

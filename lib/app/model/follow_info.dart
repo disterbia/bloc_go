@@ -1,4 +1,4 @@
-import 'package:DTalk/app/model/user_info.dart';
+import 'package:Dtalk/app/model/user_info.dart';
 
 class FollowInfo {
   final int followingCount;

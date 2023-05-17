@@ -1,9 +1,9 @@
-import 'package:DTalk/app/bloc/follow_bloc.dart';
-import 'package:DTalk/app/bloc/user_profile_bloc.dart';
-import 'package:DTalk/app/model/video_stream.dart';
-import 'package:DTalk/app/router/custom_go_router.dart';
-import 'package:DTalk/app/view/user_profile.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/bloc/follow_bloc.dart';
+import 'package:Dtalk/app/bloc/user_profile_bloc.dart';
+import 'package:Dtalk/app/model/video_stream.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/view/user_profile.dart';
+import 'package:Dtalk/main.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

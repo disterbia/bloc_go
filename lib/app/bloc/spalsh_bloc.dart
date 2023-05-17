@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:DTalk/app/const/addr.dart';
+import 'package:Dtalk/app/const/addr.dart';
 
 class SplashBloc extends Bloc<SplashEvent, bool> {
   SplashBloc() : super(false) {

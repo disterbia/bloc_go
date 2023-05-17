@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:DTalk/app/const/addr.dart';
+import 'package:Dtalk/app/const/addr.dart';
 
 class VideoUploadRepository{
   final dio = Dio();

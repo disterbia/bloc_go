@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:DTalk/app/view/splash_page.dart';
+import 'package:Dtalk/app/view/splash_page.dart';
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
-import 'package:DTalk/app/model/video_object.dart';
-import 'package:DTalk/app/repository/video_upload_repository.dart';
-import 'package:DTalk/app/view/home_page.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/model/video_object.dart';
+import 'package:Dtalk/app/repository/video_upload_repository.dart';
+import 'package:Dtalk/app/view/home_page.dart';
+import 'package:Dtalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +31,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
 
     on<DisposePlayerControllerEvent>((event, emit) {
       if (state.videoPlayerController != null) {
-        state.videoPlayerController!.dispose();
+        state.videoPlayerController!.dispose(forceDispose: true);
         emit(VideoState(titleController: state.titleController,videoPlayerController: null,videos: null));
       }
     });
@@ -56,8 +56,12 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
     emit(VideoState(titleController: TextEditingController()));
     final pickedFiles = await _picker.pickVideo(source: ImageSource.gallery);
     if (pickedFiles != null) {
-      if(controller!=null) controller!.dispose();
-      if(state.videoPlayerController!=null) state.videoPlayerController!.dispose();
+      if(controller!=null) {
+        controller!.dispose(forceDispose: true);
+      };
+      if(state.videoPlayerController!=null) {
+        state.videoPlayerController!.dispose(forceDispose: true);
+      }
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
           BetterPlayerDataSourceType.file,pickedFiles.path);
       BetterPlayerConfiguration betterPlayerConfiguration =
@@ -68,6 +72,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
           autoDispose: true,
           controlsConfiguration: BetterPlayerControlsConfiguration(
             showControls: true,
+            enableProgressBar: false,
             showControlsOnInitialize: true,
             controlBarColor: Colors.transparent,
             controlsHideTime: Duration.zero,
@@ -87,9 +92,9 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
        controller = BetterPlayerController(betterPlayerConfiguration,betterPlayerDataSource: betterPlayerDataSource,);
       await controller!.setupDataSource(betterPlayerDataSource);
       int videoDuration = controller!.videoPlayerController!.value.duration!.inSeconds;
-      if(videoDuration>10){
+      if(videoDuration>30){
         emit(FailedState());
-        emit(SnackBarState(message: "동영상 길이는 10초를 초과 할 수 없습니다."));
+        emit(SnackBarState(message: "동영상 길이는 30초를 초과 할 수 없습니다."));
       }else{
         emit(VideoState(videos: [pickedFiles],videoPlayerController: controller,titleController: TextEditingController()));
       }
@@ -176,9 +181,8 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
   }
   @override
   Future<void> close() {
-    state.videoPlayerController?.dispose();
+    state.videoPlayerController?.dispose(forceDispose: true);
     state.titleController?.dispose();
-    controller?.dispose();
     return super.close();
   }
 }
@@ -244,6 +248,13 @@ class SnackBarState extends UploadState {
 
   @override
   List<Object?> get props => [message, videos, videoPlayerController,titleController];
+}
+
+class SuccessState extends UploadState{
+  SuccessState({super.videos,super.videoPlayerController,super.titleController});
+
+  @override
+  List<Object?> get props => [videos,videoPlayerController,titleController];
 }
 
 

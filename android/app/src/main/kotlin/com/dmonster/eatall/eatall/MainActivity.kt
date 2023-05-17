@@ -1,4 +1,4 @@
-package com.dmonster.DTalk.DTalk
+package com.dmonster.Dtalk.Dtalk
 
 //병신같은 네이버
 //import io.flutter.embedding.android.FlutterActivity

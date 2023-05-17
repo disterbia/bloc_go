@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:DTalk/app/model/follow_info.dart';
-import 'package:DTalk/app/model/user_info.dart';
-import 'package:DTalk/app/repository/follow_repository.dart';
+import 'package:Dtalk/app/model/follow_info.dart';
+import 'package:Dtalk/app/model/user_info.dart';
+import 'package:Dtalk/app/repository/follow_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:DTalk/app/model/object_data.dart';
-import 'package:DTalk/app/repository/image_repository.dart';
-import 'package:DTalk/main.dart';
+import 'package:Dtalk/app/model/object_data.dart';
+import 'package:Dtalk/app/repository/image_repository.dart';
+import 'package:Dtalk/main.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 
