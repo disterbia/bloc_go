@@ -7,14 +7,22 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:591622777355:android:3d2c22ed04393ea495f50e",
+        "mobilesdk_app_id": "1:591622777355:android:a2830bc5314e0bde95f50e",
         "android_client_info": {
           "package_name": "com.dmonster.Dtalk.Dtalk"
         }
       },
       "oauth_client": [
         {
-          "client_id": "591622777355-11cntqroa2j3d3ogg3bgtcq9kto087ig.apps.googleusercontent.com",
+          "client_id": "591622777355-uphqil1itourbtvonc6ldvqkko82pejv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dmonster.Dtalk.Dtalk",
+            "certificate_hash": "22afdaa4c8ea1a95a7b6bdecef1f1661559b0078"
+          }
+        },
+        {
+          "client_id": "591622777355-0oc0fu2pjo2m2ahunh3vbfo71kdbjdgf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,8 +35,51 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "591622777355-11cntqroa2j3d3ogg3bgtcq9kto087ig.apps.googleusercontent.com",
+              "client_id": "591622777355-0oc0fu2pjo2m2ahunh3vbfo71kdbjdgf.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "591622777355-1obj9lo4vuf58t2neiqcktdql2g25pnq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dmonster.Dtalk.Dtalk"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591622777355:android:3d2c22ed04393ea495f50e",
+        "android_client_info": {
+          "package_name": "com.dmonster.eatall.eatall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "591622777355-0oc0fu2pjo2m2ahunh3vbfo71kdbjdgf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBciO4Lq3Sj-yYWc0RkiPl4KXph0kAlG5A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "591622777355-0oc0fu2pjo2m2ahunh3vbfo71kdbjdgf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "591622777355-1obj9lo4vuf58t2neiqcktdql2g25pnq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dmonster.Dtalk.Dtalk"
+              }
             }
           ]
         }
