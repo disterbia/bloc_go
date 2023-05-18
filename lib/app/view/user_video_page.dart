@@ -43,7 +43,7 @@ class _UserVideoPageState extends State<UserVideoPage> {
           builder: (context, videostate) {
             List<UserVideo>? videos = videostate.video;
 
-            return videostate is! VideoLoaded || _verticalController==null?Center(child: CircularProgressIndicator()):WillPopScope(
+            return videostate is! UserVideoLoaded || _verticalController==null?Center(child: CircularProgressIndicator()):WillPopScope(
               onWillPop: () async {
                 videostate.currentController?.dispose(forceDispose: true);
                 videostate.prevController?.dispose(forceDispose: true);
@@ -63,7 +63,7 @@ class _UserVideoPageState extends State<UserVideoPage> {
                       if (videostate.nextController != null) {
                         videostate.nextController!.dispose(forceDispose: true);
                       }
-                      context.read<UserVideoBloc>().add(UpdatePrevVideoControllers(currentIndex: _currentIndex));
+                      context.read<UserVideoBloc>().add(UserUpdatePrevVideoControllers(currentIndex: _currentIndex));
                       String removeId="";
                       String newId="";
                       if(videos!=null){
@@ -88,7 +88,7 @@ class _UserVideoPageState extends State<UserVideoPage> {
                       if (videostate.prevController != null) {
                         videostate.prevController!.dispose(forceDispose: true);
                       }
-                     context.read<UserVideoBloc>().add(UpdateNextVideoControllers(currentIndex: _currentIndex));
+                     context.read<UserVideoBloc>().add(UserUpdateNextVideoControllers(currentIndex: _currentIndex));
                       String removeId="";
                       String newId="";
                       if(videos!=null){

@@ -17,18 +17,18 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
     on<LoadVideoEvent>((event, emit) async => await _loadVideos(emit));
     on<UpdatePrevVideoControllers>((event, emit) async => await _updatePrevControllers(event, emit));
     on<UpdateNextVideoControllers>((event, emit) async => await _updateNextControllers(event, emit));
-    on<VideoPlayEvent>((event, emit) async => await _VideoPlay(event, emit));
-    on<VideoPauseEvent>((event, emit) async => await _VideoPause(event, emit));
+    on<VideoPlayEvent>((event, emit) async => await _videoPlay(event, emit));
+    on<VideoPauseEvent>((event, emit) async => await _videoPause(event, emit));
   }
 
-  Future<void> _VideoPause(VideoPauseEvent event, Emitter<VideoState> emit) async {
+  Future<void> _videoPause(VideoPauseEvent event, Emitter<VideoState> emit) async {
     if(state.currentController!.isPlaying()! || state.currentController!.isVideoInitialized()!) {
       await state.currentController!.seekTo(Duration.zero);
       await state.currentController!.pause();
     }
   }
 
-  Future<void> _VideoPlay(VideoPlayEvent event, Emitter<VideoState> emit) async {
+  Future<void> _videoPlay(VideoPlayEvent event, Emitter<VideoState> emit) async {
     if(!state.currentController!.isPlaying()!){
       await state.currentController!.play();
     }

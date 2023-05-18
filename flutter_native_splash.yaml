@@ -9,5 +9,5 @@ flutter_native_splash:
     image_dark: assets/img.jpg
     android_disable_fullscreen: true
   android: true
-  ios: false
+  ios: true
   web: false

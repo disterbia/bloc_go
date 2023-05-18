@@ -277,7 +277,7 @@ class _UserProfileState extends State<UserProfile> {
             itemBuilder: (BuildContext context, int index) {
               return InkWell(
                 onTap: () {
-                  context.read<UserVideoBloc>().add(LoadVideoEvent(
+                  context.read<UserVideoBloc>().add(UserLoadVideoEvent(
                       currentIndex: index,
                       userVideo: state.userVideos));
                   context.read<ChatBloc>().add(InitialUserChatEvent(widget.video.userInfo.id,index));

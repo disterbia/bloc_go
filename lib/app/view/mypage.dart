@@ -228,7 +228,7 @@ class _MyPageState extends State<MyPage> {
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
           onTap: (){
-            context.read<UserVideoBloc>().add(LoadVideoEvent(currentIndex: index,userVideo: state.mypage!.videos));
+            context.read<UserVideoBloc>().add(UserLoadVideoEvent(currentIndex: index,userVideo: state.mypage!.videos));
             context.read<ChatBloc>().add(InitialUserChatEvent(state.mypage!.id,index));
             context.push(MyRoutes.USERVIDEO,extra: {"index":index, "image":state.mypage!.image,"nickname":state.mypage!.nickname});
           },

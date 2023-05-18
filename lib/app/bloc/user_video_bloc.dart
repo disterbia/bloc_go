@@ -10,13 +10,13 @@ import 'package:equatable/equatable.dart';
 class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
   List<UserVideo>? videos=[];
 
-  UserVideoBloc() : super(VideoInitial()) {
-    on<LoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
-    on<UpdatePrevVideoControllers>((event, emit) async => await _updatePrevControllers(event, emit));
-    on<UpdateNextVideoControllers>((event, emit) async => await _updateNextControllers(event, emit));
+  UserVideoBloc() : super(UserVideoInitial()) {
+    on<UserLoadVideoEvent>((event, emit) async => await _loadVideos(event,emit));
+    on<UserUpdatePrevVideoControllers>((event, emit) async => await _updatePrevControllers(event, emit));
+    on<UserUpdateNextVideoControllers>((event, emit) async => await _updateNextControllers(event, emit));
    // on<PlayAndPauseEvent>((event, emit) async => await _playAndPause(event, emit));
-    on<UserVideoPlayEvent>((event, emit) async => await _VideoPlay(event, emit));
-    on<UserVideoPauseEvent>((event, emit) async => await _VideoPause(event, emit));
+    on<UserVideoPlayEvent>((event, emit) async => await _videoPlay(event, emit));
+    on<UserVideoPauseEvent>((event, emit) async => await _videoPause(event, emit));
   }
 
 
@@ -29,44 +29,44 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
   //   }
   // }
 
-  Future<void> _VideoPause(UserVideoPauseEvent event, Emitter<UserVideoState> emit) async {
+  Future<void> _videoPause(UserVideoPauseEvent event, Emitter<UserVideoState> emit) async {
     if(state.currentController!.isPlaying()! || state.currentController!.isVideoInitialized()!) {
       await state.currentController!.seekTo(Duration.zero);
       await state.currentController!.pause();
     }
   }
 
-  Future<void> _VideoPlay(UserVideoPlayEvent event, Emitter<UserVideoState> emit) async {
+  Future<void> _videoPlay(UserVideoPlayEvent event, Emitter<UserVideoState> emit) async {
     if(!state.currentController!.isPlaying()!){
       await state.currentController!.play();
     }
   }
 
 
-  Future<void> _updatePrevControllers(UpdatePrevVideoControllers event, Emitter<UserVideoState> emit) async {
+  Future<void> _updatePrevControllers(UserUpdatePrevVideoControllers event, Emitter<UserVideoState> emit) async {
     if(event.currentIndex! == 1){ // 첫동영상으로 갔을때
-      emit(VideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video: state.video));
+      emit(UserVideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video: state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
       await state.currentController!.play();
     }else{
       BetterPlayerController? prevController = await _initializeVideo(state.video![event.currentIndex!-2]);
-      emit(VideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: state.video));
+      emit(UserVideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: state.video));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
       await state.currentController!.play();
     }
   }
 
-  Future<void> _updateNextControllers(UpdateNextVideoControllers event, Emitter<UserVideoState> emit) async {
+  Future<void> _updateNextControllers(UserUpdateNextVideoControllers event, Emitter<UserVideoState> emit) async {
     if(event.currentIndex!+2 >= state.video!.length){ // 마지막 동영상으로 갔을때
-      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: state.video));
+      emit(UserVideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
       await state.currentController!.play();
     }else{
       BetterPlayerController? nextController =  await _initializeVideo(state.video![event.currentIndex!+2]);
-      emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: state.video));
+      emit(UserVideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: nextController, video: state.video));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
       await state.currentController!.play();
@@ -74,7 +74,7 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
   }
 
 
-  Future<void> _loadVideos(LoadVideoEvent event, Emitter<UserVideoState> emit) async {
+  Future<void> _loadVideos(UserLoadVideoEvent event, Emitter<UserVideoState> emit) async {
     List<UserVideo> temp = event.userVideo!;
     int index = event.currentIndex!;
     BetterPlayerController? prevController;
@@ -101,7 +101,7 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
 
 
       videos=temp;
-      emit(VideoLoaded(prevController: prevController, currentController: currentController, nextController: nextController, video: videos));
+      emit(UserVideoLoaded(prevController: prevController, currentController: currentController, nextController: nextController, video: videos));
       await state.currentController!.play();
 
   }
@@ -165,16 +165,16 @@ abstract class UserVideoEvent extends Equatable {
   UserVideoEvent({this.userVideo,this.currentIndex});
 }
 
-class LoadVideoEvent extends UserVideoEvent {
-  LoadVideoEvent({super.userVideo,super.currentIndex});
+class UserLoadVideoEvent extends UserVideoEvent {
+  UserLoadVideoEvent({super.userVideo,super.currentIndex});
 
   @override
   List<Object?> get props => [userVideo,currentIndex];
 }
 
-class UpdatePrevVideoControllers extends UserVideoEvent {
+class UserUpdatePrevVideoControllers extends UserVideoEvent {
 
-  UpdatePrevVideoControllers({super.userVideo,super.currentIndex});
+  UserUpdatePrevVideoControllers({super.userVideo,super.currentIndex});
 
   @override
   List<Object?> get props => [userVideo,currentIndex];
@@ -203,9 +203,9 @@ class UserVideoPauseEvent extends UserVideoEvent {
 //   List<Object?> get props => [userVideo,currentIndex];
 // }
 
-class UpdateNextVideoControllers extends UserVideoEvent {
+class UserUpdateNextVideoControllers extends UserVideoEvent {
 
-  UpdateNextVideoControllers({superuserVideo,super.currentIndex});
+  UserUpdateNextVideoControllers({superuserVideo,super.currentIndex});
 
   @override
   List<Object?> get props => [userVideo,currentIndex];
@@ -222,16 +222,16 @@ abstract class UserVideoState extends Equatable {
   UserVideoState({this.prevController,this.currentController,this.nextController, this.video});
 }
 
-class VideoInitial extends UserVideoState {
-  VideoInitial()
+class UserVideoInitial extends UserVideoState {
+  UserVideoInitial()
       : super(prevController: null, currentController: null, nextController: null, video: []);
 
   @override
   List<Object?> get props => [prevController, currentController, nextController, video];
 }
 
-class VideoLoaded extends UserVideoState {
-  VideoLoaded({super.prevController, super.currentController, super.nextController, super.video});
+class UserVideoLoaded extends UserVideoState {
+  UserVideoLoaded({super.prevController, super.currentController, super.nextController, super.video});
 
   @override
   List<Object?> get props => [prevController, currentController, nextController, video];
