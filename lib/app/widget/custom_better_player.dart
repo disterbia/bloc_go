@@ -15,7 +15,7 @@ class YourCustomControls extends StatelessWidget {
     return Row(
       children: <Widget>[
         IconButton(
-          icon: Image.asset(controller.isPlaying()! ? 'assets/img/up_play.png' : "assets/img/up_play.png"),
+          icon: Image.asset(controller.isPlaying()! ? 'assets/img/ic_google.png' : "assets/img/ic_google.png"),
           onPressed: () {
             if (controller.isPlaying()!) {
               controller.pause();

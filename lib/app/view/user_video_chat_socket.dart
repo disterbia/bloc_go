@@ -6,6 +6,7 @@ import 'package:Dtalk/app/model/user_video.dart';
 import 'package:Dtalk/app/model/video_stream.dart';
 import 'package:Dtalk/app/router/custom_go_router.dart';
 import 'package:Dtalk/app/widget/chat_widget.dart';
+import 'package:Dtalk/app/widget/user_chat_widget.dart';
 import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -182,7 +183,7 @@ class _UserVideoChatSocketState extends State<UserVideoChatSocket> with TickerPr
                                   topRight: Radius.circular(15),
                                 ),
                               ),
-                              child: chatWidget(context, widget.video!.id),
+                              child: userChatWidget(context, widget.video!.id),
 
                             );
                           },

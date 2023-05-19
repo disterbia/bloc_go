@@ -122,6 +122,7 @@ class TakeVideoBloc extends Bloc<TakeVideoEvent, TakeVideoState> {
         autoDispose: true,
         controlsConfiguration: BetterPlayerControlsConfiguration(
           showControls: true,
+            playerTheme:BetterPlayerTheme.material,
           showControlsOnInitialize: true,
           controlBarColor: Colors.transparent,
           controlsHideTime: Duration.zero,

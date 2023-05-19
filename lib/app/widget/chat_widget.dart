@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 Widget chatWidget(BuildContext context, String videoId) {
   return WillPopScope(
     onWillPop: () async{
-      context.read<UserVideoBloc>().add(UserVideoPlayEvent());
+      context.read<VideoStreamBloc>().add(VideoPlayEvent());
       return true;
     },
     child: BlocBuilder<ChatBloc,ChatState>(
@@ -30,7 +30,7 @@ Widget chatWidget(BuildContext context, String videoId) {
                     IconButton(
                       onPressed: () {
                         context.pop();
-                        context.read<UserVideoBloc>().add(UserVideoPlayEvent());
+                        context.read<VideoStreamBloc>().add(VideoPlayEvent());
 
                       },
                       icon: Image.asset("assets/img/sh_x.png",color: Colors.grey,),

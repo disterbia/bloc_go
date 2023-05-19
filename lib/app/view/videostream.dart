@@ -12,11 +12,10 @@ import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-
 class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController? _verticalController;
+  bool visible = false;
   int _currentIndex = 0;
   BetterPlayerController? controller;
   @override
@@ -37,7 +36,7 @@ class VideoScreenPage extends StatelessWidget {
               _verticalController!.dispose();
               _verticalController = null;
             }
-            _verticalController = PageController(initialPage: _currentIndex);
+             _verticalController = PageController(initialPage: _currentIndex);
             if (hIndex == 1) {
               return PageView.builder(
                 scrollDirection: Axis.vertical,
@@ -92,7 +91,7 @@ class VideoScreenPage extends StatelessWidget {
                   }
 
                   // 새로운 인덱스로 업데이트하고 다음 동영상 재생
-                  _currentIndex = vNextIndex;
+                   _currentIndex = vNextIndex;
 
 
                 },

@@ -44,6 +44,12 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
                 ? Stack(
               children: [
                 Container(height: double.infinity,child: CameraPreview(state.controller!)),
+                Align(alignment: Alignment.topCenter,child: Column(
+                  children: [
+                    SizedBox(height: 10,),
+                    Container(child: InkWell(onTap:()=> context.pop(),child: Image.asset("assets/img/sh_x.png")),height: 30),
+                  ],
+                )),
                 state.controller!.value.isRecordingVideo?
                 Positioned(
                   bottom: 0,

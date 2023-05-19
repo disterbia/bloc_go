@@ -75,6 +75,7 @@ class VideoUploadBloc extends Bloc<UploadEvent, UploadState> {
             enableProgressBar: false,
             showControlsOnInitialize: true,
             controlBarColor: Colors.transparent,
+            playerTheme:BetterPlayerTheme.material,
             controlsHideTime: Duration.zero,
             enablePlayPause: false,
             enableFullscreen: false,

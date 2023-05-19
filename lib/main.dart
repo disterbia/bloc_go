@@ -31,7 +31,7 @@ void main() async{
   //FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   //FlutterNativeSplash.remove();
   await Firebase.initializeApp();
- // await SharedPreferencesHelper.removeUserUid();
+  //await SharedPreferencesHelper.removeUserUid();
   UserID.uid = await SharedPreferencesHelper.getUserUid();
   UserID.nickname = await SharedPreferencesHelper.getUserNickname();
   UserID.userImage = await SharedPreferencesHelper.getUserImage();

@@ -1,4 +1,5 @@
 import 'package:Dtalk/app/view/splash_page.dart';
+import 'package:Dtalk/app/widget/custom_better_player.dart';
 import 'package:better_player/better_player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:Dtalk/app/model/video_stream.dart';
@@ -103,10 +104,11 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
             autoPlay: false,
             looping: true,
             autoDispose: false,
-            controlsConfiguration: const BetterPlayerControlsConfiguration(
+            controlsConfiguration:  BetterPlayerControlsConfiguration(
                 showControls: true,
                 showControlsOnInitialize: false,
-                 controlBarColor: Colors.transparent,
+                controlBarColor: Colors.transparent,
+                playerTheme:BetterPlayerTheme.material,
                 controlsHideTime: Duration.zero,
                 enablePlayPause: false,
                 enableFullscreen: false,
@@ -134,7 +136,6 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
     BetterPlayerController betterPlayerController = BetterPlayerController(
         betterPlayerConfiguration,
         betterPlayerDataSource: betterPlayerDataSource);
-
     return betterPlayerController;
   }
 

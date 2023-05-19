@@ -14,10 +14,11 @@ import 'package:Dtalk/app/model/user_info.dart' as myUser;
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginRepository loginRepository;
 
-  LoginBloc(this.loginRepository) : super(LoginState(isLogin: false)) {
+  LoginBloc(this.loginRepository) : super(LoginState(isLogin: false,isLoading: false)) {
     on<KakaoLoginEvent>((event, emit) async {
       if (await isKakaoTalkInstalled()) {
         try {
+          emit(LoginState(isLogin: false,isLoading: true));
           kakao.OAuthToken token = await kakao.UserApi.instance.loginWithKakaoTalk();
           print('카카오톡으로 로그인 성공');
           String result = await loginRepository.kakaoLogin(token);
@@ -30,14 +31,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             UserID.uid=result;
             UserID.userImage=userInfo.image;
             UserID.nickname=userInfo.nickname;
-            emit(LoginState(uid: result, isLogin: true));
+            emit(LoginState(uid: result, isLogin: true,isLoading: false));
           } else {
+            emit(LoginState(isLogin: false,isLoading: false));
             print("fuck you");
           }
         } catch (error) {
           print('카카오톡으로 로그인 실패 $error');
           // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
           try {
+            emit(LoginState(isLogin: false,isLoading: true));
             kakao.OAuthToken token =
                 await kakao.UserApi.instance.loginWithKakaoAccount();
             print('카카오계정으로 로그인 성공');
@@ -51,16 +54,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               UserID.uid=result;
               UserID.userImage=userInfo.image;
               UserID.nickname=userInfo.nickname;
-              emit(LoginState(uid: result, isLogin: true));
+              emit(LoginState(uid: result, isLogin: true,isLoading: false));
             } else {
+              emit(LoginState(isLogin: false,isLoading: false));
               print("fuck you");
             }
           } catch (error) {
+            emit(LoginState(isLogin: false,isLoading: false));
             print('카카오계정으로 로그인 실패 $error');
           }
         }
       } else {
         try {
+          emit(LoginState(isLogin: false,isLoading: true));
           kakao.OAuthToken token =
               await kakao.UserApi.instance.loginWithKakaoAccount();
           print('카카오계정으로 로그인 성공');
@@ -74,11 +80,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             UserID.uid=result;
             UserID.userImage=userInfo.image;
             UserID.nickname=userInfo.nickname;
-            emit(LoginState(uid: result, isLogin: true));
+            emit(LoginState(uid: result, isLogin: true,isLoading: false));
           } else {
+            emit(LoginState(isLogin: false,isLoading: false));
             print("fuck you");
           }
         } catch (error) {
+          emit(LoginState(isLogin: false,isLoading: false));
           print('카카오계정으로 로그인 실패 $error');
         }
       }
@@ -86,67 +94,86 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     on<AppleLoginEvent>((event, emit) async {
       try {
+        emit(LoginState(isLogin: false,isLoading: true));
         final AuthorizationCredentialAppleID credential =
         await SignInWithApple.getAppleIDCredential(
           scopes: [
             AppleIDAuthorizationScopes.email,
             AppleIDAuthorizationScopes.fullName,
           ],
-          webAuthenticationOptions: WebAuthenticationOptions(
-            clientId: "Dtalk.Dtalk.dmonster.com",
-            redirectUri: Uri.parse(
-              "https://flawless-gem-chestnut.glitch.me/callbacks/sign_in_with_apple",
-            ),
-          ),
+          // webAuthenticationOptions: WebAuthenticationOptions(
+          //   clientId: "Dtalk.Dtalk.dmonster.com",
+          //   redirectUri: Uri.parse(
+          //     "https://flawless-gem-chestnut.glitch.me/callbacks/sign_in_with_apple",
+          //   ),
+          // ),
         );
-        myUser.UserInfo? userInfo = await loginRepository.login(credential.userIdentifier!);
+        final oauthCredential = OAuthProvider("apple.com").credential(
+          idToken: credential.identityToken,
+          accessToken: credential.authorizationCode,
+        );
+        UserCredential result= await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+        myUser.UserInfo? userInfo = await loginRepository.login(result.user!.uid);
         if (userInfo!=null) {
-          await SharedPreferencesHelper.saveUserUid(credential.userIdentifier!); // Save uid
+          //credential.userIdentifier!
+          await SharedPreferencesHelper.saveUserUid(result.user!.uid); // Save uid
           await SharedPreferencesHelper.saveUserImage(userInfo.image);
           await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
-          UserID.uid=credential.userIdentifier!;
+          UserID.uid=result.user!.uid;
           UserID.userImage=userInfo.image;
           UserID.nickname=userInfo.nickname;
-          emit(LoginState(uid: credential.userIdentifier!, isLogin: true));
+          emit(LoginState(uid: result.user!.uid, isLogin: true,isLoading: false));
         }
       } catch (error) {
+        emit(LoginState(isLogin: false,isLoading: false));
         print('error = $error');
       }
     });
 
     on<GoogleLoginEvent>((event, emit) async {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      try{
+        emit(LoginState(isLogin: false,isLoading: true));
+        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      // Once signed in, return the UserCredential
-      UserCredential result= await FirebaseAuth.instance.signInWithCredential(credential);
-      myUser.UserInfo? userInfo = await loginRepository.login(result.user!.uid);
+        // Obtain the auth details from the request
+        final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+        // Create a new credential
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken,
+          idToken: googleAuth?.idToken,
+        );
+        // Once signed in, return the UserCredential
+        UserCredential result= await FirebaseAuth.instance.signInWithCredential(credential);
+        myUser.UserInfo? userInfo = await loginRepository.login(result.user!.uid);
 
-      if (userInfo!=null) {
-        await SharedPreferencesHelper.saveUserUid(result.user!.uid); // Save uid
-        await SharedPreferencesHelper.saveUserImage(userInfo.image);
-        await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
-        UserID.uid=result.user!.uid;
-        UserID.userImage=userInfo.image;
-        UserID.nickname=userInfo.nickname;
-        emit(LoginState(uid: result.user!.uid, isLogin: true));
-      } else {
-        print("fuck you");
+        if (userInfo!=null) {
+          await SharedPreferencesHelper.saveUserUid(result.user!.uid); // Save uid
+          await SharedPreferencesHelper.saveUserImage(userInfo.image);
+          await SharedPreferencesHelper.saveUserNickname(userInfo.nickname);
+          UserID.uid=result.user!.uid;
+          UserID.userImage=userInfo.image;
+          UserID.nickname=userInfo.nickname;
+          emit(LoginState(uid: result.user!.uid, isLogin: true,isLoading: false));
+        } else {
+          emit(LoginState(isLogin: false,isLoading: false));
+          print("fuck you");
+        }
       }
+      catch(e){
+        emit(LoginState(isLogin: false,isLoading: false));
+      }
+
     });
 
     on<NaverLoginEvent>((event, emit) async {
       try {
+        emit(LoginState(isLogin: false,isLoading: true));
         await FlutterNaverLogin.logOut();
+        emit(LoginState(isLogin: false,isLoading: false));
         final NaverLoginResult result =
         await FlutterNaverLogin.logIn();
+
         if (result.status == NaverLoginStatus.loggedIn) {
           myUser.UserInfo? userInfo = await loginRepository.login(result.account.id);
 
@@ -157,12 +184,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             UserID.uid=result.account.id;
             UserID.userImage=userInfo.image;
             UserID.nickname=userInfo.nickname;
-            emit(LoginState(uid: result.account.id, isLogin: true));
+            emit(LoginState(uid: result.account.id, isLogin: true,isLoading: false));
           } else {
+            emit(LoginState(isLogin: false,isLoading: false));
             print("fuck you");
           }
         }
       } catch (e) {
+        emit(LoginState(isLogin: false,isLoading: false));
         print("-=-=$e");
       }
     });
@@ -191,12 +220,15 @@ class GoogleLoginEvent extends LoginEvent {
   List<Object?> get props => [];
 }
 
+
 class LoginState extends Equatable {
   final String? uid;
   final bool? isLogin;
+  final bool? isLoading;
 
-  LoginState({this.uid, this.isLogin});
+  LoginState({this.uid, this.isLogin,this.isLoading});
 
   @override
-  List<Object?> get props => [uid,isLogin];
+  List<Object?> get props => [uid,isLogin,isLoading];
 }
+

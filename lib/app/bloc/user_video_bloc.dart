@@ -117,6 +117,7 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
           showControls: true,
           showControlsOnInitialize: false,
           controlBarColor: Colors.transparent,
+          playerTheme:BetterPlayerTheme.material,
           controlsHideTime: Duration.zero,
           enablePlayPause: false,
           enableFullscreen: false,
