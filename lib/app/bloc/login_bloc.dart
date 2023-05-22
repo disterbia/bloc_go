@@ -143,6 +143,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           accessToken: googleAuth?.accessToken,
           idToken: googleAuth?.idToken,
         );
+
         // Once signed in, return the UserCredential
         UserCredential result= await FirebaseAuth.instance.signInWithCredential(credential);
         myUser.UserInfo? userInfo = await loginRepository.login(result.user!.uid);
@@ -170,13 +171,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         emit(LoginState(isLogin: false,isLoading: true));
         await FlutterNaverLogin.logOut();
-        emit(LoginState(isLogin: false,isLoading: false));
         final NaverLoginResult result =
         await FlutterNaverLogin.logIn();
-
         if (result.status == NaverLoginStatus.loggedIn) {
           myUser.UserInfo? userInfo = await loginRepository.login(result.account.id);
-
           if (userInfo!=null) {
             await SharedPreferencesHelper.saveUserUid(result.account.id); // Save uid
             await SharedPreferencesHelper.saveUserImage(userInfo.image);

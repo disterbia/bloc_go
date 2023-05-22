@@ -1,3 +1,5 @@
+import 'package:Dtalk/app/widget/android_report_widget.dart';
+import 'package:Dtalk/app/widget/report_widget.dart';
 import 'package:better_player/better_player.dart';
 import 'package:Dtalk/app/bloc/chat_bloc.dart';
 import 'package:Dtalk/app/bloc/user_video_bloc.dart';
@@ -140,6 +142,7 @@ class _UserVideoPageState extends State<UserVideoPage> {
                                           CircleAvatar(backgroundImage: NetworkImage(widget.image,),),
                                           SizedBox(width: 10,),
                                           Text(widget.nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
+                                          AndroidReportWidget(false)
                                         ],
                                         mainAxisAlignment: MainAxisAlignment.center,
                                       ),

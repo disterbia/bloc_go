@@ -1,5 +1,6 @@
 import 'package:Dtalk/app/bloc/chat_bloc.dart';
 import 'package:Dtalk/app/bloc/follow_bloc.dart';
+import 'package:Dtalk/app/bloc/home_bloc.dart';
 import 'package:Dtalk/app/bloc/image_bloc.dart';
 import 'package:Dtalk/app/bloc/login_bloc.dart';
 import 'package:Dtalk/app/bloc/mypage_bloc.dart';
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => MyPageBloc(myPageRepository: MyPageRepository())),
       BlocProvider(create: (context) => UserVideoBloc()),
       BlocProvider(create: (context) => FollowBloc(FollowRepository())),
+      BlocProvider(create: (context) => HomeBloc()),
     ],
       child: ScreenUtilInit(
         designSize: const Size(360, 690),

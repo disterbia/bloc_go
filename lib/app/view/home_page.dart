@@ -1,4 +1,5 @@
 import 'package:Dtalk/app/bloc/chat_bloc.dart';
+import 'package:Dtalk/app/bloc/home_bloc.dart';
 import 'package:Dtalk/app/bloc/mypage_bloc.dart';
 import 'package:Dtalk/app/bloc/take_video_bloc.dart';
 import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
@@ -21,8 +22,6 @@ class HomePage extends StatefulWidget {
 
 
 class _HomePageState extends State<HomePage> {
-
-  int _selectedIndex = 0;
 
   final List _widgetOptions = [
    VideoScreenPage(),
@@ -47,60 +46,66 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: SafeArea(
-        child: Scaffold(backgroundColor: Colors.black,
-          body: _widgetOptions.elementAt(_selectedIndex),
-          bottomNavigationBar: BottomNavigationBar(backgroundColor:_selectedIndex==2?Colors.white: Color(0xFF272727),
-            currentIndex: _selectedIndex,
-            onTap: (int index) {
-              if(index==0){
-                context.read<VideoStreamBloc>().add(VideoPlayEvent());
-                setState(() {
-                  _selectedIndex = index;
-                });
-              }
-              else if(index==1){
-                context.read<VideoStreamBloc>().add(VideoPauseEvent());
-                if(UserID.uid==null){
-                  context.push(MyRoutes.Login);
-                }else{
-                  context.read<TakeVideoBloc>().add(InitialEvent(1));
-                  context.push(MyRoutes.TAKEVIDEO);
-                }
+      child: BlocBuilder<HomeBloc,int>(
+        builder: (context,state) {
+          return SafeArea(
+            child: Scaffold(backgroundColor: Colors.black,
+              body: _widgetOptions.elementAt(state),
+              bottomNavigationBar: BottomNavigationBar(backgroundColor:state==2?Colors.white: Color(0xFF272727),
+                currentIndex: state,
+                onTap: (int index) {
+                  if(index==0){
+                    context.read<VideoStreamBloc>().add(VideoPlayEvent());
+                    context.read<HomeBloc>().add(HomeEvent(index));
+                    // setState(() {
+                    //   _selectedIndex = index;
+                    // });
+                  }
+                  else if(index==1){
+                    context.read<VideoStreamBloc>().add(VideoPauseEvent());
+                    if(UserID.uid==null){
+                      context.push(MyRoutes.Login);
+                    }else{
+                      context.read<TakeVideoBloc>().add(InitialEvent(1));
+                      context.push(MyRoutes.TAKEVIDEO);
+                    }
 
-              }
-              else if(index==2){
-                context.read<VideoStreamBloc>().add(VideoPauseEvent());
-                if(UserID.uid==null){
-                  context.push(MyRoutes.Login);
-                }else{
-                  context.read<MyPageBloc>().add(GetMyPageEvent(userId: UserID.uid!));
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                }
-              }
-            },
-            type: BottomNavigationBarType.fixed,
-            items:  [
-              BottomNavigationBarItem(
-                icon: _selectedIndex==0?Image.asset("assets/img/menu_home_on.png",):Image.asset("assets/img/menu_home_b.png",),
-                label: '',
+                  }
+                  else if(index==2){
+                    context.read<VideoStreamBloc>().add(VideoPauseEvent());
+                    if(UserID.uid==null){
+                      context.push(MyRoutes.Login);
+                    }else{
+                      context.read<MyPageBloc>().add(GetMyPageEvent(userId: UserID.uid!));
+                      context.read<HomeBloc>().add(HomeEvent(index));
+                      // setState(() {
+                      //   _selectedIndex = index;
+                      // });
+                    }
+                  }
+                },
+                type: BottomNavigationBarType.fixed,
+                items:  [
+                  BottomNavigationBarItem(
+                    icon: state==0?Image.asset("assets/img/menu_home_on.png",):Image.asset("assets/img/menu_home_b.png",),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: state==2?Image.asset("assets/img/menu_plus_b.png"):Image.asset("assets/img/menu_plus_w.png"),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: state==2?Image.asset("assets/img/menu_my_on.png",):Image.asset("assets/img/menu_my_w.png"),
+                    label: '',
+                  ),
+                ],
+                selectedFontSize: 0,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
               ),
-              BottomNavigationBarItem(
-                icon: _selectedIndex==2?Image.asset("assets/img/menu_plus_b.png"):Image.asset("assets/img/menu_plus_w.png"),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: _selectedIndex==2?Image.asset("assets/img/menu_my_on.png",):Image.asset("assets/img/menu_my_w.png"),
-                label: '',
-              ),
-            ],
-            selectedFontSize: 0,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-          ),
-        ),
+            ),
+          );
+        }
       ),
     );
   }

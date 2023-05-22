@@ -1,3 +1,4 @@
+import 'package:Dtalk/app/bloc/home_bloc.dart';
 import 'package:Dtalk/app/const/addr.dart';
 import 'package:Dtalk/app/view/splash_page.dart';
 import 'package:Dtalk/main.dart';
@@ -10,6 +11,7 @@ import 'package:Dtalk/app/bloc/video_upload_bloc.dart';
 import 'package:Dtalk/app/router/custom_go_router.dart';
 import 'package:Dtalk/app/view/home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +33,43 @@ class _MyPageState extends State<MyPage> {
     //   statusBarColor: Colors.black, // Set status bar color
     //   statusBarIconBrightness: Brightness.light, // Status bar icons' color
     // ));
+
+    void _showAlert(BuildContext context, String reportType) {
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('회원탈퇴'),
+            content: Text('모든 정보들이 삭제 되며 복구 할 수 없습니다. 정말로 탈퇴하시겠습니까? '),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                isDefaultAction: false,
+                child: Text('취소'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              CupertinoDialogAction(
+                isDestructiveAction: true,
+                child: Text('탈퇴'),
+                onPressed: () async {
+                  context.read<MyPageBloc>().add(RemoveMyPageEvent(userId:UserID.uid!));
+                  await SharedPreferencesHelper.removeUserUid();
+                  await SharedPreferencesHelper.removeUserImage();
+                  await SharedPreferencesHelper.removeUserNickname();
+                  UserID.uid=null;
+                  UserID.userImage=null;
+                  UserID.nickname=null;
+                  context.read<HomeBloc>().add(HomeEvent(0));
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return BlocBuilder<MyPageBloc, MyPageState>(
         builder: (context, state) {
       if (state is! MyPageLoadedState)
@@ -39,7 +78,25 @@ class _MyPageState extends State<MyPage> {
         );
       return SafeArea(
         child: Scaffold(
-          appBar: AppBar(
+          appBar: AppBar(       actions: <Widget>[
+            PopupMenuButton<String>(
+              onSelected: (String result) {
+                if(result=="정보수정") context.push(MyRoutes.UPDATEPROFILE,extra: {"nickname":state.mypage!.nickname,"intro":state.mypage!.intro});
+                else _showAlert(context, result);
+              },
+              icon: Image.asset("assets/img/set_w.png",color: Colors.grey,height:20.h),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: '정보수정',
+                  child: Text('정보수정'),
+                ),
+                const PopupMenuItem<String>(
+                  value: '회원탈퇴',
+                  child: Text('회원탈퇴'),
+                ),
+              ],
+            ),
+          ],
             systemOverlayStyle: SystemUiOverlayStyle(
               // Status bar color
               statusBarColor: Colors.black,

@@ -3,6 +3,8 @@ import 'package:Dtalk/app/bloc/user_video_bloc.dart';
 import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
 import 'package:Dtalk/app/const/addr.dart';
 import 'package:Dtalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/app/widget/android_report_widget.dart';
+import 'package:Dtalk/app/widget/report_widget.dart';
 import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -73,9 +75,14 @@ Widget chatWidget(BuildContext context, String videoId) {
                                             showTime= DateFormat('MM/dd').format(timestamp);
                                           }
 
-                                        return Text(
-                                          showTime,
-                                          style: TextStyle(color: Colors.grey, fontSize: 10.sp),
+                                        return Row(
+                                          children: [
+                                            Text(
+                                              showTime,
+                                              style: TextStyle(color: Colors.grey, fontSize: 10.sp),
+                                            ),
+                                            AndroidReportWidget(true)
+                                          ],
                                         );
                                       }
                                     ),

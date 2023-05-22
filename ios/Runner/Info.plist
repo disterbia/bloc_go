@@ -65,13 +65,13 @@
 		</dict>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Access to pick a photo</string>
+	<string>동영삭 녹화를 위한 음성 사용 권한을 허용 하시겠습니까?</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Access to take a photo by camera</string>
+	<string>동영상 녹화를 위한 카메라 사용 권한을 허용하시겠습니까?</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>your usage description here</string>
+	<string>동영삭 녹화를 위한 음성 사용 권한을 허용 하시겠습니까?</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Access to pick a photo</string>
+	<string>콘텐츠 업로드를 위한 앨범 사용 권한을 허용 하시겠습니까?</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -100,7 +100,7 @@
 	<key>naverConsumerSecret</key>
 	<string>xOnDE7hHst</string>
 	<key>naverServiceAppName</key>
-	<string>dmonstertest</string>
+	<string>Dtalk</string>
 	<key>naverServiceAppUrlScheme</key>
 	<string>socialloginapp</string>
 </dict>

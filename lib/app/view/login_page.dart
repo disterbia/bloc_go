@@ -151,15 +151,17 @@ class _LoginPageState extends State<LoginPage> {
                               children: [
                                 Image.asset('assets/img/ic_naver.png', width: 30, height: 30),
                                 SizedBox(width: 10), // 이미지와 텍스트 사이에 간격을 추가
-                                Column(
-                                  children: [
-                                    Text('네이버 로그인',style: TextStyle(color: Colors.grey,fontSize: 20.sp),),
-                                    Text("검수 중 입니다.")
-                                  ],
-                                ),
+                                Text('네이버 로그인',style: TextStyle(color: Colors.black,fontSize: 20.sp),),
                               ],
                             ),
-                            onPressed: null,
+                            onPressed: () {
+                              setState(() {
+                                enabled = false;
+                              });
+                              Future.delayed(Duration(seconds: 1),  ()=>setState(() {
+                                enabled = true;
+                              }));
+                              context.read<LoginBloc>().add(NaverLoginEvent());},
                           ),
                         ),
                       ),

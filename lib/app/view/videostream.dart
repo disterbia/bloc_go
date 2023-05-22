@@ -1,5 +1,7 @@
 import 'package:Dtalk/app/bloc/follow_bloc.dart';
 import 'package:Dtalk/app/view/login_page.dart';
+import 'package:Dtalk/app/widget/android_report_widget.dart';
+import 'package:Dtalk/app/widget/report_widget.dart';
 import 'package:better_player/better_player.dart';
 import 'package:Dtalk/app/bloc/chat_bloc.dart';
 import 'package:Dtalk/app/bloc/user_profile_bloc.dart';
@@ -129,6 +131,7 @@ class VideoScreenPage extends StatelessWidget {
                                         CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image,),),
                                         SizedBox(width: 10,),
                                         Text(videos![vindex].userInfo.nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
+                                        AndroidReportWidget(false)
                                       ],
                                       mainAxisAlignment: MainAxisAlignment.center,
                                     ),

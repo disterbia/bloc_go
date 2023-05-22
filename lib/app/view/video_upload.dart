@@ -90,6 +90,7 @@ class VideoUploadScreen extends StatelessWidget {
                                   autofocus: true,
                                   controller: state.titleController,
                                   decoration: InputDecoration(
+                                    hintText: "불건전한 내용이 포함될 시 이용이 제한됩니다.",hintStyle: TextStyle(color: Colors.grey),
                                     enabledBorder: UnderlineInputBorder(
                                       borderSide:
                                       BorderSide(color: Colors.grey.shade200),
