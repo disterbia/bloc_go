@@ -17,15 +17,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController? _verticalController;
-  bool visible = false;
-  int _currentIndex = 0;
+  //int videostate.currentIndex! = 0;
   BetterPlayerController? controller;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<VideoStreamBloc, VideoState>(
       builder: (context, videostate) {
+
+        print("-=--=-=-=-=${videostate.currentIndex!}");
         List<VideoStream>? videos = videostate.video;
-        return PageView.builder(
+        return  videostate.currentController==null?Center(child: Center(child: CircularProgressIndicator(),),):PageView.builder(
           onPageChanged: (hNextIndex) async {
             if(hNextIndex==1)
             context.read<VideoStreamBloc>().add(VideoPlayEvent());
@@ -38,7 +39,7 @@ class VideoScreenPage extends StatelessWidget {
               _verticalController!.dispose();
               _verticalController = null;
             }
-             _verticalController = PageController(initialPage: _currentIndex);
+             _verticalController = PageController(initialPage: videostate.currentIndex!);
             if (hIndex == 1) {
               return PageView.builder(
                 scrollDirection: Axis.vertical,
@@ -46,23 +47,23 @@ class VideoScreenPage extends StatelessWidget {
                 itemCount: videostate.video!.length,
                 onPageChanged: (vNextIndex) {
                   // 이전 동영상으로 이동
-                  if (vNextIndex < _currentIndex) {
+                  if (vNextIndex < videostate.currentIndex!) {
 
                     if (videostate.nextController != null) {
                       videostate.nextController!.dispose(forceDispose: true);
                     }
-                    context.read<VideoStreamBloc>().add(UpdatePrevVideoControllers(currentIndex: _currentIndex));
+                    context.read<VideoStreamBloc>().add(UpdatePrevVideoControllers(currentIndex: videostate.currentIndex!));
 
                     String removeId="";
                     String newId="";
                    if(videos!=null){
-                      if (_currentIndex == 1) {
-                        removeId = videos[_currentIndex + 1].id;
-                      } else if(_currentIndex+1 ==  videostate.video!.length){
-                        newId = videos[_currentIndex - 2].id;
+                      if (videostate.currentIndex! == 1) {
+                        removeId = videos[videostate.currentIndex! + 1].id;
+                      } else if(videostate.currentIndex!+1 ==  videostate.video!.length){
+                        newId = videos[videostate.currentIndex! - 2].id;
                       }else{
-                        removeId = videos[_currentIndex + 1].id;
-                        newId = videos[_currentIndex - 2].id;
+                        removeId = videos[videostate.currentIndex! + 1].id;
+                        newId = videos[videostate.currentIndex! - 2].id;
                       }
                     }
 
@@ -74,18 +75,18 @@ class VideoScreenPage extends StatelessWidget {
                     if (videostate.prevController != null) {
                       videostate.prevController!.dispose(forceDispose: true);
                     }
-                    context.read<VideoStreamBloc>().add(UpdateNextVideoControllers(currentIndex: _currentIndex));
+                    context.read<VideoStreamBloc>().add(UpdateNextVideoControllers(currentIndex: videostate.currentIndex!));
 
                     String removeId="";
                     String newId="";
                     if(videos!=null){
-                      if (_currentIndex == 0) {
-                        newId = videos[_currentIndex + 2].id;
-                      } else if(_currentIndex== videostate.video!.length-2){
-                        removeId = videos[_currentIndex - 1].id;
+                      if (videostate.currentIndex! == 0) {
+                        newId = videos[videostate.currentIndex! + 2].id;
+                      } else if(videostate.currentIndex== videostate.video!.length-2){
+                        removeId = videos[videostate.currentIndex! - 1].id;
                       } else{
-                        removeId = videos[_currentIndex - 1].id;
-                        newId = videos[_currentIndex + 2].id;
+                        removeId = videos[videostate.currentIndex! - 1].id;
+                        newId = videos[videostate.currentIndex! + 2].id;
                       }
                     }
 
@@ -93,18 +94,19 @@ class VideoScreenPage extends StatelessWidget {
                   }
 
                   // 새로운 인덱스로 업데이트하고 다음 동영상 재생
-                   _currentIndex = vNextIndex;
+                  context.read<VideoStreamBloc>().add(IndexUpdateEvent(currentIndex: vNextIndex));
+                   // videostate.currentIndex! = vNextIndex;
 
 
                 },
                 itemBuilder: (BuildContext context, int vindex) {
-                  if (vindex == _currentIndex) {
+                  if (vindex == videostate.currentIndex!) {
                     controller = videostate.currentController;
 
-                  } else if (vindex == _currentIndex - 1) {
+                  } else if (vindex == videostate.currentIndex! - 1) {
                     controller = videostate.prevController;
 
-                  } else if (vindex == _currentIndex + 1) {
+                  } else if (vindex == videostate.currentIndex! + 1) {
                     controller = videostate.nextController;
 
                   }
@@ -131,7 +133,7 @@ class VideoScreenPage extends StatelessWidget {
                                         CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image,),),
                                         SizedBox(width: 10,),
                                         Text(videos![vindex].userInfo.nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
-                                        AndroidReportWidget(false)
+
                                       ],
                                       mainAxisAlignment: MainAxisAlignment.center,
                                     ),
@@ -148,7 +150,14 @@ class VideoScreenPage extends StatelessWidget {
                                 ),
                               ),
                               ChatStateWidget(video: videos[vindex]),
-
+                              UserID.uid==videos[vindex].uploader?Container():Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Padding(
+                                  padding:  EdgeInsets.all(20.0),
+                                  child: ReportWidget(false,blockId: videos[vindex].id,currentIndex: videostate.currentIndex!,)
+                                ),
+                              ),
                             ],
                           )
                   );
@@ -158,8 +167,8 @@ class VideoScreenPage extends StatelessWidget {
               if (hIndex == 2) {
                 context.read<UserProfileBloc>().add(GetUserProfileVideosEvent(
                     userId: UserID.uid??"",
-                    creator: videos![_currentIndex].userInfo.id));
-                return UserProfile(videos[_currentIndex],false);
+                    creator: videos![videostate.currentIndex!].userInfo.id));
+                return UserProfile(videos[videostate.currentIndex!],false);
               } else {
                 if(UserID.uid!=null){
                   context.read<FollowBloc>().add(FollowEvent(UserID.uid!));

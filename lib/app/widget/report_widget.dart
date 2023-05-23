@@ -1,10 +1,17 @@
+import 'package:Dtalk/app/bloc/video_stream_bloc.dart';
+import 'package:Dtalk/app/router/custom_go_router.dart';
+import 'package:Dtalk/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class ReportWidget extends StatelessWidget {
   bool isChat;
-  ReportWidget(this.isChat);
+  int? currentIndex;
+  String? blockId;
+  ReportWidget(this.isChat, {this.blockId,this.currentIndex});
   void _showReportModal(BuildContext context) {
     showCupertinoModalPopup(
         context: context,
@@ -66,9 +73,71 @@ class ReportWidget extends StatelessWidget {
     );
   }
 
+  void _showBlock(BuildContext context) {
+    // Navigator.pop(context);
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text('경고'),
+          content: Text('해당 동영상을 차단하면 더이상 보여지지 않으며 복구 할 수 없습니다. 정말로 차단하시겠습니까?'),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              isDefaultAction: false,
+              child: Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              child: Text('차단'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<VideoStreamBloc>().add(BlockVideoControllers(blockId: blockId!,currentIndex: currentIndex ));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  Center(
+    return  !isChat?PopupMenuButton<String>(
+      onSelected: (String result) {
+        if(UserID.uid==null) context.push(MyRoutes.Login);
+        else if(result=="신고") _showReportModal(context);
+        else _showBlock(context);
+      },
+      icon: Image.asset("assets/img/set_w.png",width: 30.w),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+         PopupMenuItem<String>(
+          value: '신고',
+          child: Container(width: 70.w,
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset("assets/img/ic_warning.png",width: 30.w),
+                Text('신고',),
+              ],
+            ),
+          ),
+        ),
+         PopupMenuItem<String>(
+          value: '차단',
+          child: Container(width: 70.w,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset("assets/img/ic_blocking2.png",width: 30.w,),
+                Text('차단',style: TextStyle(color: Colors.red),),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ):Center(
         child: CupertinoButton(
           onPressed: () => _showReportModal(context),
           child: Text('신고',style: TextStyle(fontSize: isChat?12.sp:12.sp,color: Colors.red.shade200),),

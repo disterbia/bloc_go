@@ -217,7 +217,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Widget _buildProfileBio(BuildContext context) {
-    return this.isLoading?CircularProgressIndicator():widget.video.userInfo.id == UserID.uid
+    return this.isLoading?Container():widget.video.userInfo.id == UserID.uid
         ? ConstrainedBox(constraints: BoxConstraints.tightFor(width: 200.w, height: 50.h),
           child: ElevatedButton(
           style: ButtonStyle(

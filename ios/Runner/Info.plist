@@ -65,13 +65,13 @@
 		</dict>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>동영삭 녹화를 위한 음성 사용 권한을 허용 하시겠습니까?</string>
+	<string>동영상 즉시 녹화 업로드를 기능을 위한 음성 사용 권한을 허용 하시겠습니까?</string>
 	<key>NSCameraUsageDescription</key>
-	<string>동영상 녹화를 위한 카메라 사용 권한을 허용하시겠습니까?</string>
+	<string>동영상 즉시 녹화 업로드를 기능을 위한 카메라 사용 권한을 허용 하시겠습니까?</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>동영삭 녹화를 위한 음성 사용 권한을 허용 하시겠습니까?</string>
+	<string>동영상 즉시 녹화 업로드를 기능을 위한 마이크 사용 권한을 허용 하시겠습니까?</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>콘텐츠 업로드를 위한 앨범 사용 권한을 허용 하시겠습니까?</string>
+	<string>앨범에 있는 동영상 및 사진 업로드를 위한 앨범 사용 권한을 허용 하시겠습니까?</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

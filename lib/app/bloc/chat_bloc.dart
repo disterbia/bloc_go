@@ -56,7 +56,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   Future<void> initialLoad() async{
-    List<VideoStream> temp = await repository.fetchVideosFromServer(0, null);
+    List<VideoStream> temp = await repository.fetchVideosFromServer("", null);
     if (temp.isEmpty) {
       return;
     }

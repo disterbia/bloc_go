@@ -77,36 +77,36 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(10.0),
-                  //   child: AbsorbPointer(
-                  //     absorbing: !enabled ,
-                  //     child: ElevatedButton(
-                  //       style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity,80.h),shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  //         backgroundColor: Colors.white, // 버튼의 배경색을 흰색으로 설정
-                  //         side: BorderSide(color: Color(0xFFE6E6E6)), // 버튼의 테두리 색을 회색으로 설정
-                  //           elevation: 0
-                  //       ),
-                  //       child: Row(
-                  //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         children: [
-                  //           Image.asset('assets/img/ic_apple.png', width: 30, height: 30),
-                  //           SizedBox(width: 10), // 이미지와 텍스트 사이에 간격을 추가
-                  //           Text('애플 로그인',style: TextStyle(color: Colors.black,fontSize: 20.sp),),
-                  //         ],
-                  //       ),
-                  //       onPressed: ()
-                  //       {
-                  //       setState(() {
-                  //       enabled = false;
-                  //       });
-                  //       Future.delayed(Duration(seconds: 1),  ()=>setState(() {
-                  //       enabled = true;
-                  //       }));
-                  //         context.read<LoginBloc>().add(AppleLoginEvent());},
-                  //     ),
-                  //   ),
-                  // ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: AbsorbPointer(
+                      absorbing: !enabled ,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity,80.h),shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          backgroundColor: Colors.white, // 버튼의 배경색을 흰색으로 설정
+                          side: BorderSide(color: Color(0xFFE6E6E6)), // 버튼의 테두리 색을 회색으로 설정
+                            elevation: 0
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/img/ic_apple.png', width: 30, height: 30),
+                            SizedBox(width: 10), // 이미지와 텍스트 사이에 간격을 추가
+                            Text('애플 로그인',style: TextStyle(color: Colors.black,fontSize: 20.sp),),
+                          ],
+                        ),
+                        onPressed: ()
+                        {
+                        setState(() {
+                        enabled = false;
+                        });
+                        Future.delayed(Duration(seconds: 1),  ()=>setState(() {
+                        enabled = true;
+                        }));
+                          context.read<LoginBloc>().add(AppleLoginEvent());},
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: AbsorbPointer(

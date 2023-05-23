@@ -6,6 +6,37 @@ import 'package:Dtalk/main.dart';
 
 class VideoStreamRepository {
   final dio = Dio();
+  Future<bool> blockVideo(String blockId) async{
+    try{
+      Response<dynamic> response = await dio.post(
+          '${Address.addr}block',
+          data: {
+          "userId":UserID.uid,
+            "blockId":blockId
+      }
+      );
+      if (response.statusCode == 200) {
+        print(response.data);
+        return true;
+      } else if (response.statusCode == 400) {
+        print(response.data);
+        return false;
+      } else {
+        throw Exception('Failed to load videos');
+      }
+    }on DioError catch (e) {
+      if (e.type == DioErrorType.response) {
+        print(e.response?.data);
+        return false;
+      } else {
+        print(e);
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
   Future<List<UserVideo>> fetchUserVideosFromServer(String userId) async{
     try {
       Response<dynamic> response = await dio.get(
@@ -36,14 +67,14 @@ class VideoStreamRepository {
     }
   }
   Future<List<VideoStream>> fetchVideosFromServer(
-      int page, String? firstVideoUrl) async {
+      String pageToken, String? firstVideoUrl) async {
     try {
       Response<dynamic> response = await dio.get(
         '${Address.addr}videos',
         queryParameters: {
           'user_id' : UserID.uid,
-          'page': page,
-          'first': firstVideoUrl,
+          'pageToken': pageToken,
+          'first': firstVideoUrl??"",
         },
       );
 

@@ -142,7 +142,6 @@ class _UserVideoPageState extends State<UserVideoPage> {
                                           CircleAvatar(backgroundImage: NetworkImage(widget.image,),),
                                           SizedBox(width: 10,),
                                           Text(widget.nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
-                                          AndroidReportWidget(false)
                                         ],
                                         mainAxisAlignment: MainAxisAlignment.center,
                                       ),

@@ -81,7 +81,7 @@ Widget chatWidget(BuildContext context, String videoId) {
                                               showTime,
                                               style: TextStyle(color: Colors.grey, fontSize: 10.sp),
                                             ),
-                                            AndroidReportWidget(true)
+                                            chatstate.chatRoomStates[videoId]!.messages[bindex].username==UserID.uid?Container():ReportWidget(true)
                                           ],
                                         );
                                       }
