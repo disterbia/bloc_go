@@ -42,8 +42,8 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
   Future<void> _blockControllsers(BlockVideoControllers event, Emitter<VideoState> emit) async{
     bool result = await repository.blockVideo(event.blockId!);
     print(result);
-      videos=[];
-     firstUrl="";
+    videos=[];
+    firstUrl="";
     state.nextController?.dispose(forceDispose: true);
     state.currentController?.dispose(forceDispose: true);
     state.prevController?.dispose(forceDispose: true);
@@ -71,13 +71,13 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       emit(VideoLoaded(prevController: null, currentController: state.prevController, nextController: state.currentController, video:state.video,currentIndex: state.currentIndex));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
-     await state.currentController!.play();
+      await state.currentController!.play();
     }else{
       BetterPlayerController? prevController = await _initializeVideo(state.video![event.currentIndex!-2]);
       emit(VideoLoaded(prevController: prevController, currentController: state.prevController, nextController: state.currentController, video: state.video,currentIndex: state.currentIndex));
       await state.nextController!.seekTo(Duration.zero);
       await state.nextController!.pause();
-     await state.currentController!.play();
+      await state.currentController!.play();
     }
   }
 
@@ -86,7 +86,7 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
       emit(VideoLoaded(prevController: state.currentController, currentController: state.nextController, nextController: null, video: state.video,currentIndex: state.currentIndex));
       await state.prevController!.seekTo(Duration.zero);
       await state.prevController!.pause();
-     await state.currentController!.play();
+      await state.currentController!.play();
       await _getMoreVideos(state.video!.last.id,firstUrl,emit);
     }else{
       BetterPlayerController? nextController =  await _initializeVideo(state.video![event.currentIndex!+2]);
@@ -131,39 +131,39 @@ class VideoStreamBloc extends Bloc<VideoEvent, VideoState> {
 
   Future<BetterPlayerController> _initializeVideo(VideoStream video) async {
     BetterPlayerConfiguration betterPlayerConfiguration =
-         BetterPlayerConfiguration(
-            aspectRatio: VideoAspectRatio.aspectRatio,
-            autoPlay: false,
-            looping: true,
-            autoDispose: false,
-            controlsConfiguration:  BetterPlayerControlsConfiguration(
-                showControls: true,
-                showControlsOnInitialize: false,
-                controlBarColor: Colors.transparent,
-                playerTheme:BetterPlayerTheme.material,
-                controlsHideTime: Duration.zero,
-                enablePlayPause: false,
-                enableFullscreen: false,
-                enableMute: false,
-                enableProgressText: false,
-                enableSkips: false,
-                enableAudioTracks: false,
-                enableOverflowMenu: false,
-                enablePlaybackSpeed: false,
-                enableSubtitles: false,
-                enableQualities: false,
-                enablePip: false,
-                enableRetry: false,));
+    BetterPlayerConfiguration(
+        aspectRatio: VideoAspectRatio.aspectRatio,
+        autoPlay: false,
+        looping: true,
+        autoDispose: false,
+        controlsConfiguration:  BetterPlayerControlsConfiguration(
+          showControls: true,
+          showControlsOnInitialize: false,
+          controlBarColor: Colors.transparent,
+          playerTheme:BetterPlayerTheme.material,
+          controlsHideTime: Duration.zero,
+          enablePlayPause: false,
+          enableFullscreen: false,
+          enableMute: false,
+          enableProgressText: false,
+          enableSkips: false,
+          enableAudioTracks: false,
+          enableOverflowMenu: false,
+          enablePlaybackSpeed: false,
+          enableSubtitles: false,
+          enableQualities: false,
+          enablePip: false,
+          enableRetry: false,));
 
     BetterPlayerDataSource betterPlayerDataSource =
-        BetterPlayerDataSource(BetterPlayerDataSourceType.network, video.url,
-          videoFormat: BetterPlayerVideoFormat.hls,
-            cacheConfiguration: const BetterPlayerCacheConfiguration(
-              useCache: true,
-              maxCacheSize: 5 * 1024 * 1024,
-              maxCacheFileSize: 5 * 1024 * 1024,
-              preCacheSize: 3 * 1024 * 1024,
-            ));
+    BetterPlayerDataSource(BetterPlayerDataSourceType.network, video.url,
+        videoFormat: BetterPlayerVideoFormat.hls,
+        cacheConfiguration: const BetterPlayerCacheConfiguration(
+          useCache: true,
+          maxCacheSize: 20 * 1024 * 1024,
+          maxCacheFileSize: 20 * 1024 * 1024,
+          preCacheSize:   1024,
+        ));
 
     BetterPlayerController betterPlayerController = BetterPlayerController(
         betterPlayerConfiguration,
@@ -268,4 +268,3 @@ class VideoLoaded extends VideoState {
   @override
   List<Object?> get props => [prevController, currentController, nextController, video,currentIndex];
 }
-

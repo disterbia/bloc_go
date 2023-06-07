@@ -14,6 +14,7 @@ import 'package:Dtalk/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class VideoScreenPage extends StatelessWidget {
   PageController _horizontalController = PageController(initialPage: 1);
   PageController? _verticalController;
@@ -29,7 +30,7 @@ class VideoScreenPage extends StatelessWidget {
         return  videostate.currentController==null?Center(child: Center(child: CircularProgressIndicator(),),):PageView.builder(
           onPageChanged: (hNextIndex) async {
             if(hNextIndex==1)
-            context.read<VideoStreamBloc>().add(VideoPlayEvent());
+              context.read<VideoStreamBloc>().add(VideoPlayEvent());
             else  context.read<VideoStreamBloc>().add(VideoPauseEvent());
           },
           controller: _horizontalController,
@@ -39,7 +40,7 @@ class VideoScreenPage extends StatelessWidget {
               _verticalController!.dispose();
               _verticalController = null;
             }
-             _verticalController = PageController(initialPage: videostate.currentIndex!);
+            _verticalController = PageController(initialPage: videostate.currentIndex!);
             if (hIndex == 1) {
               return PageView.builder(
                 scrollDirection: Axis.vertical,
@@ -56,7 +57,7 @@ class VideoScreenPage extends StatelessWidget {
 
                     String removeId="";
                     String newId="";
-                   if(videos!=null){
+                    if(videos!=null){
                       if (videostate.currentIndex! == 1) {
                         removeId = videos[videostate.currentIndex! + 1].id;
                       } else if(videostate.currentIndex!+1 ==  videostate.video!.length){
@@ -95,7 +96,7 @@ class VideoScreenPage extends StatelessWidget {
 
                   // 새로운 인덱스로 업데이트하고 다음 동영상 재생
                   context.read<VideoStreamBloc>().add(IndexUpdateEvent(currentIndex: vNextIndex));
-                   // videostate.currentIndex! = vNextIndex;
+                  // videostate.currentIndex! = vNextIndex;
 
 
                 },
@@ -111,55 +112,55 @@ class VideoScreenPage extends StatelessWidget {
 
                   }
                   return WillPopScope(
-                    onWillPop: () async {
-                      await videostate.currentController?.seekTo(Duration.zero);
-                      await videostate.currentController?.pause();
-                      return Future(() => true);
-                    },
-                    child: Stack(
-                            children: [
-                              controller != null
-                                  ? BetterPlayer(controller: controller!)
-                                  : Center(child: CircularProgressIndicator()),
-                              Positioned(
-                                bottom: 25,
-                                left: 25,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                      onWillPop: () async {
+                        await videostate.currentController?.seekTo(Duration.zero);
+                        await videostate.currentController?.pause();
+                        return Future(() => true);
+                      },
+                      child: Stack(
+                        children: [
+                          controller != null
+                              ? BetterPlayer(controller: controller!)
+                              : Center(child: CircularProgressIndicator()),
+                          Positioned(
+                            bottom: 25,
+                            left: 25,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        videos![vindex].userInfo.image==""?CircleAvatar(backgroundImage: AssetImage("assets/img/profile3_s.png"),):
-                                        CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image,),),
-                                        SizedBox(width: 10,),
-                                        Text(videos![vindex].userInfo.nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
+                                    videos![vindex].userInfo.image==""?CircleAvatar(backgroundImage: AssetImage("assets/img/profile3_s.png"),):
+                                    CircleAvatar(backgroundImage: NetworkImage(videos![vindex].userInfo.image,),),
+                                    SizedBox(width: 10,),
+                                    Text(videos![vindex].userInfo.nickname,style: TextStyle(color: Colors.white,fontSize: 16.sp),),
 
-                                      ],
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                    ),
-                                    SizedBox(height: 10,),
-                                    Container(width: 250,
-                                      child: Row(
-                                        children: [
-                                          SizedBox(width: 5,),
-                                          Expanded(child: Text(videos[vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,style: TextStyle(color: Colors.white,fontSize: 18.sp,fontWeight: FontWeight.w100))),
-                                        ],
-                                      ),
-                                    ),
                                   ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                 ),
-                              ),
-                              ChatStateWidget(video: videos[vindex]),
-                              UserID.uid==videos[vindex].uploader?Container():Positioned(
-                                top: 0,
-                                right: 0,
-                                child: Padding(
-                                  padding:  EdgeInsets.all(20.0),
-                                  child: ReportWidget(false,blockId: videos[vindex].id,currentIndex: videostate.currentIndex!,)
+                                SizedBox(height: 10,),
+                                Container(width: 250,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 5,),
+                                      Expanded(child: Text(videos[vindex].title,overflow: TextOverflow.ellipsis,maxLines: 2,style: TextStyle(color: Colors.white,fontSize: 18.sp,fontWeight: FontWeight.w100))),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          )
+                              ],
+                            ),
+                          ),
+                          ChatStateWidget(video: videos[vindex]),
+                          UserID.uid==videos[vindex].uploader?Container():Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Padding(
+                                padding:  EdgeInsets.all(20.0),
+                                child: ReportWidget(false,blockId: videos[vindex].id,currentIndex: videostate.currentIndex!,)
+                            ),
+                          ),
+                        ],
+                      )
                   );
                 },
               );

@@ -137,9 +137,9 @@ class UserVideoBloc extends Bloc<UserVideoEvent, UserVideoState> {
         videoFormat: BetterPlayerVideoFormat.hls,
         cacheConfiguration: const BetterPlayerCacheConfiguration(
           useCache: true,
-          maxCacheSize: 5 * 1024 * 1024,
-          maxCacheFileSize: 5 * 1024 * 1024,
-          preCacheSize: 3 * 1024 * 1024,
+          maxCacheSize: 20 * 1024 * 1024,
+          maxCacheFileSize: 20 * 1024 * 1024,
+          preCacheSize:  1024,
         ));
 
     BetterPlayerController betterPlayerController = BetterPlayerController(
